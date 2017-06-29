@@ -38,6 +38,45 @@ in
 lib/python2.7/site-packages/socketio/sdjango.py (line 6)
 
 
+## Get js libraries
+
+bootstrap
+bootstrap-colorpickersliders
+bootstrap-modal.min.js
+bootstrap-modalmanager.min.js
+bootstrap-slider.js
+dat.gui.js
+domReady.js
+FileSaver.min.js
+flashsocket
+jqtree
+jquery-2.1.3.min.js
+jquery-transform
+jquery-ui.min.js
+jquery.mCustomScrollbar.min.js
+jquery.mousewheel.min.js
+jquery.nanoscroller.js
+jquery.oembed.js
+jQueryUI
+js.cookie.js
+jszip
+live.js
+paper-full.js
+perfect-scrollbar
+pinit.js
+RequestAnimationFrame.js
+require.js
+sb-1.4.1.min.js
+socket.io.js
+spin.js
+bootstrap-table
+tinycolor.js
+tween.min.js
+typeahead.bundle.js
+underscore-min.js
+video-js.css
+ZeroClipboard
+
 ## Migrate
 
 `python manage.py migrate`
