@@ -2,6 +2,30 @@ body {
   background-color: white;
   overflow: hidden;
 }
+.glyphicon-refresh-animate {
+  -animation: spin .7s infinite linear;
+  -webkit-animation: spin .7s infinite linear;
+}
+@-webkit-keyframes spin {
+  from {
+    -webkit-transform: scale(1) rotate(0deg);
+            transform: scale(1) rotate(0deg);
+  }
+  to {
+    -webkit-transform: scale(1) rotate(360deg);
+            transform: scale(1) rotate(360deg);
+  }
+}
+@keyframes spin {
+  from {
+    -webkit-transform: scale(1) rotate(0deg);
+            transform: scale(1) rotate(0deg);
+  }
+  to {
+    -webkit-transform: scale(1) rotate(360deg);
+            transform: scale(1) rotate(360deg);
+  }
+}
 .commeUnDessein-ui,
 .commeUnDessein-ui.open {
   background-color: #33383e;
@@ -167,11 +191,7 @@ body {
   color: white;
   text-align: left;
   z-index: 2000;
-  -webkit-transition: left 0.5s ease-out, top 0.25s linear;
   -khtml-transition: left 0.5s ease-out, top 0.25s linear;
-  -moz-transition: left 0.5s ease-out, top 0.25s linear;
-  -ms-transition: left 0.5s ease-out, top 0.25s linear;
-  -o-transition: left 0.5s ease-out, top 0.25s linear;
   transition: left 0.5s ease-out, top 0.25s linear;
 }
 #CommeUnDessein_alerts .alert-controls {
@@ -215,9 +235,6 @@ body {
   top: 50%;
   -webkit-transform: translateY(-50%);
   -khtml-transform: translateY(-50%);
-  -moz-transform: translateY(-50%);
-  -ms-transform: translateY(-50%);
-  -o-transform: translateY(-50%);
   transform: translateY(-50%);
   left: 25px;
   right: 0;
@@ -241,11 +258,7 @@ body {
   opacity: 0.5;
   color: white;
   background-color: #33383e;
-  -webkit-transition: opacity 0.25s linear;
   -khtml-transition: opacity 0.25s linear;
-  -moz-transition: opacity 0.25s linear;
-  -ms-transition: opacity 0.25s linear;
-  -o-transition: opacity 0.25s linear;
   transition: opacity 0.25s linear;
 }
 #CommeUnDessein_alerts.activated.show,
@@ -274,8 +287,6 @@ body {
   right: 0;
   -webkit-user-select: none;
   -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   -o-user-select: none;
   user-select: none;
 }
@@ -313,8 +324,6 @@ body {
   cursor: url(../images/cursors/hand.png) 32 32, move;
   -webkit-user-select: text;
   -khtml-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
   -o-user-select: text;
   user-select: text;
 }
@@ -346,9 +355,6 @@ body {
   overflow: hidden;
   -webkit-transform-origin: 0% 0% 0;
   -khtml-transform-origin: 0% 0% 0;
-  -moz-transform-origin: 0% 0% 0;
-  -ms-transform-origin: 0% 0% 0;
-  -o-transform-origin: 0% 0% 0;
   transform-origin: 0% 0% 0;
 }
 #stage.main .custom-div:hover {
@@ -413,9 +419,6 @@ body {
   left: 50%;
   -webkit-transform: translate(-50%, -50%);
   -khtml-transform: translate(-50%, -50%);
-  -moz-transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  -o-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
 #stage.main .custom-div textarea {
@@ -431,11 +434,8 @@ body {
   padding-left: 12px;
   padding-right: 12px;
   padding-top: 6px;
-  -webkit-background-clip: padding-box;
   -khtml-background-clip: padding-box;
-  -moz-background-clip: padding-box;
   -ms-background-clip: padding-box;
-  -o-background-clip: padding-box;
   background-clip: padding-box;
 }
 #stage.main .custom-div .content {
@@ -447,11 +447,8 @@ body {
   border-style: solid;
   border-width: 0px;
   margin: 0;
-  -webkit-background-clip: padding-box;
   -khtml-background-clip: padding-box;
-  -moz-background-clip: padding-box;
   -ms-background-clip: padding-box;
-  -o-background-clip: padding-box;
   background-clip: padding-box;
   position: relative;
   float: left;
@@ -459,9 +456,6 @@ body {
   left: 50%;
   -webkit-transform: translate(-50%, -50%);
   -khtml-transform: translate(-50%, -50%);
-  -moz-transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  -o-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
 #stage.main .custom-div .content.image {
@@ -535,19 +529,18 @@ body {
   clear: both;
 }
 #user-profile .commeUnDesseinin {
-  display: -webkit-flex;
   display: -moz-flex;
-  display: -ms-flexbox;
   display: -ms-flex;
+  display: -webkit-box;
   display: flex;
-  -webkit-justify-content: space-between;
   -moz-justify-content: space-between;
   -ms-justify-content: space-between;
-  justify-content: space-between;
-  -webkit-align-items: center;
+  -webkit-box-pack: justify;
+          justify-content: space-between;
   -moz-align-items: center;
   -ms-align-items: center;
-  align-items: center;
+  -webkit-box-align: center;
+          align-items: center;
   margin-top: 10px;
   margin-bottom: 10px;
   width: 100%;
@@ -643,11 +636,15 @@ body {
 }
 .all-tools .search {
   width: 100%;
+  display: -webkit-box;
   display: flex;
-  flex-direction: row;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+          flex-direction: row;
 }
 .all-tools .search input {
-  flex: 1;
+  -webkit-box-flex: 1;
+          flex: 1;
 }
 .all-tools .search button {
   margin-left: -1px;
@@ -748,11 +745,7 @@ li.tool-btn.selected .favorite-btn {
 .mCustomScrollbar.tree li.closed hr {
   visibility: hidden;
   height: 0px;
-  -webkit-transition: height 0.5s ease-out;
   -khtml-transition: height 0.5s ease-out;
-  -moz-transition: height 0.5s ease-out;
-  -ms-transition: height 0.5s ease-out;
-  -o-transition: height 0.5s ease-out;
   transition: height 0.5s ease-out;
 }
 .sidebar {
@@ -769,15 +762,9 @@ li.tool-btn.selected .favorite-btn {
   list-style: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   -o-user-select: none;
   user-select: none;
-  -webkit-transition: left 0.5s ease-out;
   -khtml-transition: left 0.5s ease-out;
-  -moz-transition: left 0.5s ease-out;
-  -ms-transition: left 0.5s ease-out;
-  -o-transition: left 0.5s ease-out;
   transition: left 0.5s ease-out;
   /*
 	.option-list {
@@ -887,11 +874,7 @@ li.tool-btn.selected .favorite-btn {
   background: #33383e;
   border: none;
   border-radius: 0;
-  -webkit-transition: right 0.5s ease-out;
   -khtml-transition: right 0.5s ease-out;
-  -moz-transition: right 0.5s ease-out;
-  -ms-transition: right 0.5s ease-out;
-  -o-transition: right 0.5s ease-out;
   transition: right 0.5s ease-out;
 }
 .sidebar .sidebar-handle:focus {
@@ -1018,6 +1001,7 @@ li.tool-btn.selected .favorite-btn {
 .sidebar ul.tool-list {
   float: left;
   list-style-type: none;
+  display: -webkit-box;
   display: flex;
   flex-wrap: wrap;
   margin: 0;
@@ -1051,7 +1035,8 @@ li.tool-btn.selected .favorite-btn {
   height: 30px;
   font-size: 25px;
   text-align: center;
-  justify-content: center;
+  -webkit-box-pack: center;
+          justify-content: center;
   line-height: 25px;
 }
 .sidebar ul.tool-list li.tool-btn:hover,
@@ -1158,8 +1143,6 @@ li.tool-btn.selected .favorite-btn {
   -webkit-touch-callout: text;
   -webkit-user-select: text;
   -khtml-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
   -o-user-select: text;
   user-select: text;
 }
@@ -1183,8 +1166,6 @@ li.tool-btn.selected .favorite-btn {
   -webkit-touch-callout: text;
   -webkit-user-select: text;
   -khtml-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
   -o-user-select: text;
   user-select: text;
 }
@@ -1301,8 +1282,6 @@ li.tool-btn.selected .favorite-btn {
 .dat-gui {
   -webkit-user-select: none;
   -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   -o-user-select: none;
   user-select: none;
 }
@@ -1348,8 +1327,6 @@ li.tool-btn.selected .favorite-btn {
 .dat-gui .dg.main input[type=text] {
   -webkit-user-select: text;
   -khtml-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
   -o-user-select: text;
   user-select: text;
 }
@@ -1452,12 +1429,12 @@ li.tool-btn.selected .favorite-btn {
 #urlModal .modal-footer {
   margin-top: 0;
 }
-#codeEditor {
-  right: 50%;
+#drawingPanel {
+  left: 70%;
   position: absolute;
   top: 0px;
   bottom: 0px;
-  left: 265px;
+  right: 0px;
   background-color: rgba(38, 42, 47, 0.97);
   color: white;
   display: none;
@@ -1466,157 +1443,90 @@ li.tool-btn.selected .favorite-btn {
   z-index: 999;
   min-width: 150px;
   overflow: hidden;
-  -webkit-transition: left 0.5s ease-out;
   -khtml-transition: left 0.5s ease-out;
-  -moz-transition: left 0.5s ease-out;
-  -ms-transition: left 0.5s ease-out;
-  -o-transition: left 0.5s ease-out;
   transition: left 0.5s ease-out;
   -webkit-user-select: none;
   -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   -o-user-select: none;
   user-select: none;
 }
-#codeEditor .editor-handle {
-  float: right;
+#drawingPanel .panel-handle {
+  float: left;
   width: 10px;
   height: 100%;
   cursor: ew-resize;
+  display: -webkit-box;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+          flex-direction: column;
+  -webkit-box-pack: center;
+          justify-content: center;
 }
-#codeEditor .editor-handle button {
+#drawingPanel .panel-handle button {
   width: 10px;
   padding: 0;
   padding-top: 5px;
   padding-bottom: 5px;
   border: none;
 }
-#codeEditor .container {
+#drawingPanel .container {
+  display: -webkit-box;
   display: flex;
-  flex-direction: column;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+          flex-direction: column;
   height: 100%;
   width: auto;
   margin-right: 0;
-  padding-right: 0;
+  padding-right: 20px;
 }
-#codeEditor .container .header {
+#drawingPanel .container .header {
+  display: -webkit-box;
   display: flex;
-  flex-direction: row;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+          flex-direction: row;
   margin-left: 10px;
   margin-right: -5px;
 }
-#codeEditor .container .header .fileName {
-  flex: 1;
-  width: 100%;
-  margin: 2px;
-}
-#codeEditor .container .header .fileName .twitter-typeahead {
-  width: 100%;
-}
-#codeEditor .container .header .fileName .twitter-typeahead .tt-dropdown-menu {
-  color: #eeeeee;
-  background-color: #24282d;
-  font-size: 11px;
-  width: 100%;
-  border-left: 1px lightgray solid;
-  border-right: 1px lightgray solid;
-}
-#codeEditor .container .header .fileName .twitter-typeahead .tt-dropdown-menu .tt-suggestion {
-  border-bottom: 1px lightgray solid;
-  padding: 5px;
-}
-#codeEditor .container .header .fileName .twitter-typeahead .tt-dropdown-menu .tt-suggestion.tt-cursor {
-  background-color: #1ed36f;
-}
-#codeEditor .container .header .fileName .twitter-typeahead .tt-dropdown-menu .tt-suggestion p {
-  margin: 0;
-}
-#codeEditor .container .header button {
+#drawingPanel .container .header button {
   width: 29px;
   height: 29px;
   margin: 2px;
 }
-#codeEditor .container .header .link-file {
-  position: relative;
-  overflow: hidden;
-}
-#codeEditor .container .header .link-file input.link-file {
+#drawingPanel .container .header .close-panel {
   position: absolute;
-  top: 0;
-  right: 0;
-  margin: 0;
-  padding: 0;
-  font-size: 20px;
-  cursor: pointer;
-  opacity: 0;
-  filter: alpha(opacity=0);
+  top: 5px;
+  right: 5px;
 }
-#codeEditor .container .header .close-editor {
-  position: relative;
-  margin-right: 5px;
-}
-#codeEditor .container .code {
-  flex: 1;
+#drawingPanel .container .content {
+  -webkit-box-flex: 1;
+          flex-grow: 1;
+  display: -webkit-box;
   display: flex;
-  min-height: 20px;
-  margin-top: 5px;
 }
-#codeEditor .container .code .content {
-  overflow: auto;
+#drawingPanel .container .content .loading-animation {
+  -webkit-box-flex: 1;
+          flex-grow: 1;
+  display: block;
   width: 100%;
+  text-align: center;
+  margin: auto;
 }
-#codeEditor .container .console {
+#drawingPanel .container .footer {
+  display: -webkit-box;
   display: flex;
-  flex-direction: column;
-  min-height: 20px;
-  max-height: 400px;
-  height: 0;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+          flex-direction: row;
+  -webkit-box-pack: end;
+          justify-content: flex-end;
 }
-#codeEditor .container .console .handle {
-  width: 100%;
-  height: 20px;
-  cursor: ns-resize;
-}
-#codeEditor .container .console .handle .btn.show {
-  float: right;
-  width: 20px;
-  height: 100%;
-  font-size: 9px;
-  line-height: 10px;
-  border-radius: 0;
-  border: 0;
-  opacity: 1;
-  color: white;
-  background-color: #33383e;
-  outline: none;
-}
-#codeEditor .container .console.highlight .handle {
-  background-color: darkred;
-}
-#codeEditor .container .console .content {
-  overflow: auto;
-  width: 100%;
-  flex: 1;
-}
-#codeEditor .container .console .content p.error {
-  color: lightcoral;
-}
-#codeEditor .container .console.closed .content {
-  overflow: hidden;
-}
-#codeEditor .container .footer {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-}
-#codeEditor .container .footer button {
+#drawingPanel .container .footer button {
   margin: 1px;
 }
-#codeEditor.r-hidden {
+#drawingPanel.r-hidden {
   left: 0px;
 }
 #codeEditorBckp {
@@ -1630,16 +1540,10 @@ li.tool-btn.selected .favorite-btn {
   display: none;
   padding: 5px;
   z-index: 999;
-  -webkit-transition: left 0.5s ease-out;
   -khtml-transition: left 0.5s ease-out;
-  -moz-transition: left 0.5s ease-out;
-  -ms-transition: left 0.5s ease-out;
-  -o-transition: left 0.5s ease-out;
   transition: left 0.5s ease-out;
   -webkit-user-select: none;
   -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   -o-user-select: none;
   user-select: none;
 }
@@ -1659,8 +1563,6 @@ li.tool-btn.selected .favorite-btn {
 #codeEditorBckp #codeEditorContent {
   -webkit-user-select: text;
   -khtml-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
   -o-user-select: text;
   user-select: text;
   width: 100%;
@@ -1678,8 +1580,6 @@ li.tool-btn.selected .favorite-btn {
 #codeEditorBckp .message-box .console-handle {
   -webkit-user-select: none;
   -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   -o-user-select: none;
   user-select: none;
   width: 100%;
@@ -1693,8 +1593,6 @@ li.tool-btn.selected .favorite-btn {
 #codeEditorBckp .message-box .content {
   -webkit-user-select: text;
   -khtml-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
   -o-user-select: text;
   user-select: text;
   background-color: #fafafa;
@@ -1715,8 +1613,6 @@ li.tool-btn.selected .favorite-btn {
 #codeEditorBckp .footer {
   -webkit-user-select: none;
   -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   -o-user-select: none;
   user-select: none;
   width: 100%;
@@ -1773,9 +1669,7 @@ li.tool-btn.selected .favorite-btn {
 }
 #screenshotModal .image img,
 .pinterest-modal .image img {
-  -webkit-box-shadow: rgba(0, 0, 0, 0.6) 1px 1px 1px 1px;
   -khtml-box-shadow: rgba(0, 0, 0, 0.6) 1px 1px 1px 1px;
-  -moz-box-shadow: rgba(0, 0, 0, 0.6) 1px 1px 1px 1px;
   -ms-box-shadow: rgba(0, 0, 0, 0.6) 1px 1px 1px 1px;
   -o-box-shadow: rgba(0, 0, 0, 0.6) 1px 1px 1px 1px;
   box-shadow: rgba(0, 0, 0, 0.6) 1px 1px 1px 1px;
@@ -1803,8 +1697,6 @@ li.tool-btn.selected .favorite-btn {
 }
 #stripeAnimationDropZone {
   border: 2px dashed #bbb;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
   border-radius: 5px;
   padding: 25px;
   text-align: center;
@@ -1821,10 +1713,15 @@ li.tool-btn.selected .favorite-btn {
 }
 #loadingBar {
   z-index: 1005;
+  display: -webkit-box;
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+          flex-direction: row;
+  -webkit-box-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+          justify-content: center;
   font-family: 'Lucida Grande';
   font-size: 20px;
   position: fixed;
@@ -1834,6 +1731,14 @@ li.tool-btn.selected .favorite-btn {
   right: 0;
   background-color: rgba(0, 0, 0, 0.3);
   z-index: 999999;
+}
+#loadingBar .spinnger {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+}
+#loadingBar #spinner {
+  margin-left: 170px;
 }
 .form-control {
   height: auto;
@@ -1875,9 +1780,7 @@ body.allauth .container.allauth .form-signin input {
   outline: none;
 }
 body.allauth .container.allauth .form-signin input:focus {
-  -webkit-box-shadow: rgba(0, 0, 0, 0.0745098) 0px 1px 1px 0px inset, rgba(104, 174, 231, 0.298039) 0px 0px 3.97034692764282px 0px;
   -khtml-box-shadow: rgba(0, 0, 0, 0.0745098) 0px 1px 1px 0px inset, rgba(104, 174, 231, 0.298039) 0px 0px 3.97034692764282px 0px;
-  -moz-box-shadow: rgba(0, 0, 0, 0.0745098) 0px 1px 1px 0px inset, rgba(104, 174, 231, 0.298039) 0px 0px 3.97034692764282px 0px;
   -ms-box-shadow: rgba(0, 0, 0, 0.0745098) 0px 1px 1px 0px inset, rgba(104, 174, 231, 0.298039) 0px 0px 3.97034692764282px 0px;
   -o-box-shadow: rgba(0, 0, 0, 0.0745098) 0px 1px 1px 0px inset, rgba(104, 174, 231, 0.298039) 0px 0px 3.97034692764282px 0px;
   box-shadow: rgba(0, 0, 0, 0.0745098) 0px 1px 1px 0px inset, rgba(104, 174, 231, 0.298039) 0px 0px 3.97034692764282px 0px;
@@ -1904,9 +1807,7 @@ body.allauth .container.allauth .form-signin button[type="submit"] {
 body.allauth .container.allauth .form-signin .form-control {
   position: relative;
   height: auto;
-  -webkit-box-sizing: border-box;
   -khtml-box-sizing: border-box;
-  -moz-box-sizing: border-box;
   -ms-box-sizing: border-box;
   -o-box-sizing: border-box;
   box-sizing: border-box;
@@ -1934,9 +1835,12 @@ body.allauth .container.allauth .checkbox {
   font-weight: normal;
 }
 #aceDiff {
+  display: -webkit-box;
   display: flex;
   display: -webkit-flex;
-  flex-direction: row;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+          flex-direction: row;
   bottom: 0;
   top: 0;
   left: 0;
@@ -1957,12 +1861,14 @@ body.allauth .container.allauth .checkbox {
   float: right;
 }
 #aceDiff > div {
-  flex-grow: 1;
+  -webkit-box-flex: 1;
+          flex-grow: 1;
   -webkit-flex-grow: 1;
   position: relative;
 }
 #aceDiff > div#acediff-gutter {
-  flex: 0 0 60px;
+  -webkit-box-flex: 0;
+          flex: 0 0 60px;
   -webkit-flex: 0 0 60px;
   border-left: 1px solid #999999;
   border-right: 1px solid #999999;

@@ -25,6 +25,7 @@ class UserProfile(Document):
     username = StringField(required=True, unique=True)
     admin = BooleanField(default=False)
     commeUnDesseinCoins = IntField(default=0)
+    votes = ListField(ReferenceField('Vote', reverse_delete_rule=PULL))
 
     def profile_image_url(self):
 

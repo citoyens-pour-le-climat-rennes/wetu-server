@@ -1,17 +1,37 @@
 from mongoengine import *
+from models import *
 import datetime
 
 
 class Drawing(Document):
+    city = StringField(required=True)
+    planetX = DecimalField(required=True)
+    planetY = DecimalField(required=True)
+    box = PolygonField(required=True)
+    rType = StringField(default='Drawing')
     owner = StringField(required=True)
     status = StringField(default='NotValidated', required=True)
     paths = ListField(ReferenceField('Path'), required=True)
     date = DateTimeField(default=datetime.datetime.now, required=True)
-    votes = IntField(default=0)
+    votes = ListField(ReferenceField('Vote', reverse_delete_rule=PULL))
+    
+    title = StringField(unique=True)
+    description = StringField()
+
     # lastUpdate = DateTimeField(default=datetime.datetime.now)
     
     meta = {
-        'indexes': [[ ("owner", 1)]]
+        'indexes': [ [ ("city", 1), ("planetX", 1), ("planetY", 1), ("box", "2dsphere") ] , [ ("owner", 1) ] ]
+    }
+
+class Vote(Document):
+    author = ReferenceField('UserProfile', reverse_delete_rule=CASCADE, required=True)
+    drawing = ReferenceField(Drawing, reverse_delete_rule=CASCADE)
+    positive = BooleanField(default=True)
+    date = DateTimeField(default=datetime.datetime.now, required=True)
+
+    meta = {
+        'indexes': [[ ("author", 1) ]]
     }
 
 class Path(Document):
@@ -168,14 +188,6 @@ class City(Document):
     meta = {
         'indexes': [[ ("owner", 1), ("public", 1), ("name", 1) ]]
     }
-
-# class RUser(Document):
-#     name = StringField(required=True)
-#     cities = ListField(ReferenceField(City))
-
-#     meta = {
-#         'indexes': [[ ("name", 1) ]]
-#     }
 
 # class Area(Document):
 #     x = DecimalField()

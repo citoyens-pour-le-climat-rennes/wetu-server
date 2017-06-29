@@ -53,7 +53,7 @@ if settings.DEBUG:
 		@functools.wraps(func)
 		def wrapper(*args, **kwargs):
 			if debugMode:
-				import pdb; pdb.set_trace()
+				import pdb; pdb.Pdb(skip=['django.*', 'gevent.*']).set_trace()
 			return func(*args, **kwargs)
 		return wrapper
 else:
@@ -439,7 +439,7 @@ def load(request, rectangle, areasToLoad, qZoom, city=None):
 	if not cityPk:
 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
 
-	models = ['Path', 'Div', 'Box', 'AreaToUpdate']
+	models = ['Path', 'Div', 'Box', 'AreaToUpdate', 'Drawing']
 	items = getItems(models, areasToLoad, qZoom, cityPk, checkAddItem)
 
 	# load rasters
@@ -771,8 +771,8 @@ def getAreas(bounds):
 def savePath(request, points, object_type, box, date, data=None, city=None):
 # def savePath(request, points, pID, planet, object_type, data=None, rasterData=None, rasterPosition=None, areasNotRasterized=None):
 
-	if not len(request.user.username) == 0:
-		return json.dumps( { 'state': 'error', 'message': 'The user does not exist.' } )
+	if not request.user.is_authenticated():
+		return json.dumps( { 'state': 'not_logged_in', 'message': 'The user does not exist.' } )
 
 	city = getCity(request, city)
 	if not city:
@@ -810,7 +810,7 @@ def savePath(request, points, object_type, box, date, data=None, city=None):
 	# rasterResult = updateRastersJson(rasterData, rasterPosition, areasNotRasterized)
 
 	# return json.dumps( {'state': rasterResult['state'], 'pID': pID, 'pk': str(p.pk), 'message': rasterResult['message'] if 'message' in rasterResult else '' } )
-	return json.dumps( {'state': 'success', 'pk': str(p.pk) } )
+	return json.dumps( {'state': 'success', 'pk': str(p.pk), 'owner': request.user.username } )
 
 # @dajaxice_register
 @checkDebug
@@ -1180,8 +1180,19 @@ def deleteDiv(request, pk):
 # @dajaxice_register
 @checkDebug
 def saveDrawing(request, date=None, pathPks=[]):
+	if not request.user.is_authenticated():
+		return json.dumps({'state': 'not_logged_in'})
 
 	paths = []
+
+	xMin = None
+	xMax = None
+	yMin = None
+	yMax = None
+
+	city = None
+	planetX = None
+	planetY = None
 
 	for pk in pathPks:
 		try:
@@ -1190,11 +1201,35 @@ def saveDrawing(request, date=None, pathPks=[]):
 			if path.drawing:
 				return json.dumps({'state': 'error', 'message': 'One path is already part of a drawing.'})
 
+			if city != None and path.city != city or planetX != None and path.planetX != planetX or planetY != None and path.planetY != planetY:
+				return json.dumps({'state': 'error', 'message': 'One path is from a different city or planet.'})
+
+			city = path.city
+			planetX = path.planetX
+			planetY = path.planetY
+
+			cbox = path.box['coordinates'][0]
+			cleft = cbox[0][0]
+			ctop = cbox[0][1]
+			cright = cbox[2][0]
+			cbottom = cbox[2][1]
+
+			if not xMin or cleft < xMin:
+				xMin = cleft
+			if not xMax or cright > xMax:
+				xMax = cright
+			if not yMin or ctop < yMin:
+				yMin = ctop
+			if not yMax or cbottom > yMax:
+				yMax = cbottom
+
 			paths.append(path)
 		except Path.DoesNotExist:
 			return json.dumps({'state': 'error', 'message': 'Element does not exist for this user.'})
 
-	d = Drawing(owner=request.user.username, paths=paths, date=datetime.datetime.fromtimestamp(date/1000.0))
+	points = [ [xMin, yMin], [xMax, yMin], [xMax, yMax], [xMin, yMax], [xMin, yMin] ]
+
+	d = Drawing(city=city, planetX=planetX, planetY=planetY, box=[points], owner=request.user.username, paths=paths, date=datetime.datetime.fromtimestamp(date/1000.0))
 	d.save()
 
 	for path in paths:
@@ -1205,7 +1240,24 @@ def saveDrawing(request, date=None, pathPks=[]):
 
 # @dajaxice_register
 @checkDebug
+def loadDrawing(request, pk):
+	try:
+		d = Drawing.objects.get(pk=pk)
+	except Drawing.DoesNotExist:
+		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
+	
+	votes = []
+	for vote in d.votes:
+		votes.append( { vote: vote.to_json(), author: vote.author.username, authorPk: str(vote.author.pk) })
+
+	return json.dumps( {'state': 'success', 'votes': votes } )
+
+# @dajaxice_register
+@checkDebug
 def updateDrawing(request, pk, date, status):
+	
+	if not request.user.is_authenticated():
+		return json.dumps({'state': 'not_logged_in'})
 
 	try:
 		d = Drawing.objects.get(pk=pk)
@@ -1216,7 +1268,9 @@ def updateDrawing(request, pk, date, status):
 		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
 
 	d.status = status
-	d.votes = 0
+
+	for vote in d.votes:
+		vote.delete()
 
 	d.save()
 
@@ -1225,6 +1279,8 @@ def updateDrawing(request, pk, date, status):
 # @dajaxice_register
 @checkDebug
 def deleteDrawing(request, pk):
+	if not request.user.is_authenticated():
+		return json.dumps({'state': 'not_logged_in'})
 
 	try:
 		d = Drawing.objects.get(pk=pk)
@@ -1242,6 +1298,28 @@ def deleteDrawing(request, pk):
 
 	return json.dumps( { 'state': 'success', 'pk': pk } )
 
+# --- votes --- #
+
+@checkDebug
+def vote(request, pk, date, positive):
+	if not request.user.is_authenticated():
+		return json.dumps({'state': 'not_logged_in'})
+
+	drawing = Drawing.objects.get(pk=pk)
+
+	if drawing.owner == request.user.username:
+		return json.dumps({'state': 'error', 'message': 'Cannot vote for own drawing.'})
+
+	vote = Vote(author=request.user, drawing=drawing, positive=positive)
+	vote.save()
+
+	drawing.votes.append(vote)
+	drawing.save()
+
+	request.user.votes.append(vote)
+	request.user.save()
+
+	return json.dumps( {'state': 'success', 'owner': request.user.username, 'drawingPk':str(drawing.pk), 'votePk':str(vote.pk) } )
 
 # --- rasters --- #
 
