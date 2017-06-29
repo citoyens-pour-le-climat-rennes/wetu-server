@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+
+{% load static %}
+{% load dajaxice_templatetags %}
+
+{# --- allauth --- #}
+
+{% load i18n %}
+{% load account %}
+{% load socialaccount %}
+{% load url from future %}
+
+<html lang="en">
+  <head>
+
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="{% static 'icons/logo32.png' %}">
+
+    <title>CommeUnDessein</title>
+  
+    <!-- Nanoscroller CSS -->
+    <!-- <link href="{% static 'libs/nanoscroller.css' %}" rel="stylesheet"> -->
+    <link href="{% static 'libs/jquery.mCustomScrollbar.css' %}" rel="stylesheet">
+
+    <!-- jQuery oembed CSS -->
+    <link href="{% static 'libs/jquery.oembed.css' %}" rel="stylesheet">
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'libs/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Custom styles -->
+    <link href="{% static 'libs/bootstrap-colorpickersliders/bootstrap.colorpickersliders.css' %}" rel="stylesheet">
+    <link href="{% static 'libs/slider.css' %}" rel="stylesheet">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+    
+  	{% dajaxice_js_import %}
+  
+  </head>
+
+  <body>
+
+    <div id="CommeUnDessein_alerts">
+
+      <div class="alert-controls">
+
+        <button type="button" class="btn btn-default btn-xs btn-up nav">
+          <span class="glyphicon glyphicon-chevron-up"></span>
+        </button>
+        <span class="badge-xs alert-number"></span>
+        <button type="button" class="btn btn-default btn-xs btn-down nav">
+          <span class="glyphicon glyphicon-chevron-down"></span>
+        </button>
+      </div>
+
+      <div class="alert fade in">
+        <p></p>
+      </div>
+    
+      <button type="button" class="btn btn-default btn-xs btn-down show">
+        <span class="glyphicon glyphicon-chevron-up"></span>
+      </button>
+    </div>
+
+    <div class="container-fluid">
+      <div class="row">
+
+       <!--  <div id="user-profile">
+          <ul class="user-profile">
+            {% if request.user.is_authenticated %}
+
+                <img class="user-img" src="{{ request.user.profile.profile_image_url }}"/>
+
+                <div class="btn-group">
+                  <button type="button" class="btn btn-primary">
+                    {% if request.user.first_name or request.user.last_name %}
+                      {{ request.user.first_name }} {{ request.user.last_name }}
+                    {% else %}
+                      {{ request.user.username }}
+                    {% endif %}
+                  </button>
+                  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                    <span class="sr-only">Toggle Dropdown</span>
+                  </button>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="{% url 'account_logout' %}">Sign Out</a></li>
+                  </ul>
+                </div>
+
+            {% else %}
+
+                <div class="btn-group">
+                  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                    Sign in / up <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="{% provider_login_url "google" %}">Google</a></li>
+                    <li><a href="/accounts/facebook/login/"><div class="fb">Facebook</div></a></li>
+                    <li><a href="{% url 'account_login' %}">CommeUnDessein</a></li>
+                    <li><a href="{% url 'account_signup' %}">Sign up</a></li>
+                  </ul>
+                </div>
+                {% include "socialaccount/snippets/login_extra.html" %}
+
+            {% endif %}
+          </ul>
+        </div> -->
+
+        <div id="sidebar" class="sidebar">
+          
+          <button type="button" class="sidebar-handle btn btn-default">
+            <span class="glyphicon glyphicon-backward"></span>
+          </button>
+
+          <h3 class="title"> <img class="title-img" src="{% static 'icons/logo48.png' %}"/> CommeUnDessein</h3>
+
+          <div class="item-list">
+            <div class="mCustomScrollbar">
+
+              <div class="panel-group" id="accordion">
+
+                {% if request.user.is_authenticated %}
+
+                  <div class="panel panel-default in">
+                    <div class="panel-heading">
+                      <h4 class="panel-title">
+                        <a data-toggle="collapse" href="#User">
+                          User
+                        </a>
+                      </h4>
+                    </div>
+                    <div id="User" class="panel-collapse collapse in">
+                      <div class="panel-body">
+
+                        <div id="user-profile">
+
+                          <div class="user-profile">
+
+                            <img class="user-img" src="{{ request.user.profile.profile_image_url }}"/>
+
+                            <div class="btn-group">
+                              <button type="button" class="btn btn-primary">
+                                {% if request.user.first_name or request.user.last_name %}
+                                  {{ request.user.first_name }} {{ request.user.last_name }}
+                                {% else %}
+                                  {{ request.user.username }}
+                                {% endif %}
+                              </button>
+                              <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                <span class="caret"></span>
+                                <span class="sr-only">Toggle Dropdown</span>
+                              </button>
+                              <ul class="dropdown-menu" role="menu">
+                                <li><a href="{% url 'account_logout' %}">Sign Out</a></li>
+                              </ul>
+                            </div>
+                          </div>
+
+                          <span class="commeUnDesseinin"><strong>Credit: {% if request.user.profile.commeUnDesseinCoins %} {{ request.user.profile.commeUnDesseinCoins }} {% else %} 0 {% endif %} ®</strong></span>
+                          <button id="buyCommeUnDesseinCoins" type="button" class="btn btn-primary btn-xs">Buy commeUnDesseinCoins</button>
+
+                          <button id="postImage" type="button" class="btn btn-primary btn-xs">Post image</button>
+
+                          <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+                          </fb:login-button>
+
+                          <div id="status">
+                          </div>
+
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+
+                {% else %}
+
+                  <div id="user-login-group" class="btn-group">
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                      Sign in / up <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="{% provider_login_url "google" %}">Google</a></li>
+                      <li><a href="/accounts/facebook/login/"><div class="fb">Facebook</div></a></li>
+                      <li><a href="{% url 'account_login' %}">CommeUnDessein</a></li>
+                      <li><a href="{% url 'account_signup' %}">Sign up</a></li>
+                    </ul>
+                  </div>
+                  {% include "socialaccount/snippets/login_extra.html" %}
+
+                {% endif %}
+
+                <div class="panel panel-default in">
+                  <div class="panel-heading">
+                    <h4 class="panel-title main-tools">
+                      <a data-toggle="collapse" href="#MainTools">
+                        Main tools
+                      </a>
+                    </h4>
+                  </div>
+
+                  <div id="MainTools" class="panel-collapse collapse in">
+                    <div class="panel-body">
+
+                      <ul class="tool-list">
+                        <ul class="edit-list">
+                          <li data-type="move"><img src="{% static 'icons/hand.png' %}" alt="hand"></li>
+                          <li data-type="select"><img src="{% static 'icons/cursor.png' %}" alt="cursor"></li>
+                          <li data-type="editCurve"><img src="{% static 'icons/editCurve.png' %}" alt="editCurve"></li>
+                          <li data-type="screenshot"><img src="{% static 'icons/screenshot.png' %}" alt="screenshot"></li>
+                        </ul>
+                        <ul class="special-list">
+                          <li data-type="lock"><img src="{% static 'icons/lock.png' %}" alt="key"></li>
+                          <li data-type="link"><img src="{% static 'icons/link.png' %}" alt="link"></li>
+                          <li data-type="text"><img src="{% static 'icons/typewriter.png' %}" alt="typewriter"></li>
+                          <li data-type="media"><img src="{% static 'icons/camera.png' %}" alt="camera"></li>
+                        </ul>
+                        <ul class="brush-list">
+                          <li data-type="smoothBrush"><img src="{% static 'icons/brush.png' %}" alt="brush"></li>
+                          <li data-type="preciseBrush"><img src="{% static 'icons/brush.png' %}" alt="brush"></li>
+                          <li data-type="rectangle"><img src="{% static 'icons/rectangle.png' %}" alt="rectangle"></li>
+                          <li data-type="circle"><img src="{% static 'icons/circle.png' %}" alt="circle"></li>
+                        </ul>
+                      </ul>
+
+                    </div>
+                  </div>
+                  
+                </div>
+
+                <div class="panel panel-default in">
+                  <div class="panel-heading">
+                    <h4 class="panel-title">
+                      <a data-toggle="collapse" href="#CustomTools">
+                        Custom tools
+                      </a>
+                    </h4>
+                  </div>
+
+                  <div id="CustomTools" class="panel-collapse collapse in">
+                    <div class="panel-body">
+
+                      <ul class="tool-list">
+                        <ul class="brushes">
+                          <li data-type="brush"><img src="{% static 'icons/brush.png' %}" alt="brush"></li>
+                          <li data-type="preciseBrush"><img src="{% static 'icons/brush.png' %}" alt="brush"></li>
+                          <li data-type="rollerBrush"><img src="{% static 'icons/rollerBrush.png' %}" alt="rollerBrush"></li>
+                          <li data-type="fuzzyBrush"><img src="{% static 'icons/fuzzyBrush.png' %}" alt="fuzzyBrush"></li>
+                        </ul>
+                        <ul class="shapes">
+                          <li data-type="spiral"><img src="{% static 'icons/spiral.png' %}" alt="spiral"></li>
+                        </ul>
+                      </ul>
+
+                    </div>
+                  </div>
+                  
+                </div>
+
+                <div id="dat-gui">
+
+                </div>
+
+                <div class="panel panel-default in">
+                  <div class="panel-heading">
+                    <h4 class="panel-title">
+                      <a data-toggle="collapse" href="#Options">
+                        Options
+                      </a>
+                    </h4>
+                  </div>
+                  <div id="Options" class="panel-collapse collapse in">
+                    <div class="panel-body">
+
+
+                      <div class="option-list">
+
+                        <!-- <div class="general-options options"> -->
+
+                          <!-- <label class="display-grid-input" ><input id="displayGrid" type="checkbox" class="display-grid-input" name="display-grid-input" value="false">Display grid</label> -->
+<!-- 
+                          <div class="zoom-group">
+                            <label for="zoomSlider" class="zoom-slider">Zoom</label>
+
+                            <input id="zoomSlider" type="text" class="zoom-slider bootstrap-slider" value="" data-slider-min="10" data-slider-max="200" data-slider-step="1" data-slider-value="100">
+                          </div> -->
+
+                        <!-- </div> -->
+<!-- 
+                        <div class="style-options options">
+
+                          <div class="fill-group">
+                            <label class="checkbox"><input id="fillShape" type="checkbox" class="fill-shape" name="fill-shape" checked="true"><span class="text">Fill color</span></label>
+
+                            <input id="fillColorPicker" type="text" class="form-control fill-color-picker" data-name="fill-color-picker">
+                          </div>
+
+                          <div class="stroke-group">
+                            <label class="checkbox"><input id="useStroke" type="checkbox" class="use-stroke" name="use-stroke" checked="true"><span class="text">Stroke color</span></label>
+
+                            <input id="strokeColorPicker" type="text" class="form-control stroke-color-picker" data-name="stroke-color-picker">
+                          </div>
+
+                          <div class="size-group">
+                            <label for="sizeSlider" class="size-slider">Stroke width</label>
+
+                            <input id="sizeSlider" type="text" class="size-slider bootstrap-slider" value="" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="3">
+                          </div>
+                          <hr>
+                        </div>  --> <!-- style options   -->
+<!-- 
+                        <div class="transform-options options">
+
+                          <label for="scaleSlider" class="scale-slider">Scale</label>
+                          <input id="scaleSlider" type="text" class="scale-slider bootstrap-slider" value="" data-slider-min="0.05" data-slider-max="5" data-slider-step="0.01" data-slider-value="1">
+
+                          <label for="rotationSlider" class="rotation-slider">Rotation</label>
+                          <input id="rotationSlider" type="text" class="rotation-slider bootstrap-slider" value="" data-slider-min="0" data-slider-max="360" data-slider-step="1" data-slider-value="0">
+
+                        </div>  --> <!-- transform options   -->
+<!-- 
+                        <div class="delete-options options">
+                          <button id="deleteSelectedItems" type="button" class="btn btn-danger btn-delete">Delete selected object</button>
+                        </div>   --> <!-- delete options   -->
+<!-- 
+                        <div class="div-options link-options options">
+                          <button id="modifySelectedItems" type="button" class="btn btn-primary">Modify selected item</button>
+                          <hr>
+                        </div>  --> <!-- delete options   -->
+<!-- 
+                        <div class="parameters options"> 
+                        
+                        </div> -->  <!-- image options   -->
+<!-- 
+                        <div class="image-options options"> 
+
+                          <label id="fitImage" class="checkbox fit-image-input" ><input type="checkbox" class="fit-image-input" name="fit-image-input" value="false">Fit image</label>
+                        
+                        </div>  --> <!-- image options   -->
+
+                        <!-- <div class="text-options options">  -->
+                        <!-- 
+                          <label >Font</label>
+                          <input id="fontFamily" type="text" class="form-control typeahead" placeholder="Font family name">
+ -->
+                          <!-- <select id="fontStyle" class="form-control disabled">
+                          </select> -->
+
+                          <!-- <select id="fontSubset" class="form-control disabled">
+                          </select> -->
+<!-- 
+                          <select id="fontEffect" class="form-control">
+                            <option>none</option>
+                            <option>anaglyph</option>
+                            <option>brick-sign</option>
+                            <option>canvas-print</option>
+                            <option>crackle</option>
+                            <option>decaying</option>
+                            <option>destruction</option>
+                            <option>distressed</option>
+                            <option>distressed-wood</option>
+                            <option>fire</option>
+                            <option>fragile</option>
+                            <option>grass</option>
+                            <option>ice</option>
+                            <option>mitosis</option>
+                            <option>neon</option>
+                            <option>outline</option>
+                            <option>putting-green</option>
+                            <option>scuffed-steel</option>
+                            <option>shadow-multiple</option>
+                            <option>static</option>
+                            <option>stonewash</option>
+                            <option>3d</option>
+                            <option>3d-float</option>
+                            <option>vintage</option>
+                            <option>wallpaper</option>
+                          </select>
+
+                          <div id="fontStyle" class="btn-group" data-toggle="buttons">
+                            <label class="btn btn-default" name="italic">
+                              <input type="checkbox"><span class="glyphicon glyphicon-italic"></span>
+                            </label>
+                            <label class="btn btn-default" name="bold">
+                              <input type="checkbox"><span class="glyphicon glyphicon-bold"></span>
+                            </label>
+                            <label class="btn btn-default" name="underline">
+                              <input type="checkbox"><img class="glyphicon" src="{% static 'icons/underline.png' %}"/> 
+                            </label>
+                            <label class="btn btn-default" name="overline">
+                              <input type="checkbox"><img class="glyphicon" src="{% static 'icons/overline.png' %}"/> 
+                            </label>
+                            <label class="btn btn-default" name="line-through">
+                              <input type="checkbox"><img class="glyphicon" src="{% static 'icons/line-through.png' %}"/> 
+                            </label>
+                          </div>
+
+                          <div class="btn-group">
+                            <button type="button" class="btn btn-default justify"><span class="glyphicon glyphicon-align-justify"></span></button>
+                            <button type="button" class="btn btn-default align-left"><span class="glyphicon glyphicon-align-left"></span></button>
+                            <button type="button" class="btn btn-default align-center"><span class="glyphicon glyphicon-align-center"></span></button>
+                            <button type="button" class="btn btn-default align-right"><span class="glyphicon glyphicon-align-right"></span></button>
+                          </div>
+
+                          <div class="font-size-group">
+                            <label for="fontSizeSlider" class="font-size-slider">Font size</label>
+
+                            <input id="fontSizeSlider" type="text" class="font-size-slider bootstrap-slider" value="" data-slider-min="5" data-slider-max="300" data-slider-step="1" data-slider-value="12">
+                          </div>
+
+                          <button id="fontSubmit" class="btn btn-default" type="button">Apply font</button>
+ -->
+                        <!-- </div>  text options   -->
+
+                      </div>  <!-- option-list   -->
+
+                    </div>
+                  </div>
+                </div>  <!-- option panel   -->
+
+                <div class="panel panel-default in last-panel">
+                  <div class="panel-heading">
+                    <h4 class="panel-title">
+                      <a data-toggle="collapse" href="#Chat">
+                        Chat
+                      </a>
+                    </h4>
+                  </div>
+                  <div id="Chat" class="panel-collapse collapse in">
+                    <div id="chatContent" class="panel-body">
+
+                      {% if not request.user.is_authenticated %}
+                        
+                        <div id="chatLogin">
+                            
+                            <!--                        
+                            <div class="btn-group">
+                              <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                Sign in / up <span class="caret"></span>
+                              </button>
+                              <ul class="dropdown-menu" role="menu">
+                                <li><a href="{% provider_login_url "google" %}">Google</a></li>
+                                <li><a href="/accounts/facebook/login/"><div class="fb">Facebook</div></a></li>
+                                <li><a href="{% url 'account_login' %}">CommeUnDessein</a></li>
+                                <li><a href="{% url 'account_signup' %}">Sign up</a></li>
+                              </ul>
+                            </div> -->
+
+                          <p>Sign in or choose a user name</p>
+
+                          <div id="chatUserName" class="input-group">
+                            <input id="chatUserNameInput" type="text" class="form-control" placeholder="Username">
+                            <span class="input-group-btn">
+                              <button id="chatUserNameSubmit" class="btn btn-default" type="button">Chat</button>
+                            </span>
+                          </div><!-- /input-group -->
+
+                        </div>
+                      {% endif %}
+
+                      <p class="hidden" id="chatUserNameError">Error setting username.</p>
+
+                      <div id="chatMain" class="hidden">
+
+                        <p id="chatConnectingMessage">Connecting...</p>
+
+                        <div id="messages">
+                          <div id="chatUserNames"><span>Online:</span></div>
+                          <div id="chatMessagesScroll" class=""><div id="chatMessages" class="mCustomScrollbar form-control"></div></div>
+                        </div>
+
+                        <div id="chatSendMessage" class="input-group">
+                          <input id="chatSendMessageInput" type="text" class="form-control">
+                          <span class="input-group-btn">
+                            <button id="chatSendMessageSubmit" class="btn btn-default" type="button">Send</button>
+                          </span>
+                        </div><!-- /input-group -->
+
+
+                      </div>
+
+                    </div>
+                  </div>
+                </div>  <!-- chat panel   -->
+
+              </div>
+
+            </div> <!-- /mCustomScrollbar -->
+          </div> <!-- /item-list -->
+
+        </div>
+
+        <div id="stage" class="main">
+          <div class="hidden lock-separator"></div>
+          <div class="hidden link-separator"></div>
+          <div class="hidden text-separator"></div>
+          <div class="hidden media-separator"></div>
+          <canvas id="canvas" resize hidpi="off" data-posX="{{ x }}" data-posY="{{ y }}" data-points="{{ points }}"></canvas>
+
+        </div>
+
+      </div>
+    </div>
+
+    <div id="templates">
+
+      <div class="modals">
+
+        <!-- Input div modal -->
+        <div class="modal fade" id="divModal" tabindex="-1" role="dialog" aria-labelledby="divModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="urlModalLabel"></h4>
+              </div>
+              <div class="modal-body">
+
+                <p class="cost"></p>
+                
+                <div class="form-group name-group">
+                  <label for="urlModalSiteNamte">Site name</label>
+                  <input id="urlModalSiteNamte" type="text" class="name form-control" placeholder="Site name">
+                </div>
+                <div class="form-group url-group">
+                  <label for="urlModalURL">URL</label>
+                  <input id="urlModalURL" type="url" class="url form-control submit-shortcut" placeholder="http://">
+                </div>
+                <div class="form-group message-group">
+                  <label for="urlModalMessage">Message</label>
+                  <input id="urlModalMessage" type="text" class="message form-control submit-shortcut" placeholder="Enter the message you want others to see when they look at this link.">
+                </div>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Add</button>
+              </div>
+            </div>
+          </div>
+        </div> <!-- /Input div modal -->
+
+        <!-- Buy commeUnDesseinCoins modal -->
+        <div class="modal fade" id="commeUnDesseininModal" tabindex="-1" role="dialog" aria-labelledby="commeUnDesseininModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="commeUnDesseininModalLabel">Buy commeUnDesseinCoins</h4>
+              </div>
+              <div class="modal-body">
+
+                <div class="form-group name-group">
+
+                  <p>CommeUnDesseinCoins enable you to add links and protect content from others. The money you give helps to pay the server and is distributed among all contributors of CommeUnDessein.</p>
+
+                  <form id="paypalForm" target="paypal" action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
+                    <input type="hidden" name="cmd" value="_s-xclick">
+                    <input type="hidden" name="hosted_button_id" value="H7F2ZYUEVNW5Y">
+                    <input type="hidden" name="custom" value="">
+                    <input type="hidden" name="amount" value="1">
+                    <input type="hidden" name="return_url" value="https://romanesc.co/paypal/commeUnDesseinin/return/">
+                    <input type="hidden" name="cancel_return" value="https://romanesc.co/paypal/commeUnDesseinin/cancel/">
+                    <input type="image" src="https://www.sandbox.paypal.com/fr_FR/FR/i/btn/btn_cart_LG.gif" border="0" name="submit" alt="PayPal - la solution de paiement en ligne la plus simple et la plus sécurisée !">
+                    <img alt="" border="0" src="https://www.sandbox.paypal.com/fr_FR/i/scr/pixel.gif" width="1" height="1">
+                  </form>
+
+<!-- 
+                  <form id="paypalForm" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                    <input type="hidden" name="cmd" value="_s-xclick">
+                    <input type="hidden" name="hosted_button_id" value="F9P9CXF5B6JSA">
+                    <table>
+                      <tr><td><input type="hidden" name="on0" value="CommeUnDesseinCoins">CommeUnDesseinCoins</td></tr><tr><td>
+                      <select name="os0">
+                        <option value="1000"  >1000 commeUnDesseinCoins ...... €1,00 EUR</option>
+                        <option value="5000"  >5000 commeUnDesseinCoins ...... €5,00 EUR</option>
+                        <option value="10000" >10000 commeUnDesseinCoins ..... €10,00 EUR</option>
+                        <option value="50000" >50000 commeUnDesseinCoins ..... €50,00 EUR</option>
+                        <option value="100000">100000 commeUnDesseinCoins ... €100,00 EUR</option>
+                      </select> </td></tr>
+                    </table>
+                    <input type="hidden" name="currency_code" value="EUR">
+                    <input type="hidden" name="custom" value="">
+                    <input type="hidden" name="return_url" value="https://romanesc.co/paypal/commeUnDesseinin/return/">
+                    <input type="hidden" name="cancel_return" value="https://romanesc.co/paypal/commeUnDesseinin/cancel/">
+
+                    <input type="image" src="https://www.paypalobjects.com/en_GB/i/btn/btn_paynow_LG.gif" border="0" name="submit" alt="Pay now">
+                    <img alt="" border="0" src="https://www.paypalobjects.com/fr_FR/i/scr/pixel.gif" width="1" height="1">
+
+                  </form>  -->
+
+                </div>
+
+              </div>
+<!--               <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Add</button>
+              </div> -->
+            </div>
+          </div>
+        </div> <!-- /Buy commeUnDesseinCoins modal -->
+
+      </div><!-- /Modals -->
+
+      <div class="hidden">
+        
+        <div class="custom-div">
+          <div class="handle tl"></div>
+          <div class="handle tr"></div>
+          <div class="handle br"></div>
+          <div class="handle bl"></div>
+        </div>
+
+        <div class="lock-content content" data-toggle="popover" data-container="body"></div>
+
+        <div class="slider-group">
+          <label for="" class="slider"></label>
+          <input id="" type="text" class="bootstrap-slider" value="" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="0">
+        </div>
+
+        <label class="checkbox"><input type="checkbox" class="" name="" checked=""><span class="text"></span></label>
+
+        <div id="fontStyle" class="btn-group" data-toggle="buttons">
+          <label class="btn btn-default btn-xs" name="italic">
+            <input type="checkbox"><span class="glyphicon glyphicon-italic"></span>
+          </label>
+          <label class="btn btn-default btn-xs" name="bold">
+            <input type="checkbox"><span class="glyphicon glyphicon-bold"></span>
+          </label>
+          <label class="btn btn-default btn-xs" name="underline">
+            <input type="checkbox"><img class="glyphicon" src="{% static 'icons/underline.png' %}"/> 
+          </label>
+          <label class="btn btn-default btn-xs" name="overline">
+            <input type="checkbox"><img class="glyphicon" src="{% static 'icons/overline.png' %}"/> 
+          </label>
+          <label class="btn btn-default btn-xs" name="line-through">
+            <input type="checkbox"><img class="glyphicon" src="{% static 'icons/line-through.png' %}"/> 
+          </label>
+        </div>
+
+        <div id="textAlign" class="btn-group">
+          <button type="button" class="btn btn-default justify btn-xs"><span class="glyphicon glyphicon-align-justify"></span></button>
+          <button type="button" class="btn btn-default align-left btn-xs"><span class="glyphicon glyphicon-align-left"></span></button>
+          <button type="button" class="btn btn-default align-center btn-xs"><span class="glyphicon glyphicon-align-center"></span></button>
+          <button type="button" class="btn btn-default align-right btn-xs"><span class="glyphicon glyphicon-align-right"></span></button>
+        </div>
+
+      </div> <!-- /hidden -->
+
+    </div>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+    <!-- online for fast caching
+    <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+    -->
+
+    <!-- static for offine -->
+    <script src="{% static 'libs/jquery-1.10.2.js' %}"></script>
+
+    <script src="{% static 'libs/socket.io.js' %}"></script>
+    <script>WEB_SOCKET_SWF_LOCATION="{{ STATIC_URL }}flashsocket/WebSocketMain.swf"; window.room = "0";</script>
+    <script src="{% static 'libs/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'libs/tinycolor.js' %}"></script>
+    <script src="{% static 'libs/bootstrap-colorpickersliders/bootstrap.colorpickersliders.nocielch.js' %}"></script>
+    <script src="{% static 'libs/bootstrap-slider.js' %}"></script>
+    <script src="{% static 'libs/dat.gui.js' %}"></script>
+    <!-- <script src="{% static 'libs/paper/paper-core.min.js' %}"></script> -->
+    <script src="{% static 'libs/paper/paper-full.js' %}"></script>
+
+    <!-- <script src="{% static 'libs/jquery.nanoscroller.js' %}"></script> -->
+    <script src="{% static 'libs/jquery.mCustomScrollbar.concat.min.js' %}"></script>
+    <script src="{% static 'libs/jquery.oembed.js' %}"></script>
+    <script src="{% static 'libs/typeahead.bundle.min.js' %}"></script>
+  <!--  <script src="{% static 'libs/fabric/all.js' %}">
+-->
+  </script>
+
+    
+    <!-- app scripts -->
+    <script src="{% static 'js/facebook.js' %}"></script>
+    <script src="{% static 'js/global.js' %}"></script>
+    <script src="{% static 'js/coordinateSystems.js' %}"></script>
+    <script src="{% static 'js/path.js' %}"></script>
+    <script src="{% static 'js/socket.js' %}"></script>
+    <script src="{% static 'js/ajax.js' %}"></script>
+    <script src="{% static 'js/div.js' %}"></script>
+    <script src="{% static 'js/options.js' %}"></script>
+    <script src="{% static 'js/tools.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    
+  </body>
+</html>
+
+    <!--
+    <div class="tt-suggestion"><p style="white-space: normal;"><strong>A</strong>BeeZee</p></div><div class="tt-suggestion"><p style="white-space: normal;"><strong>A</strong>bel</p></div><div class="tt-suggestion"><p style="white-space: normal;"><strong>A</strong>bril F<strong>a</strong>tf<strong>a</strong>ce</p></div><div class="tt-suggestion"><p style="white-space: normal;"><strong>A</strong>clonic<strong>a</strong></p></div><div class="tt-suggestion"><p style="white-space: normal;"><strong>A</strong>cme</p></div> 
+-->

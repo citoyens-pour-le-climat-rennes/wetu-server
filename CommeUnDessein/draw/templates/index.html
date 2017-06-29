@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+{# --- allauth --- #}
+
+{% load i18n %}
+{% load account %}
+{% load socialaccount %}
+
+<html lang="en">
+  <head>
+
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="{% static 'images/icons/logo32.png' %}">
+
+    <title>Comme Un Dessein</title>
+
+    <!-- Nanoscroller CSS -->
+    <!-- <link href="{% static 'libs/nanoscroller.css' %}" rel="stylesheet"> -->
+    <!-- <link href="{% static 'libs/pace/themes/pace-theme-center-circle.css' %}" rel="stylesheet" /> -->
+
+    <link href="{% static 'libs/jquery.mCustomScrollbar.css' %}" rel="stylesheet">
+
+    <!-- jQuery oembed CSS -->
+    <link href="{% static 'libs/jquery.oembed.css' %}" rel="stylesheet">
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'libs/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <!-- <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet"> -->
+    <!-- <link href="{% static 'libs/bootstrap.min.css' %}" rel="stylesheet"> -->
+    <!-- <link href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-modal/2.2.5/css/bootstrap-modal.css" rel="stylesheet"> -->
+
+    <!-- Custom styles -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/bootstrap-table.min.css" rel="stylesheet">
+    <link href="{% static 'libs/bootstrap-colorpickersliders/bootstrap.colorpickersliders.css' %}" rel="stylesheet">
+    <link href="{% static 'libs/jqtree/jqtree.css' %}" rel="stylesheet">
+    <!-- <link href="{% static 'libs/slider.css' %}" rel="stylesheet"> -->
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    <!-- Latest compiled and minified CSS -->
+
+
+    <link href='http://fonts.googleapis.com/css?family=Bitter' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+    <script>window.RXMLHttpRequest = XMLHttpRequest; // dajaxice modifies the XMLHttpRequest object and some of its default functionnalities do not work afterwards (no onload event sent), so we store the default version in RXMLHttpRequest</script>
+
+
+  </head>
+
+  <body>
+
+    <div id="CommeUnDessein_alerts" class="r-hidden">
+
+      <div class="alert-controls">
+
+        <button type="button" class="btn btn-xs btn-up">
+          <span class="glyphicon glyphicon-chevron-up"></span>
+        </button>
+        <div class="badge-xs alert-number"></div>
+        <button type="button" class="btn btn-xs btn-down">
+          <span class="glyphicon glyphicon-chevron-down"></span>
+        </button>
+      </div>
+
+      <div class="alert fade in">
+        <p></p>
+      </div>
+
+      <button type="button" class="btn btn-default btn-xs btn-down show">
+        <span class="glyphicon glyphicon-chevron-up"></span>
+      </button>
+
+    </div>
+
+    <div class="container-fluid">
+      <div class="row">
+       <!--  <div id="user-profile">
+          <ul class="user-profile">
+            {% if request.user.is_authenticated %}
+
+                <img class="user-img" src="{{ request.user.profile.profile_image_url }}"/>
+
+                <div class="btn-group">
+                  <button type="button" class="btn btn-primary">
+                    {% if request.user.first_name or request.user.last_name %}
+                      {{ request.user.first_name }} {{ request.user.last_name }}
+                    {% else %}
+                      {{ request.user.username }}
+                    {% endif %}
+                  </button>
+                  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                    <span class="sr-only">Toggle Dropdown</span>
+                  </button>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="{% url 'account_logout' %}">Sign Out</a></li>
+                  </ul>
+                </div>
+
+            {% else %}
+
+                <div class="btn-group">
+                  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                    Sign in / up <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="{% provider_login_url "google" %}">Google</a></li>
+                    <li><a href="/accounts/facebook/login/"><div class="fb">Facebook</div></a></li>
+                    <li><a href="{% url 'account_login' %}">CommeUnDessein</a></li>
+                    <li><a href="{% url 'account_signup' %}">Sign up</a></li>
+                  </ul>
+                </div>
+                {% include "socialaccount/snippets/login_extra.html" %}
+
+            {% endif %}
+          </ul>
+        </div> -->
+        <div id="fb-root"></div>
+
+        <!-- Sidebar -->
+
+        <div id="sidebar" class="sidebar">
+
+          <button type="button" class="sidebar-handle btn btn-default">
+            <span class="glyphicon glyphicon-chevron-left"></span>
+          </button>
+
+          <h3 class="title"> <img class="title-img" src="{% static 'images/icons/logo48.png' %}" alt="commeUnDessein_logo"/> Comme un dessein</h3>
+
+          <div class="item-list">
+            <div class="sidebar-scrollbar mCustomScrollbar">
+
+              <div class="panel-group" id="accordion">
+
+                {% if request.user.is_authenticated %}
+
+                  <div class="panel panel-default in user">
+                    <div class="panel-heading">
+                      <h4 class="panel-title" data-toggle="collapse" data-target="#User">
+                        <a>
+                          User
+                        </a>
+                      </h4>
+                    </div>
+                    <div id="User" class="panel-collapse collapse in">
+                      <div class="panel-body">
+
+                        <div id="user-profile" class="commeUnDessein-ui">
+
+                          <div class="user-profile">
+
+                            <img class="user-img" src="{{ profileImageURL }}"/>
+
+                            <div class="btn-group">
+
+                              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                {% if request.user.first_name or request.user.last_name %}
+                                  {{ request.user.first_name }} {{ request.user.last_name }}
+                                {% else %}
+                                  {{ request.user.username }}
+                                {% endif %} <span class="caret"></span>
+                              </button>
+                              <ul class="dropdown-menu" role="menu">
+                                <li><a href="{% url 'account_logout' %}">Sign Out</a></li>
+                              </ul>
+                            </div>
+                          </div>
+
+                          <!--
+                          <div class="commeUnDesseinin">
+                            <div class="credit">
+                              <strong>Credit:{% if request.user.profile.commeUnDesseinCoins %} {{ request.user.profile.commeUnDesseinCoins }} {% else %} 0 {% endif %} ®</strong>
+                            </div>
+                            <button id="buyCommeUnDesseinCoins" type="button" class="btn btn-primary btn-xs">Buy commeUnDesseinCoins</button>
+                          </div>
+                           -->
+
+                          <div id="status">
+                          </div>
+
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+
+                {% else %}
+
+                  <div id="user-login-group" class="btn-group">
+                    <button type="button" class="dropdown-toggle" data-toggle="dropdown">
+                      Sign in / up
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="{% provider_login_url "google" %}">Google</a></li>
+                      <li><a href="{% provider_login_url "github" %}">Github</a></li>
+                      <li><a href="/accounts/facebook/login/"><div class="fb">Facebook</div></a></li>
+                      <li><a href="{% url 'account_login' %}">CommeUnDessein</a></li>
+                      <li><a href="{% url 'account_signup' %}">Sign up</a></li>
+                    </ul>
+                  </div>
+                  {% include "socialaccount/snippets/login_extra.html" %}
+
+                {% endif %}
+
+                <div class="panel panel-default in">
+                  <div class="panel-heading">
+                    <h4 class="panel-title" data-toggle="collapse" data-target="#FavoriteTools">
+                      <a>
+                        Tools
+                      </a>
+                    </h4>
+                  </div>
+
+                  <div id="FavoriteTools" class="panel-collapse collapse in">
+                    <div class="panel-body">
+
+                      <ul id="sortable2" class="favorite-tool-list tool-list connectedSortable module-list">
+                        <!-- <li data-name="Precise path" class="tool-btn"><img src="{% static 'images/icons/inverted/editCurve.png' %}" alt="editCurve"></li>
+                        <li data-name="Rectangle" data-cursor="rectangle" class="tool-btn"><img src="{% static 'images/icons/inverted/rectangle.png' %}" alt="rectangle"></li>
+                        <li data-name="Spiral" data-cursor="spiral" class="tool-btn"><img src="{% static 'images/icons/inverted/spiral.png' %}" alt="spiral"></li> -->
+                        <!-- <li data-name="Checkpoint"><span class="short-name">Ch.</span><span class="tool-name">Checkpoint</span></li> -->
+                      </ul>
+
+                    </div>
+                  </div>
+
+                </div>
+
+
+<!-- 
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h4 class="panel-title collapsed" data-toggle="collapse" data-target="#AllTools">
+                      <a>
+                        All tools
+                      </a>
+                    </h4>
+                  </div>
+
+                  <div id="AllTools" class="panel-collapse collapse">
+                    <div class="panel-body">
+
+                      <div class="all-tools commeUnDessein-ui">
+                        <div class="search search-tools">
+                          <input type="text" class="search-tool" placeholder="Tool name">
+                          <button class="btn btn-default open-modal"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                        </div>
+                        <div class="mCustomScrollbar tree">
+                          <ul id="sortable1" class="all-tool-list connectedSortable module-list" >
+                          </ul>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+
+                </div>
+ -->
+
+
+
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h4 class="panel-title collapsed" data-toggle="collapse" data-target="#History">
+                      <a>
+                        History
+                      </a>
+                    </h4>
+                  </div>
+
+                  <div id="History" class="panel-collapse collapse">
+                    <div class="panel-body">
+                      <div class="mCustomScrollbar history">
+                        <ul class="history commeUnDessein-ui command-list">
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h4 class="panel-title collapsed" data-toggle="collapse" data-target="#RItems">
+                      <a>
+                        Items
+                      </a>
+                    </h4>
+                  </div>
+
+                  <div id="RItems" class="panel-collapse collapse">
+                    <div class="panel-body">
+                      <div class="mCustomScrollbar rItems tree">
+                        <ul class="layers folder">
+                          <li class="main-layer">
+                            <h6 class="title">Main layer</h6>
+                            <ul class="commeUnDessein-ui rPath-list">
+                            </ul>
+                            <!-- <hr> -->
+                            <ul class="commeUnDessein-ui rDiv-list">
+                            </ul>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="dat-gui dg-sidebar"></div>
+
+                <div class="panel panel-default in last-panel">
+                  <div class="panel-heading">
+                    <h4 class="panel-title" data-toggle="collapse" data-target="#Chat">
+                      <a>
+                        Chat
+                      </a>
+                    </h4>
+                  </div>
+
+                  <div id="Chat" class="panel-collapse collapse in">
+                    <div id="chatContent" class="panel-body">
+
+                      {% if not request.user.is_authenticated %}
+
+                        <div id="chatLogin">
+
+                          <p class="default-username-message"></p>
+                          <p><a class="sign-in" href="">Sign in</a> or <a class="change-username" href="">choose another user name</a></p>
+
+                          <div id="chatUserName" class="input-group commeUnDessein-ui">
+                            <input id="chatUserNameInput" type="text" class="form-control" placeholder="Username">
+                            <span class="input-group-btn">
+                              <button id="chatUserNameSubmit" class="btn btn-default" type="button">Chat</button>
+                            </span>
+                          </div>
+
+                        </div>
+                      {% endif %}
+
+                      <p class="hidden" id="chatUserNameError">Error setting username.</p>
+
+                      <div id="chatMain" class="hidden">
+
+                        <p id="chatConnectingMessage">Connecting...</p>
+
+                        <div id="messages">
+                          <p id="chatRoom"><span>Room:</span></p>
+                          <p id="chatUserNames"><span>Online:</span></p>
+                          <div id="chatMessagesScroll" class="mCustomScrollbar"><div id="chatMessages" class=""></div></div>
+                        </div>
+
+                        <div id="chatSendMessage" class="input-group commeUnDessein-ui">
+                          <input id="chatSendMessageInput" type="text" class="form-control">
+                          <span class="input-group-btn">
+                            <button id="chatSendMessageSubmit" class="btn btn-default" type="button">Send</button>
+                          </span>
+                        </div>
+
+
+                      </div>
+
+                    </div>
+                  </div>
+                </div>  <!-- chat panel   -->
+
+              </div>
+
+            </div> <!-- /mCustomScrollbar -->
+          </div> <!-- /item-list -->
+
+        </div> <!-- / Sidebar -->
+
+        <div class="dat-gui dg-right"></div>
+
+        <div id="stage" class="main">
+
+          <!-- <canvas id="selection-canvas" resize hidpi="off"></canvas> -->
+
+          <div id="rasters"></div>
+
+          <div class="hidden media-separator"></div>
+          <div class="hidden text-separator"></div>
+
+          <!-- <canvas id="background-canvas" resize hidpi="off"></canvas> -->
+          <canvas id="canvas" resize hidpi="off" data-pos-x="{{ x }}" data-pos-y="{{ y }}" data-points="{{ points }}" data-box="{{ box }}" data-site="{{ site }}" data-message="{{ message }}" data-load-entire-area="{{ loadEntireArea }}" data-city="{{ city }}" data-owner="{{ owner }}" data-github-login="{{ githubLogin }}"></canvas>
+          <div id="rasters"></div>
+
+        </div>
+
+        <div id="codeEditor" class="commeUnDessein-ui">
+          <div class="handle editor-handle">
+            <button type="button" class="handle-left btn btn-default">
+              <span class="glyphicon glyphicon-chevron-left"></span>
+            </button>
+            <button type="button" class="handle-right btn btn-default">
+              <span class="glyphicon glyphicon-chevron-right"></span>
+            </button>
+          </div>
+          <div class="container">
+            <div class='header item'>
+              <div class="fileName"><input type="text" class="form-control" placeholder="Search or create..."></div>
+              <button class="btn btn-default open-modal"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+              <button class="btn btn-default link-file"><span class="glyphicon glyphicon-floppy-open" aria-hidden="true"></span><input type="file" class="link-file form-control"/></button>
+              <button class="btn btn-default hide"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+              <button class="btn btn-default close-editor"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+              <!-- <button type="button" class="close close-editor"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button> -->
+            </div>
+
+            <div class="code extend item">
+            </div>
+
+            <div id="aceDiff" class="acediff">
+              <div>
+                <h6 class='repository-name left-repository-name'>Main</h6>
+                <div id="acediff-left-editor"></div>
+              </div>
+              <div id="acediff-gutter"></div>
+              <div>
+                <h6 class='repository-name right-repository-name'>Fork</h6>
+                <button class="btn btn-default close-diffing"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                <div id="acediff-right-editor"></div>
+              </div>
+            </div>
+
+            <div class='console resizable item closed'>
+              <div class="handle console-handle">
+                <button type="button" class="close btn btn-default btn-xs btn-down show">
+                  <span class="glyphicon glyphicon-chevron-up"></span>
+                </button>
+              </div>
+              <div class="content">
+              </div>
+            </div>
+
+            <div class='footer item'>
+              <div class='diff'>
+                <button class="btn btn-default previous" type="button"><span class="glyphicon glyphicon-chevron-left"></span></button>
+                <button class="btn btn-default next" type="button"><span class="glyphicon glyphicon-chevron-right"></span></button>
+                <button class="btn btn-default copy-main" type="button"><span class="glyphicon glyphicon-copy"></span><span class="text">Copy main file</span></button>
+                <!-- <button class="btn btn-info commit" type="button"><span class="glyphicon glyphicon-plus"></span>Commit changes</button> -->
+                <!-- <button class="btn btn-success pull-request" type="button"><span class="glyphicon glyphicon-ok"></span>Create pull request</button> -->
+              </div>
+              <button class="btn btn-info submit run" type="button"><span class="glyphicon glyphicon-play"></span>Run</button>
+              <!-- <button class="btn btn-success request" type="button"><span class="glyphicon glyphicon-plus"></span>Push request</button> -->
+              <!-- <button class="btn btn-success accept hidden" type="button"></span>Accept</button> -->
+            </div>
+          </div>
+        </div>
+
+        <div id="codeEditorBckp">
+          <div class="handle"></div>
+
+          <div class="search-add commeUnDessein-ui">
+            <input type="text" class="form-control" placeholder="Search or create...">
+            <button class="btn btn-default"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+            <button class="btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+            <button type="button" class="close close-editor"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+          </div>
+
+          <div id="codeEditorContent"></div>
+
+          <div class="message-box">
+            <div class="console-handle commeUnDessein-ui">
+              <button type="button" class="btn btn-default btn-xs btn-down show">
+                <span class="glyphicon glyphicon-chevron-up"></span>
+              </button>
+            </div>
+            <!-- <button type="button" class="close close-message-box"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button> -->
+            <div class="content"></div>
+
+            <div class="footer">
+              <button class="btn btn-info submit run" type="button"><span class="glyphicon glyphicon-play"></span>Run</button>
+              <!-- <button class="btn btn-info submit tool" type="button"><span class="glyphicon glyphicon-play"></span>Test tool</button> -->
+              <button class="btn btn-success request" type="button"><span class="glyphicon glyphicon-plus"></span>Push request</button>
+            </div>
+
+          </div>
+
+        </div>
+
+
+<!--
+        <ul id="dragTest" style="
+    position: absolute;
+    left: 300px;
+">
+          <div class="drop-zone" style="
+    height: 200px;
+    width: 200px;
+    border: red solid;
+"></div>
+        </ul> -->
+
+
+      </div>
+    </div>
+
+    <!-- <div id="loadingBar"><img src="static/images/loader.GIF"></div> -->
+    <div id="drawingBar">Drawing...</div>
+    <div id="loadingBar"><div id="spinner"></div>Loading...</div>
+    <!-- <canvas id="loadingBar"></canvas> -->
+
+    <div id="templates">
+
+      <div class="modals">
+
+        <!-- Input div modal -->
+        <div class="modal fade" id="divModal" tabindex="-1" role="dialog" aria-labelledby="divModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="divModalLabel"></h4>
+              </div>
+              <div class="modal-body">
+
+                <p class="cost"></p>
+
+                <div id="divModalTypeSelector">
+
+                  <div class="radio">
+                    <label>
+                      <input type="radio" name="typeSelector" id="divModalMessage" value="lock" checked>
+                      Create message
+                    </label>
+                  </div>
+
+                  <div class="radio">
+                    <label>
+                      <input type="radio" name="typeSelector" id="divModalLink" value="link" checked>
+                      Create link (® x1000)
+                    </label>
+                  </div>
+
+                  <div class="radio">
+                    <label>
+                      <input type="radio" name="typeSelector" id="divModalWebsite" value="website">
+                      Create website (® x2)
+                    </label>
+                    <p class="help-block">This will give you a specific address: <italic>sitename.romanesc.co</italic>.In order to have a custom site name, you can redirect your own domain to this address.</p>
+                  </div>
+
+                  <div class="radio disabled">
+                    <label>
+                      <input type="radio" name="typeSelector" id="divModalVieoGame" value="video-game">
+                      Create vieo game (® x2)
+                    </label>
+                  </div>
+
+                </div>
+
+<!--                 <div class="checkbox website">
+                  <label>
+                    <input id="divModalCreateWebsite" type="checkbox"> Create website (® x2)
+                  </label>
+                  <p class="help-block">This will give you a specific address: <italic>sitename.romanesc.co</italic>. You will also be able to have your own site name if you have your own domain, just redirecting to the site.</p>
+                </div> -->
+
+                <div class="checkbox restrict-area">
+                  <label>
+                    <input id="divModalRestrictArea" type="checkbox"> Restrict area
+                  </label>
+                  <p class="help-block">Users visiting your website will not be able to go out of the site boundaries.</p>
+                </div>
+
+                <div class="checkbox disable-toolbar">
+                  <label>
+                    <input id="divModalDisableToolbar" type="checkbox"> Disable toolbar
+                  </label>
+                  <p class="help-block">Users will not have access to the toolbar on your site.</p>
+                </div>
+
+                <div class="form-group url-name-group">
+                  <label for="divModalUrlSiteName">Site name</label>
+                  <input id="divModalUrlSiteName" type="text" class="url-name form-control" placeholder="Site name">
+                </div>
+
+                <div class="form-group name-group">
+                  <label for="divModalSiteName">Site name</label>
+                  <!-- <input id="divModalSiteName" type="text" class="name form-control" placeholder="Site name"> -->
+                  <div class="input-group">
+                    <input id="divModalSiteName" type="text" class="name form-control" placeholder="Site name">
+                    <span class="input-group-addon">.commeUnDessein.co</span>
+                  </div>
+                </div>
+
+                <div class="form-group message-group">
+                  <label for="divModalMessage">Message</label>
+                  <input id="divModalMessage" type="text" class="message form-control submit-shortcut" placeholder="Enter the message you want others to see when they look at this link.">
+                </div>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Add</button>
+              </div>
+            </div>
+          </div>
+        </div> <!-- /Input div modal -->
+
+        <!-- Buy commeUnDesseinCoins modal -->
+        <div class="modal fade" id="commeUnDesseininModal" tabindex="-1" role="dialog" aria-labelledby="commeUnDesseininModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="commeUnDesseininModalLabel">Buy commeUnDesseinCoins</h4>
+              </div>
+              <div class="modal-body">
+
+                <div class="form-group name-group">
+
+                  <p>CommeUnDesseinCoins enable you to add links and protect content from others. The money you give helps to pay the server and is distributed among all contributors of CommeUnDessein.</p>
+
+                  <form id="paypalForm" target="paypal" action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
+                    <input type="hidden" name="cmd" value="_s-xclick">
+                    <input type="hidden" name="hosted_button_id" value="H7F2ZYUEVNW5Y">
+                    <input type="hidden" name="custom" value="">
+                    <input type="hidden" name="amount" value="1">
+                    <input type="hidden" name="return_url" value="https://romanesc.co/paypal/commeUnDesseinin/return/">
+                    <input type="hidden" name="cancel_return" value="https://romanesc.co/paypal/commeUnDesseinin/cancel/">
+                    <input type="image" src="https://www.sandbox.paypal.com/fr_FR/FR/i/btn/btn_cart_LG.gif" border="0" name="submit" alt="PayPal - la solution de paiement en ligne la plus simple et la plus sécurisée !">
+                    <img alt="" border="0" src="https://www.sandbox.paypal.com/fr_FR/i/scr/pixel.gif" width="1" height="1">
+                  </form>
+
+<!--
+                  <form id="paypalForm" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                    <input type="hidden" name="cmd" value="_s-xclick">
+                    <input type="hidden" name="hosted_button_id" value="F9P9CXF5B6JSA">
+                    <table>
+                      <tr><td><input type="hidden" name="on0" value="CommeUnDesseinCoins">CommeUnDesseinCoins</td></tr><tr><td>
+                      <select name="os0">
+                        <option value="1000"  >1000 commeUnDesseinCoins ...... €1,00 EUR</option>
+                        <option value="5000"  >5000 commeUnDesseinCoins ...... €5,00 EUR</option>
+                        <option value="10000" >10000 commeUnDesseinCoins ..... €10,00 EUR</option>
+                        <option value="50000" >50000 commeUnDesseinCoins ..... €50,00 EUR</option>
+                        <option value="100000">100000 commeUnDesseinCoins ... €100,00 EUR</option>
+                      </select> </td></tr>
+                    </table>
+                    <input type="hidden" name="currency_code" value="EUR">
+                    <input type="hidden" name="custom" value="">
+                    <input type="hidden" name="return_url" value="https://romanesc.co/paypal/commeUnDesseinin/return/">
+                    <input type="hidden" name="cancel_return" value="https://romanesc.co/paypal/commeUnDesseinin/cancel/">
+
+                    <input type="image" src="https://www.paypalobjects.com/en_GB/i/btn/btn_paynow_LG.gif" border="0" name="submit" alt="Pay now">
+                    <img alt="" border="0" src="https://www.paypalobjects.com/fr_FR/i/scr/pixel.gif" width="1" height="1">
+
+                  </form>  -->
+
+                </div>
+
+              </div>
+<!--               <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Add</button>
+              </div> -->
+            </div>
+          </div>
+        </div> <!-- /Buy commeUnDesseinCoins modal -->
+
+        <!-- Screenshot modal -->
+        <div class="modal fade" id="screenshotModal" tabindex="-1" role="dialog" aria-labelledby="screenshotModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="screenshotModalLabel">Screenshot</h4>
+              </div>
+              <div class="modal-body">
+                <p>What would you like to do with the extracted image?</p>
+                <div class="image">
+                  <a href="" download="image.png" class="png"><img class="png" src="" alt="screenshot-png"></a>
+                </div>
+                <div class="form-group url-name-group">
+                  <label for="screenshotModalDescription">Description (Optional)</label>
+                  <input id="screenshotModalDescription" type="text" class="form-control" name="message"placeholder="Artwork made with CommeUnDessein">
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" name="copy-data-url" data-clipboard-text="">Copy data url</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" name="download-png">Download PNG</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" name="download-svg">Download SVG</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" name="publish-on-facebook">Publish on Facebook</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" name="publish-on-facebook-photo">Publish on Facebook as photo</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" name="publish-on-pinterest">Publish on Pinterest</button>
+                <a name="publish-on-twitter" class="btn btn-primary twitter-share-button" href="https://twitter.com/share" data-text="Artwork made on CommeUnDessein" data-size="large" data-count="none">Publish on Twitter</a>
+              </div>
+            </div>
+          </div>
+        </div> <!-- /Input div modal -->
+
+        <!-- Custom modal -->
+        <div class="modal fade" id="customModal" tabindex="-1" role="dialog" aria-labelledby="customModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="customModalLabel"></h4>
+              </div>
+              <div class="modal-body">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" name="cancel" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" name="submit">Ok</button>
+              </div>
+            </div>
+          </div>
+        </div> <!-- /Custom modal -->
+
+      </div><!-- /Modals -->
+
+
+      <div class="hidden">
+
+        <div class="color-picker-container">
+          <div class="color-picker">
+            <!-- <label><input type='checkbox' class='gradient-checkbox' form-control>Gradient</label> -->
+
+            <select name="color-type">
+              <option value="flat-color">Flat color</option>
+              <option value="linear-gradient">Linear Gradient</option>
+              <option value="radial-gradient">Radial gradient</option>
+            </select>
+
+            <div class="color-picker-slider"></div>
+          </div>
+        </div>
+
+        <div class="custom-div">
+          <!-- <div class="handle tl"></div>
+          <div class="handle tr"></div>
+          <div class="handle br"></div>
+          <div class="handle bl"></div> -->
+          <div class="mask"></div>
+        </div>
+
+        <div class="screenshot-btn btn-group">
+          <button type="button" class="btn btn-primary extract-btn" data-click='quick-snapshot'>Take snapshot</button>
+          <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+            <span class="caret"></span>
+            <span class="sr-only">Toggle Dropdown</span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <li><a class="extract-btn" data-click='quick-snapshot'>Take snapshot (fast)</a></li>
+            <li><a class="extract-btn" data-click='redraw-snapshot'>Redraw and take snapshot (slower)</a></li>
+          </ul>
+        </div>
+
+        <li class="layer">
+          <h6 class="title"></h6>
+          <ul class="commeUnDessein-ui rPath-list">
+          </ul>
+          <!-- <hr> -->
+          <ul class="commeUnDessein-ui rDiv-list">
+          </ul>
+        </li>
+
+        <div class="lock-content content" data-container="body"></div>
+
+        <button class="dat-gui-toggle" type="button"> <span class="glyphicon glyphicon-transfer" aria-hidden="true"></span></button>
+<!--
+        <div class="slider-group">
+          <label for="" class="slider"></label>
+          <input id="" type="text" class="bootstrap-slider" value="" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="0">
+        </div> -->
+
+        <label class="checkbox"><input type="checkbox" class="" name="" checked=""><span class="text"></span></label>
+
+        <div id="fontStyle" class="btn-group" data-toggle="buttons">
+          <label class="btn btn-default btn-xs" name="italic">
+            <input type="checkbox"><span class="glyphicon glyphicon-italic"></span>
+          </label>
+          <label class="btn btn-default btn-xs" name="bold">
+            <input type="checkbox"><span class="glyphicon glyphicon-bold"></span>
+          </label>
+          <label class="btn btn-default btn-xs" name="underline">
+            <input type="checkbox"><img class="glyphicon" src="{% static 'images/icons/inverted/underline.png' %}"/>
+          </label>
+          <label class="btn btn-default btn-xs" name="overline">
+            <input type="checkbox"><img class="glyphicon" src="{% static 'images/icons/inverted/overline.png' %}"/>
+          </label>
+          <label class="btn btn-default btn-xs" name="line-through">
+            <input type="checkbox"><img class="glyphicon" src="{% static 'images/icons/inverted/line-through.png' %}"/>
+          </label>
+        </div>
+
+        <div id="textAlign" class="btn-group">
+          <button type="button" class="btn btn-default justify btn-xs"><span class="glyphicon glyphicon-align-justify"></span></button>
+          <button type="button" class="btn btn-default align-left btn-xs"><span class="glyphicon glyphicon-align-left"></span></button>
+          <button type="button" class="btn btn-default align-center btn-xs"><span class="glyphicon glyphicon-align-center"></span></button>
+          <button type="button" class="btn btn-default align-right btn-xs"><span class="glyphicon glyphicon-align-right"></span></button>
+        </div>
+
+        <div id="align" class="btn-group btn-group-xs align-btn-group">
+          <button type="button" class="btn btn-default btn-xs" data-type="h-top"><img class="glyphicon" src="{% static 'images/icons/align/h-top.png' %}"/></button>
+          <button type="button" class="btn btn-default btn-xs" data-type="h-center"><img class="glyphicon" src="{% static 'images/icons/align/h-center.png' %}"/></button>
+          <button type="button" class="btn btn-default btn-xs" data-type="h-bottom"><img class="glyphicon" src="{% static 'images/icons/align/h-bottom.png' %}"/></button>
+
+          <button type="button" class="btn btn-default btn-xs" data-type="v-left"><img class="glyphicon" src="{% static 'images/icons/align/v-left.png' %}"/></button>
+          <button type="button" class="btn btn-default btn-xs" data-type="v-center"><img class="glyphicon" src="{% static 'images/icons/align/v-center.png' %}"/></button>
+          <button type="button" class="btn btn-default btn-xs" data-type="v-right"><img class="glyphicon" src="{% static 'images/icons/align/v-right.png' %}"/></button>
+        </div>
+
+        <div id="distribute" class="btn-group btn-group-xs align-btn-group">
+          <button type="button" class="btn btn-default btn-xs" data-type="h-top"><img class="glyphicon" src="{% static 'images/icons/distribute/h-top.png' %}"/></button>
+          <button type="button" class="btn btn-default btn-xs" data-type="h-center"><img class="glyphicon" src="{% static 'images/icons/distribute/h-center.png' %}"/></button>
+          <button type="button" class="btn btn-default btn-xs" data-type="h-bottom"><img class="glyphicon" src="{% static 'images/icons/distribute/h-bottom.png' %}"/></button>
+
+          <button type="button" class="btn btn-default btn-xs" data-type="v-left"><img class="glyphicon" src="{% static 'images/icons/distribute/v-left.png' %}"/></button>
+          <button type="button" class="btn btn-default btn-xs" data-type="v-center"><img class="glyphicon" src="{% static 'images/icons/distribute/v-center.png' %}"/></button>
+          <button type="button" class="btn btn-default btn-xs" data-type="v-right"><img class="glyphicon" src="{% static 'images/icons/distribute/v-right.png' %}"/></button>
+        </div>
+
+      </div> <!-- /hidden -->
+
+    </div>
+
+    <object id="wacomPlugin" type="application/x-wacomtabletplugin" width="0" height="0" style="position:absolute; left:0px; top:0px">
+      <param name="onload" value="pluginLoaded" />
+    </object>
+
+    <!-- Bootstrap core JavaScript ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <!-- online for fast caching-->
+    <!-- <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>-->
+    <!-- <script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>-->
+    <!-- static for offine -->
+    <!-- data-pos-x="{{ x }}" data-pos-y="{{ y }}" data-points="{{ points }}" data-box="{{ box }}" data-site="{{ site }}" data-message="{{ message }}" data-load-entire-area="{{ loadEntireArea }}" data-city="{{ city }}" data-owner="{{ owner }}" data-github-login="{{ githubLogin }} -->
+    <script>
+        var R = {};
+        R.city = { owner: '{{ owner }}', name: '{{ city }}', site: '{{ site }}' };
+        R.loadEntireArea = '{{ loadEntireArea }}' === 'True';
+        R.loadedBox = '{{ box }}'.length>0?JSON.parse('{{ box }}'):null;
+    </script>
+    <script src="//ajax.googleapis.com/ajax/libs/webfont/1.5.10/webfont.js"></script>
+    <script src="{% static 'libs/js.cookie.js' %}"></script>
+    <script>WEB_SOCKET_SWF_LOCATION="{% static 'flashsocket/WebSocketMain.swf' %}"; window.room = "0";</script>
+    <script data-main="{% static 'comme-un-dessein-client/js/App' %}" src="{% static 'libs/require.js' %}"></script>
+
+
+    <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js"></script> -->
+    <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/tinycolor/0.11.1/tinycolor.min.js"></script> -->
+    <!-- <script src="{% static 'libs/jquery.nanoscroller.js' %}"></script> -->
+    <!-- <script src="{% static 'libs/howler.min.js' %}"></script> -->
+    <!-- <script src="{% static 'libs/howler.js' %}"></script> -->
+    <!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.15.0/plugins/CSSPlugin.min.js"></script> -->
+    <!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.15.0/easing/EasePack.min.js"></script> -->
+    <!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.15.0/TweenLite.min.js"></script> -->
+    <!-- <script src="{% static 'libs/soundjs-0.5.2.min.js' %}"></script> -->
+    <!-- <script src="{% static 'libs/pace/pace.js' %}" data-pace-options='{ "ajax": false, "document": false, "eventLag": false, "elements": false, "restartOnPushState": false, "restartOnRequestAfter": false }'></script> -->
+    <!-- <script src="{% static 'libs/ace/src-min-noconflict/ace.js' %}"></script> -->
+    <!--  <script src="{% static 'libs/fabric/all.js' %}"> -->
+
+<!--
+    <script src="{% static 'libs/jquery-1.10.2.js' %}"></script>
+    <script src="{% static 'libs/jquery-ui.min.js' %}"></script>
+    <script src="{% static 'libs/jquery.mousewheel.min.js' %}"></script>
+    <script src="{% static 'libs/socket.io.js' %}"></script>
+    <script src="{% static 'libs/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'libs/tinycolor.js' %}"></script>
+    <script src="{% static 'libs/bootstrap-colorpickersliders/bootstrap.colorpickersliders.nocielch.js' %}"></script>
+    <script src="{% static 'libs/dat.gui.js' %}"></script>
+    <script src="{% static 'libs/paper/paper-full.js' %}"></script>
+    <script src="{% static 'libs/jquery.mCustomScrollbar.concat.min.js' %}"></script>
+    <script src="{% static 'libs/jquery.oembed.js' %}"></script>
+    <script src="{% static 'libs/typeahead.bundle.min.js' %}"></script>
+    <script src="{% static 'libs/coffee-script.js' %}"></script>
+    <script src="{% static 'libs/ace/src-min-noconflict/ace.js' %}"></script>
+    <script src="{% static 'libs/ZeroClipboard/ZeroClipboard.js' %}"></script>
+    <script src="{% static 'libs/RequestAnimationFrame.js' %}"></script>
+    <script src="{% static 'libs/tween.min.js' %}"></script>
+    <script async defer src="//assets.pinterest.com/js/pinit.js"></script>
+ -->
+<!--
+    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="{% static 'js/coordinateSystems.js' %}"></script>
+    <script src="{% static 'js/global.js' %}"></script>
+    <script src="{% static 'js/command.js' %}"></script>
+    <script src="{% static 'js/sound.js' %}"></script>
+    <script src="{% static 'js/editor.js' %}"></script>
+    <script src="{% static 'js/modal.js' %}"></script>
+    <script src="{% static 'js/rasterizer.js' %}"></script>
+    <script src="{% static 'js/item.js' %}"></script>
+    <script src="{% static 'js/path.js' %}"></script>
+    <script src="{% static 'js/div.js' %}"></script>
+    <script src="{% static 'js/lock.js' %}"></script>
+    <script src="{% static 'js/socket.js' %}"></script>
+    <script src="{% static 'js/ajax.js' %}"></script>
+    <script src="{% static 'js/options.js' %}"></script>
+    <script src="{% static 'js/tools.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+ -->
+  </body>
+</html>
+
+    <!--
+    <div class="tt-suggestion"><p style="white-space: normal;"><strong>A</strong>BeeZee</p></div><div class="tt-suggestion"><p style="white-space: normal;"><strong>A</strong>bel</p></div><div class="tt-suggestion"><p style="white-space: normal;"><strong>A</strong>bril F<strong>a</strong>tf<strong>a</strong>ce</p></div><div class="tt-suggestion"><p style="white-space: normal;"><strong>A</strong>clonic<strong>a</strong></p></div><div class="tt-suggestion"><p style="white-space: normal;"><strong>A</strong>cme</p></div>
+-->

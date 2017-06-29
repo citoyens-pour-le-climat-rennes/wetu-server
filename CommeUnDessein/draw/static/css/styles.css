@@ -1,0 +1,34 @@
+html {	
+	background-color: #33383E;
+	color: white;
+	font-family: sans-serif;
+}
+
+body {
+
+	width: 350px;
+	margin: auto;
+	margin-top: 100px;
+	padding: 50px;
+	border: 1px solid white;
+	border-radius: 5px;
+	background-color: rgb(51, 52, 53);
+}
+
+ul {
+
+	list-style: none;
+	padding: 0;
+	display: inline;
+	color: black;
+}
+
+li {
+	display: inline-block;
+	margin-right: 10px;
+}
+
+a {
+	color: rgb(64, 152, 215);
+	text-decoration: none;
+}
