@@ -1179,7 +1179,7 @@ def deleteDiv(request, pk):
 
 # @dajaxice_register
 @checkDebug
-def saveDrawing(request, date=None, pathPks=[]):
+def saveDrawing(request, date, pathPks, title, description):
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
 
@@ -1200,6 +1200,9 @@ def saveDrawing(request, date=None, pathPks=[]):
 
 			if path.drawing:
 				return json.dumps({'state': 'error', 'message': 'One path is already part of a drawing.'})
+
+			if path.owner != request.user.username:
+				return json.dumps({'state': 'error', 'message': 'One path is not property of user.'})
 
 			if city != None and path.city != city or planetX != None and path.planetX != planetX or planetY != None and path.planetY != planetY:
 				return json.dumps({'state': 'error', 'message': 'One path is from a different city or planet.'})
@@ -1229,7 +1232,7 @@ def saveDrawing(request, date=None, pathPks=[]):
 
 	points = [ [xMin, yMin], [xMax, yMin], [xMax, yMax], [xMin, yMax], [xMin, yMin] ]
 
-	d = Drawing(city=city, planetX=planetX, planetY=planetY, box=[points], owner=request.user.username, paths=paths, date=datetime.datetime.fromtimestamp(date/1000.0))
+	d = Drawing(city=city, planetX=planetX, planetY=planetY, box=[points], owner=request.user.username, paths=paths, date=datetime.datetime.fromtimestamp(date/1000.0), title=title, description=description)
 	d.save()
 
 	for path in paths:
@@ -1248,13 +1251,13 @@ def loadDrawing(request, pk):
 	
 	votes = []
 	for vote in d.votes:
-		votes.append( { vote: vote.to_json(), author: vote.author.username, authorPk: str(vote.author.pk) })
+		votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk) })
 
 	return json.dumps( {'state': 'success', 'votes': votes } )
 
 # @dajaxice_register
 @checkDebug
-def updateDrawing(request, pk, date, status):
+def updateDrawing(request, pk, title, description):
 	
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
@@ -1267,10 +1270,8 @@ def updateDrawing(request, pk, date, status):
 	if request.user.username != d.owner:
 		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
 
-	d.status = status
-
-	for vote in d.votes:
-		vote.delete()
+	d.title = title
+	d.description = description
 
 	d.save()
 
@@ -1290,10 +1291,6 @@ def deleteDrawing(request, pk):
 	if request.user.username != d.owner:
 		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
 
-	for path in d.paths:
-		path.drawing = None
-		path.save()
-
 	d.delete()
 
 	return json.dumps( { 'state': 'success', 'pk': pk } )
@@ -1310,14 +1307,39 @@ def vote(request, pk, date, positive):
 	if drawing.owner == request.user.username:
 		return json.dumps({'state': 'error', 'message': 'Cannot vote for own drawing.'})
 
-	vote = Vote(author=request.user, drawing=drawing, positive=positive)
+	if drawing.status != 'pending':
+		return json.dumps({'state': 'error', 'message': 'The drawing is not in vote mode.'})
+
+	for vote in drawing.votes:
+		if vote.author.username == request.user.username:
+			return json.dumps({'state': 'error', 'message': 'You already voted for this drawing.'})
+
+	user = None
+
+	try:
+		user = UserProfile.objects.get(username=request.user.username)
+	except UserProfile.DoesNotExist:
+		return json.dumps({'state': 'error', 'message': 'Username does not exist.'})
+
+	vote = Vote(author=user, drawing=drawing, positive=positive, date=datetime.datetime.fromtimestamp(date/1000.0))
 	vote.save()
 
 	drawing.votes.append(vote)
 	drawing.save()
 
-	request.user.votes.append(vote)
-	request.user.save()
+	user.votes.append(vote)
+	user.save()
+
+	nPositiveVotes = 0
+	nNegativeVotes = 0
+	for vote in drawing.votes:
+		if vote.positive:
+			nPositiveVotes++
+		else:
+			nNegativeVotes++
+
+	if nPositiveVotes > 100 && nNegativeVotes < 20:
+		drawing.status = 'drawing'
 
 	return json.dumps( {'state': 'success', 'owner': request.user.username, 'drawingPk':str(drawing.pk), 'votePk':str(vote.pk) } )
 

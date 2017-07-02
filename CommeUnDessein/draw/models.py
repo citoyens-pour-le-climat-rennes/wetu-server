@@ -15,36 +15,36 @@ import hashlib
 from mongoengine import *
 import datetime
 
-@receiver(user_signed_up, dispatch_uid="_allauth.user_signed_up")
-def createUserProfile(sender, user, **kwargs):
-    profile = UserProfile(username=user.username)
-    profile.save()
-    return
+# @receiver(user_signed_up, dispatch_uid="_allauth.user_signed_up")
+# def createUserProfile(sender, user, **kwargs):
+#     profile = UserProfile(username=user.username)
+#     profile.save()
+#     return
 
-class UserProfile(Document):
-    username = StringField(required=True, unique=True)
-    admin = BooleanField(default=False)
-    commeUnDesseinCoins = IntField(default=0)
-    votes = ListField(ReferenceField('Vote', reverse_delete_rule=PULL))
+# class UserProfile(Document):
+#     username = StringField(required=True, unique=True)
+#     admin = BooleanField(default=False)
+#     commeUnDesseinCoins = IntField(default=0)
+#     votes = ListField(ReferenceField('Vote', reverse_delete_rule=PULL))
 
-    def profile_image_url(self):
+#     def profile_image_url(self):
 
-        user = User.objects.get(username=self.username)
+#         user = User.objects.get(username=self.username)
 
-        socialAccount = SocialAccount.objects.filter(user_id=user.id).first()
+#         socialAccount = SocialAccount.objects.filter(user_id=user.id).first()
 
-        if socialAccount:
-            if socialAccount.provider == 'facebook':
-                return "http://graph.facebook.com/{}/picture?width=64&height=64".format(socialAccount.uid)
-            elif socialAccount.provider == 'google':
-                return socialAccount.extra_data['picture']
-            else:
-                defaultUrl = urllib.quote_plus("http://www.mediafire.com/convkey/7e65/v9zp48cdnsccr4d6g.jpg")
-                return "http://www.gravatar.com/avatar/{}?s=64&d={}".format(hashlib.md5(user.email).hexdigest(), defaultUrl)
+#         if socialAccount:
+#             if socialAccount.provider == 'facebook':
+#                 return "http://graph.facebook.com/{}/picture?width=64&height=64".format(socialAccount.uid)
+#             elif socialAccount.provider == 'google':
+#                 return socialAccount.extra_data['picture']
+#             else:
+#                 defaultUrl = urllib.quote_plus("http://www.mediafire.com/convkey/7e65/v9zp48cdnsccr4d6g.jpg")
+#                 return "http://www.gravatar.com/avatar/{}?s=64&d={}".format(hashlib.md5(user.email).hexdigest(), defaultUrl)
 
-    meta = {
-        'indexes': [[ ("username", 1)]]
-    }
+#     meta = {
+#         'indexes': [[ ("username", 1)]]
+#     }
 
 
 # --- django-allauth : sqlite --- #

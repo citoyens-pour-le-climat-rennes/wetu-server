@@ -36,13 +36,17 @@ body {
 .commeUnDessein-ui input,
 .commeUnDessein-ui.open input,
 .commeUnDessein-ui button,
-.commeUnDessein-ui.open button {
+.commeUnDessein-ui.open button,
+.commeUnDessein-ui textarea,
+.commeUnDessein-ui.open textarea {
   background: transparent;
 }
 .commeUnDessein-ui input,
 .commeUnDessein-ui.open input,
 .commeUnDessein-ui button,
 .commeUnDessein-ui.open button,
+.commeUnDessein-ui textarea,
+.commeUnDessein-ui.open textarea,
 .commeUnDessein-ui .dropdown-menu,
 .commeUnDessein-ui.open .dropdown-menu {
   font-size: 11px;
@@ -57,6 +61,8 @@ body {
 .commeUnDessein-ui.open input .btn .caret,
 .commeUnDessein-ui button .btn .caret,
 .commeUnDessein-ui.open button .btn .caret,
+.commeUnDessein-ui textarea .btn .caret,
+.commeUnDessein-ui.open textarea .btn .caret,
 .commeUnDessein-ui .dropdown-menu .btn .caret,
 .commeUnDessein-ui.open .dropdown-menu .btn .caret {
   margin-left: 3px;
@@ -65,6 +71,8 @@ body {
 .commeUnDessein-ui.open input:hover,
 .commeUnDessein-ui button:hover,
 .commeUnDessein-ui.open button:hover,
+.commeUnDessein-ui textarea:hover,
+.commeUnDessein-ui.open textarea:hover,
 .commeUnDessein-ui .dropdown-menu:hover,
 .commeUnDessein-ui.open .dropdown-menu:hover {
   color: #eeeeee;
@@ -74,6 +82,8 @@ body {
 .commeUnDessein-ui.open input:focus,
 .commeUnDessein-ui button:focus,
 .commeUnDessein-ui.open button:focus,
+.commeUnDessein-ui textarea:focus,
+.commeUnDessein-ui.open textarea:focus,
 .commeUnDessein-ui .dropdown-menu:focus,
 .commeUnDessein-ui.open .dropdown-menu:focus {
   outline: none;
@@ -85,6 +95,8 @@ body {
 .commeUnDessein-ui.open input:active,
 .commeUnDessein-ui button:active,
 .commeUnDessein-ui.open button:active,
+.commeUnDessein-ui textarea:active,
+.commeUnDessein-ui.open textarea:active,
 .commeUnDessein-ui .dropdown-menu:active,
 .commeUnDessein-ui.open .dropdown-menu:active {
   background-color: inherit;
@@ -95,6 +107,8 @@ body {
 .commeUnDessein-ui.open input .glyphicon,
 .commeUnDessein-ui button .glyphicon,
 .commeUnDessein-ui.open button .glyphicon,
+.commeUnDessein-ui textarea .glyphicon,
+.commeUnDessein-ui.open textarea .glyphicon,
 .commeUnDessein-ui .dropdown-menu .glyphicon,
 .commeUnDessein-ui.open .dropdown-menu .glyphicon {
   margin-right: 2px;
@@ -103,6 +117,8 @@ body {
 .commeUnDessein-ui.open input li a,
 .commeUnDessein-ui button li a,
 .commeUnDessein-ui.open button li a,
+.commeUnDessein-ui textarea li a,
+.commeUnDessein-ui.open textarea li a,
 .commeUnDessein-ui .dropdown-menu li a,
 .commeUnDessein-ui.open .dropdown-menu li a {
   padding-top: 10px;
@@ -112,6 +128,8 @@ body {
 .commeUnDessein-ui.open input li a span.glyphicon,
 .commeUnDessein-ui button li a span.glyphicon,
 .commeUnDessein-ui.open button li a span.glyphicon,
+.commeUnDessein-ui textarea li a span.glyphicon,
+.commeUnDessein-ui.open textarea li a span.glyphicon,
 .commeUnDessein-ui .dropdown-menu li a span.glyphicon,
 .commeUnDessein-ui.open .dropdown-menu li a span.glyphicon {
   margin-right: 5px;
@@ -120,6 +138,8 @@ body {
 .commeUnDessein-ui.open input li a:hover,
 .commeUnDessein-ui button li a:hover,
 .commeUnDessein-ui.open button li a:hover,
+.commeUnDessein-ui textarea li a:hover,
+.commeUnDessein-ui.open textarea li a:hover,
 .commeUnDessein-ui .dropdown-menu li a:hover,
 .commeUnDessein-ui.open .dropdown-menu li a:hover {
   color: white;
@@ -1429,6 +1449,34 @@ li.tool-btn.selected .favorite-btn {
 #urlModal .modal-footer {
   margin-top: 0;
 }
+.cd-column {
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+          flex-direction: column;
+}
+.cd-row {
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+          flex-direction: row;
+}
+.cd-grow {
+  -webkit-box-flex: 1;
+          flex-grow: 1;
+}
+.cd-center {
+  -webkit-box-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+          justify-content: center;
+}
+.cd-end {
+  -webkit-box-pack: end;
+          justify-content: flex-end;
+}
 #drawingPanel {
   left: 70%;
   position: absolute;
@@ -1480,6 +1528,9 @@ li.tool-btn.selected .favorite-btn {
   width: auto;
   margin-right: 0;
   padding-right: 20px;
+  padding-top: 30px;
+  padding-left: 10px;
+  padding-bottom: 10px;
 }
 #drawingPanel .container .header {
   display: -webkit-box;
@@ -1505,6 +1556,27 @@ li.tool-btn.selected .favorite-btn {
           flex-grow: 1;
   display: -webkit-box;
   display: flex;
+}
+#drawingPanel .container .content .btn {
+  margin-left: 5px;
+}
+#drawingPanel .container .content .votes {
+  margin-right: 10px;
+}
+#drawingPanel .container .content .votes .vote-button {
+  position: relative;
+}
+#drawingPanel .container .content .votes .vote-button .vote-list {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 30px;
+  padding: 10px;
+  background-color: rgba(38, 42, 47, 0.97);
+  z-index: 1;
+}
+#drawingPanel .container .content .votes .vote-button:hover .vote-list {
+  display: block;
 }
 #drawingPanel .container .content .loading-animation {
   -webkit-box-flex: 1;

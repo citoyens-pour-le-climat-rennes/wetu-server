@@ -81,10 +81,10 @@ body {
 	font-size: 11px;
 	color: rgb(238, 238, 238);
 
-	input, button {
+	input, button, textarea {
 		background: transparent; //@sidebar-background-color;
 	}
-	input, button, .dropdown-menu {
+	input, button, textarea, .dropdown-menu {
 		font-size: 11px;
 		color: rgb(238, 238, 238);
 
@@ -1637,6 +1637,29 @@ li.tool-btn {
 // 	}
 // }
 
+
+.cd-column {
+	display: flex;
+	flex-direction: column;
+}
+.cd-row {
+	display: flex;
+	flex-direction: row;
+}
+
+.cd-grow {
+	flex-grow: 1;
+}
+
+.cd-center {
+    align-items: center;
+    justify-content: center;
+}
+
+.cd-end {
+	justify-content: flex-end;
+}
+
 #drawingPanel {
 	left: 70%;
 	position: absolute;
@@ -1678,8 +1701,10 @@ li.tool-btn {
 		width: auto;
 		margin-right: 0;
 		padding-right: 20px;
-		.item {
-		}
+		padding-top: 30px;
+		padding-left: 10px;
+		padding-bottom: 10px;
+		
 		.header {
 			display: flex;
 			flex-direction: row;
@@ -1699,6 +1724,31 @@ li.tool-btn {
 		.content {
 			flex-grow: 1;
 			display: flex;
+			.btn {
+				margin-left: 5px;
+			}
+			.votes {
+    			margin-right: 10px;
+
+    			.vote-button {
+    				position: relative;
+    				.vote-list {
+	    				display: none;
+	    				position: absolute;
+	    				top: 0;
+	    				left: 30px;
+	    				padding: 10px;
+	    				background-color: rgba(38, 42, 47, 0.97);
+	    				z-index: 1;
+	    			}
+	    			&:hover {
+    					.vote-list {
+		    				display: block;
+		    			}
+	    			}
+    			}
+    			
+			}
 			.loading-animation {
 				flex-grow: 1;
 				display: block;

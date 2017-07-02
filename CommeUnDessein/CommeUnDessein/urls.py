@@ -12,7 +12,7 @@ admin.autodiscover()
 
 urlpatterns = [
     # prevent the extra are-you-sure-you-want-to-logout step on logout
-    url(r'^accounts/logout/$', django_contrib_auth_views.logout, {'next_page': '/'}),
+    # url(r'^accounts/logout/$', django_contrib_auth_views.logout, {'next_page': '/'}),
 
     url(r'^', include('draw.urls')),
     # url(r'^$', 'draw.views.index'),

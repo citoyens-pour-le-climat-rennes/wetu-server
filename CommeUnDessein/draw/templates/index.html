@@ -302,14 +302,13 @@
                     <div class="panel-body">
                       <div class="mCustomScrollbar rItems tree">
                         <ul class="layers folder">
-                          <li class="main-layer">
+                          <!-- <li class="main-layer">
                             <h6 class="title">Main layer</h6>
                             <ul class="commeUnDessein-ui rPath-list">
                             </ul>
-                            <!-- <hr> -->
                             <ul class="commeUnDessein-ui rDiv-list">
                             </ul>
-                          </li>
+                          </li> -->
                         </ul>
                       </div>
                     </div>
@@ -407,37 +406,61 @@
               <span class="glyphicon glyphicon-chevron-right"></span>
             </button>
           </div>
-          <div class="container">
+          <div class="container cd-column">
 
             <div class='header item'>
               <button class="btn btn-default close-panel" type="button"><span class="glyphicon glyphicon-remove"></span></button>
             </div>
 
-            <div class="content extend item">
+            <div class="content cd-grow">
 
-              <div class="column">
+              <div class="cd-row cd-grow">
 
-                <h3 class="title"></h3>
+                <div class="votes cd-column cd-center">
 
-                <h4 class="author"></h4>
+                  <span class="vote-button positive">
+                    <button class="btn btn-default vote-up" type="button"><span class="glyphicon glyphicon-triangle-top"></span></button>
+                    <span class="n-votes positive">0</span>
+                    <ul class="vote-list positive list-unstyled"></ul>
+                  </span>
+                  <span class="vote-button negative">
+                    <button class="btn btn-default vote-down" type="button"><span class="glyphicon glyphicon-triangle-bottom"></span></button>
+                    <span class="n-votes negative">0</span>
+                    <ul class="vote-list negative list-unstyled"></ul>
+                  </span>
+                  
+                  <div>
+                    <div><span class="n-votes total">0</span> votes</div>
+                    <div><span class="percentage-votes">0</span>% positive</div>
+                  </div>
 
-                <p class="description"></p>
+                </div>
 
-              </div>
+                <div class="cd-column cd-grow">
 
-              <div class="votes">
+                  <div class="cd-column read">
+                    <h3 class="title"></h3>
+                    <h4 class="author"></h4>
+                    <p class="description"></p>
+                  </div>
 
-                <span class="vote-button positive">
-                  <button class="btn btn-default vote-up" type="button"><span class="glyphicon glyphicon-triangle-top"></span>Vote up</button>
-                  <span class="n-votes positive">0</span>
-                  <ul class="votes"></ul>
-                </span>
-                <span class="vote-button negative">
-                  <button class="btn btn-default vote-down" type="button"><span class="glyphicon glyphicon-triangle-bottom"></span>Vote down</button>
-                  <span class="n-votes positive">0</span>
-                  <ul class="votes"></ul>
-                </span>
-                <span><span class="n-votes">0</span> votes, <span class="percentage-votes">0</span>% are positive</span>
+                  <form class="create modify cd-column cd-grow">
+                    <div class="form-group">
+                      <label for="drawing-title">Drawing title</label>
+                      <input type="text" class="form-control" id="drawing-title" placeholder="Mandala">
+                    </div>
+                    <div class="form-group cd-grow cd-column">
+                      <label for="drawing-description">Description</label>
+                      <textarea class="form-control cd-grow" id="drawing-description" rows="5"></textarea>
+                    </div>
+                    <div class="cd-row cd-end">
+                      <button class="btn btn-danger cancel" type="button"><span class="glyphicon glyphicon-remove"></span>Cancel drawing</button>
+                      <button class="btn btn-info modify" type="button"><span class="glyphicon glyphicon-ok"></span>Modify descrition</button>
+                      <button class="btn btn-success submit" type="button"><span class="glyphicon glyphicon-ok"></span>Submit drawing</button>
+                    </div>
+                  </form>
+
+                </div>
 
               </div>
 
@@ -447,10 +470,10 @@
 
             </div>
 
-            <div class='footer item'>
+            <!-- <div class='footer item'>
               <button class="btn btn-default modify" type="button"><span class="glyphicon glyphicon-remove"></span>Modify drawing</button>
               <button class="btn btn-info submit" type="button"><span class="glyphicon glyphicon-ok"></span>Submit drawing</button>
-            </div>
+            </div> -->
           </div>
         </div>
 
