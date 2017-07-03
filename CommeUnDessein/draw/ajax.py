@@ -1334,11 +1334,11 @@ def vote(request, pk, date, positive):
 	nNegativeVotes = 0
 	for vote in drawing.votes:
 		if vote.positive:
-			nPositiveVotes++
+			nPositiveVotes += 1
 		else:
-			nNegativeVotes++
+			nNegativeVotes += 1
 
-	if nPositiveVotes > 100 && nNegativeVotes < 20:
+	if nPositiveVotes > 100 and nNegativeVotes < 20:
 		drawing.status = 'drawing'
 
 	return json.dumps( {'state': 'success', 'owner': request.user.username, 'drawingPk':str(drawing.pk), 'votePk':str(vote.pk) } )

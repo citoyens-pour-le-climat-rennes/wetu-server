@@ -3,8 +3,8 @@ body {
   overflow: hidden;
 }
 .glyphicon-refresh-animate {
-  -animation: spin .7s infinite linear;
-  -webkit-animation: spin .7s infinite linear;
+  -animation: spin 1.25s infinite linear;
+  -webkit-animation: spin 1.25s infinite linear;
 }
 @-webkit-keyframes spin {
   from {
@@ -1811,6 +1811,9 @@ li.tool-btn.selected .favorite-btn {
 }
 #loadingBar #spinner {
   margin-left: 170px;
+}
+#loadingBar .glyphicon-refresh-animate {
+  margin-right: 10px;
 }
 .form-control {
   height: auto;
