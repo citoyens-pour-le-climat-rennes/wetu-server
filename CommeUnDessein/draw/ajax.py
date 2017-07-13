@@ -768,7 +768,7 @@ def getAreas(bounds):
 
 # @dajaxice_register
 @checkDebug
-def savePath(request, points, object_type, box, date, data=None, city=None):
+def savePath(request, clientID, points, object_type, box, date, data=None, city=None):
 # def savePath(request, points, pID, planet, object_type, data=None, rasterData=None, rasterPosition=None, areasNotRasterized=None):
 
 	if not request.user.is_authenticated():
@@ -799,8 +799,7 @@ def savePath(request, points, object_type, box, date, data=None, city=None):
 
 	boxGeometry = makeBox(boxPoints[0][0], boxPoints[0][1], boxPoints[2][0], boxPoints[2][1])
 	
-	
-	p = Path(city=city, planetX=planetX, planetY=planetY, box=boxGeometry, points=points, owner=request.user.username, object_type=object_type, data=data, date=datetime.datetime.fromtimestamp(date/1000.0), lock=lock )
+	p = Path(clientID=clientID, city=city, planetX=planetX, planetY=planetY, box=boxGeometry, points=points, owner=request.user.username, object_type=object_type, data=data, date=datetime.datetime.fromtimestamp(date/1000.0), lock=lock )
 	p.save()
 
 	addAreaToUpdate( boxPoints, planetX, planetY, city )
@@ -893,7 +892,7 @@ def deletePath(request, pk):
 
 # @dajaxice_register
 @checkDebug
-def saveBox(request, box, object_type, data=None, siteData=None, siteName=None, city=None):
+def saveBox(request, clientID, box, object_type, data=None, siteData=None, siteName=None, city=None):
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
 
@@ -914,7 +913,7 @@ def saveBox(request, box, object_type, data=None, siteData=None, siteName=None, 
 	# todo: warning: website is not defined in Box model...
 	try:
 		data = json.dumps( { 'loadEntireArea': loadEntireArea } )
-		b = Box(city=city, planetX=planetX, planetY=planetY, box=[points], owner=request.user.username, object_type=object_type, siteName=siteName, data=data)
+		b = Box(clientID=clientID, city=city, planetX=planetX, planetY=planetY, box=[points], owner=request.user.username, object_type=object_type, siteName=siteName, data=data)
 		b.save()
 		addAreaToUpdate( points, planetX, planetY, city )
 	except ValidationError:
@@ -1082,7 +1081,7 @@ def deleteBox(request, pk):
 
 # @dajaxice_register
 @checkDebug
-def saveDiv(request, box, object_type, date=None, data=None, lock=None, city=None):
+def saveDiv(request, clientID, box, object_type, date=None, data=None, lock=None, city=None):
 
 	points = box['points']
 	planetX = box['planet']['x']
@@ -1103,7 +1102,7 @@ def saveDiv(request, box, object_type, date=None, data=None, lock=None, city=Non
 	# if lockedAreas.count()>0:
 	# 	return json.dumps( {'state': 'error', 'message': 'Your div intersects with a locked area'} )
 
-	d = Div(city=city, planetX=planetX, planetY=planetY, box=[points], owner=request.user.username, object_type=object_type, data=data, lock=lock, date=datetime.datetime.fromtimestamp(date/1000.0))
+	d = Div(clientID=clientID, city=city, planetX=planetX, planetY=planetY, box=[points], owner=request.user.username, object_type=object_type, data=data, lock=lock, date=datetime.datetime.fromtimestamp(date/1000.0))
 	# addAreaToUpdate( points, planetX, planetY )
 	d.save()
 
@@ -1179,7 +1178,7 @@ def deleteDiv(request, pk):
 
 # @dajaxice_register
 @checkDebug
-def saveDrawing(request, date, pathPks, title, description):
+def saveDrawing(request, clientID, date, pathIDs, title, description):
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
 
@@ -1194,9 +1193,9 @@ def saveDrawing(request, date, pathPks, title, description):
 	planetX = None
 	planetY = None
 
-	for pk in pathPks:
+	for clientID in pathIDs:
 		try:
-			path = Path.objects.get(pk=pk)
+			path = Path.objects.get(clientID=clientID)
 
 			if path.drawing:
 				return json.dumps({'state': 'error', 'message': 'One path is already part of a drawing.'})
@@ -1232,7 +1231,7 @@ def saveDrawing(request, date, pathPks, title, description):
 
 	points = [ [xMin, yMin], [xMax, yMin], [xMax, yMax], [xMin, yMax], [xMin, yMin] ]
 
-	d = Drawing(city=city, planetX=planetX, planetY=planetY, box=[points], owner=request.user.username, paths=paths, date=datetime.datetime.fromtimestamp(date/1000.0), title=title, description=description)
+	d = Drawing(clientID=clientID, city=city, planetX=planetX, planetY=planetY, box=[points], owner=request.user.username, paths=paths, date=datetime.datetime.fromtimestamp(date/1000.0), title=title, description=description)
 	d.save()
 
 	for path in paths:
