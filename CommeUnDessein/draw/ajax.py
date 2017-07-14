@@ -1178,7 +1178,7 @@ def deleteDiv(request, pk):
 
 # @dajaxice_register
 @checkDebug
-def saveDrawing(request, clientID, date, pathIDs, title, description):
+def saveDrawing(request, clientID, date, pathPks, title, description):
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
 
@@ -1193,9 +1193,9 @@ def saveDrawing(request, clientID, date, pathIDs, title, description):
 	planetX = None
 	planetY = None
 
-	for clientID in pathIDs:
+	for pathPk in pathPks:
 		try:
-			path = Path.objects.get(clientID=clientID)
+			path = Path.objects.get(pk=pathPk)
 
 			if path.drawing:
 				return json.dumps({'state': 'error', 'message': 'One path is already part of a drawing.'})

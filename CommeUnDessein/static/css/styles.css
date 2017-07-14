@@ -573,6 +573,15 @@ body {
 #stage.main .custom-div.website {
   cursor: url(../images/cursors/hand.png) 32 32, move;
 }
+#stage.main .submit-drawing {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  border-radius: 0;
+}
+#stage.main .submit-drawing .glyphicon {
+  margin-right: 5px;
+}
 #user-profile .user-profile {
   padding: 0;
   margin: 0;
