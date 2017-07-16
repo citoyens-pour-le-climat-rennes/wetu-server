@@ -56,7 +56,7 @@ class UserProfile(Document):
 UserProfile.register_delete_rule(Vote, 'author', CASCADE)
 
 class Drawing(Document):
-    clientID = StringField(required=True, unique=True)
+    clientId = StringField(required=True, unique=True)
 
     city = StringField(required=True)
     planetX = DecimalField(required=True)
@@ -81,7 +81,7 @@ class Drawing(Document):
 Drawing.register_delete_rule(Vote, 'drawing', CASCADE)
 
 class Path(Document):
-    clientID = StringField(required=True, unique=True)
+    clientId = StringField(required=True, unique=True)
 
     city = StringField(required=True)
     planetX = DecimalField(required=True)
@@ -106,10 +106,10 @@ class Path(Document):
         'indexes': [[ ("city", 1), ("planetX", 1), ("planetY", 1), ("points", "2dsphere") ]]
     }
 
-Path.register_delete_rule(Drawing, 'drawing', PULL)
+Path.register_delete_rule(Drawing, 'paths', PULL)
 
 class Box(Document):
-    clientID = StringField(required=True, unique=True)
+    clientId = StringField(required=True, unique=True)
 
     city = StringField(required=True)
     planetX = DecimalField(required=True)
@@ -154,7 +154,7 @@ class AreaToUpdate(Document):
     }
 
 class Div(Document):
-    clientID = StringField(required=True, unique=True)
+    clientId = StringField(required=True, unique=True)
 
     city = StringField(required=True)
     planetX = DecimalField(required=True)
