@@ -780,6 +780,15 @@ def getAreas(bounds):
 
 # 	return
 
+def boxContainsPoint(boxX, boxY, boxWidth, boxHeight, pointX, pointY):
+	return pointX > boxX and pointX < boxX + boxWidth and pointY > boxY and pointY < boxY + boxHeight
+
+def boxContainsPoints(boxX, boxY, boxWidth, boxHeight, points):
+	for point in points:
+		if not boxContainsPoint(boxX, boxY, boxWidth, boxHeight, point[0], point[1]):
+			return False
+	return True
+
 # @dajaxice_register
 @checkDebug
 def savePath(request, clientId, points, object_type, box, date, data=None, city=None):
@@ -791,6 +800,9 @@ def savePath(request, clientId, points, object_type, box, date, data=None, city=
 	city = getCity(request, city)
 	if not city:
 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.' } )
+
+	if not boxContainsPoints(-2, -1.5, 4, 3, points):
+		return json.dumps( { 'state': 'error', 'message': 'The path is not in the drawing area.' } )
 
 	boxPoints = box['points']
 	planetX = box['planet']['x']
