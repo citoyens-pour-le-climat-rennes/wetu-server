@@ -53,7 +53,7 @@ with open('/data/secret_key.txt') as f:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['comme-un-dessein.space', 'comme-un-dessein.io', 'localhost']
+ALLOWED_HOSTS = ['comme-un-dessein.space', 'comme-un-dessein.io', 'localhost', '192.168.0.25']
 
 
 # Application definition

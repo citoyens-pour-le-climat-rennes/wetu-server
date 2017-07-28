@@ -60,6 +60,18 @@ def ajaxCall(request):
 	else:
 		return HttpResponse("Fail")
 
+@csrf_exempt
+def ajaxCallNoCSRF(request):
+	if request.is_ajax():
+		import pdb; pdb.Pdb(skip=['django.*', 'gevent.*']).set_trace()
+		data = json.loads(request.POST.get('data'))
+		function = data["function"]
+		args = data["args"]
+		if function == "getNextValidatedDrawing" or function == "setDrawingStatusDrawn":
+			ajaxCall(request)
+	else:
+		return HttpResponse("Fail")
+
 # socketio_manage(request.environ, {'': BaseNamespace, '/chat': ChatNamespace, '/draw': DrawNamespace}, request)
 
 

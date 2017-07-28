@@ -8,7 +8,8 @@ import ast
 from django.core import serializers
 from django.contrib.auth.models import User
 from django.db.models import F
-from models import Path, Box, Div, UserProfile
+from models import Path, Box, Div, UserProfile, Drawing
+from ajax import TIPIBOT_PASSWORD
 from pprint import pprint
 from django.contrib.auth import authenticate, login, logout
 from paypal.standard.ipn.signals import payment_was_successful, payment_was_flagged, payment_was_refunded, payment_was_reversed
@@ -57,6 +58,30 @@ class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
         self.broadcast_event('announcement', '%s has connected' % nickname)
         self.broadcast_event('nicknames', self.nicknames)
         return True, nickname
+
+    # def on_getNextValidatedDrawing(self):
+    #     drawings = Drawing.objects(status='drawing')
+
+    #     # get all path of the first drawing
+    #     paths = []
+    #     for path in drawings.paths:
+    #         paths.append(path.to_json())
+
+    #     return json.dumps( {'state': 'success', 'pk': drawing.pk, 'paths': paths } )
+
+    # def on_setDrawingStatusDrawn(self, pk):
+    #     if secret != TIPIBOT_PASSWORD:
+    #         return json.dumps({'state': 'error', 'message': 'Secret invalid.'})
+
+    #     try:
+    #         drawing = Drawing.objects.get(pk=pk)
+    #     except Drawing.DoesNotExist:
+    #         return json.dumps({'state': 'error', 'message': 'Drawing does not exist.', 'pk': pk})
+        
+    #     drawing.status = 'drawn'
+    #     drawing.save()
+
+    #     return json.dumps( {'state': 'success', 'message': 'Drawing status successfully updated.' } )
 
     def recv_disconnect(self):
         # Remove nickname from the list.

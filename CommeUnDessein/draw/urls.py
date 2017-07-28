@@ -12,6 +12,7 @@ urlpatterns = [
 
     url(r'^$', views.index, name='index'),
     url(r'^ajaxCall/$', views.ajaxCall),
+    url(r'^ajaxCallNoCSRF/$', views.ajaxCallNoCSRF),
 
     # url(r'^#(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)$', views.index, name='index'),
     # url(r'^(?P<owner>[\w-]+)/(?P<name>[\w-]+)/#(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)$', views.index, name='index'),
@@ -23,6 +24,7 @@ urlpatterns = [
     url(r'^#(?P<owner>[\w]+)/(?P<city>[\w-]+)/sites/(?P<site>[\w]+)$', views.index, name='index'),
     url(r'^#(?P<owner>[\w]+)/(?P<city>[\w-]+)/sites/(?P<site>[\w]+)/(?P<x>[\d.]+),(?P<y>[\d.]+)$', views.index, name='index'),
     url(r'^rasterizer/$', views.index),
+    url(r'^rasterizer/ajaxCall/$', views.ajaxCall),
     url(r'^rasterizer/#(?P<x>[\d.]+),(?P<y>[\d.]+)$', views.index),
     # url(r'^rasterizer/#(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)$', views.rasterizer, name='index'),
     # url(r'^([\w,.,-]+)$', views.index, name='index'),

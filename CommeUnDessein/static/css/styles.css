@@ -1645,6 +1645,9 @@ li.tool-btn.selected .favorite-btn {
 #drawingPanel .container .content .votes .vote-button:hover .vote-list {
   display: block;
 }
+#drawingPanel .container .content .votes .vote-button .voted {
+  background-color: #ec971f;
+}
 #drawingPanel .container .content .loading-animation {
   -webkit-box-flex: 1;
           flex-grow: 1;

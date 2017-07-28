@@ -68,5 +68,6 @@ CommeUnDessein/static/libs/
 CommeUnDessein/static/docs/
 CommeUnDessein/static/node_modules/
 CommeUnDessein/static/comme-un-dessein-client/
+CommeUnDessein/rasterizer/
 
 .DS_Store

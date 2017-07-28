@@ -1,3 +1,4 @@
+from threading import Timer
 import datetime
 import logging
 import os
@@ -45,6 +46,14 @@ import base64
 import functools
 
 debugMode = False
+positiveVoteThreshold = 3
+negativeVoteThreshold = 2
+
+def administratorName(): 		# function to make it const
+    return "arthur44"
+
+def userAllowed(request, owner):
+	return request.user.username == owner or request.user.username == administratorName()
 
 if settings.DEBUG:
 	import pdb
@@ -81,6 +90,9 @@ logger = logging.getLogger(__name__)
 
 with open('/data/secret_github.txt') as f:
 	PASSWORD = base64.b64decode(f.read().strip())
+
+with open('/data/secret_tipibot.txt') as f:
+	TIPIBOT_PASSWORD = f.read().strip()
 
 with open('/data/client_secret_github.txt') as f:
 	CLIENT_SECRET = f.read().strip()
@@ -846,7 +858,7 @@ def updatePath(request, pk, points=None, box=None, data=None, date=None):
 	except Path.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': 'Update impossible: element does not exist for this user'})
 
-	if request.user.username != p.owner:
+	if not userAllowed(request, p.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of path'})
 
 	if p.drawing:
@@ -867,7 +879,7 @@ def updatePath(request, pk, points=None, box=None, data=None, date=None):
 		# p.owner = None
 
 		for area in lockedAreas:
-			if area.owner == request.user.username:
+			if userAllowed(request, area.owner):
 				p.lock = str(area.pk)
 				p.owner = area.owner
 			else:
@@ -901,13 +913,13 @@ def deletePath(request, pk):
 	except Path.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': 'Delete impossible: element does not exist for this user'})
 
-	if request.user.username != p.owner:
+	if not userAllowed(request, p.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of path'})
 
 	if p.drawing:
 		return json.dumps({'state': 'error', 'message': 'Path is in drawing'})
 
-	if p.lock and request.user.username != p.owner:
+	if p.lock and not userAllowed(request, p.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of path'})
 
 	addAreaToUpdate( p.box['coordinates'][0], p.planetX, p.planetY, p.city )
@@ -1096,7 +1108,7 @@ def deleteBox(request, pk):
 	Path.objects(city=b.city, planetX=planetX, planetY=planetY, points__geo_within=oldGeometry).update(set__lock=None)
 	Div.objects(city=b.city, planetX=planetX, planetY=planetY, box__geo_within=oldGeometry).update(set__lock=None)
 
-	if request.user.username != b.owner:
+	if not userAllowed(request, b.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of div'})
 
 	# deleteAreas(b)
@@ -1120,7 +1132,7 @@ def saveDiv(request, clientId, box, object_type, date=None, data=None, lock=None
 	lockedAreas = Box.objects(city=city, planetX=planetX, planetY=planetY, box__geo_intersects=makeBox(points[0][0], points[0][1], points[2][0], points[2][1]) ) # , owner__ne=request.user.username )
 	lock = None
 	for area in lockedAreas:
-		if area.owner == request.user.username:
+		if userAllowed(request, area.owner):
 			lock = str(area.pk)
 		else:
 			return json.dumps( {'state': 'error', 'message': 'Your div intersects with a locked area which you do not own'} )
@@ -1143,7 +1155,7 @@ def updateDiv(request, pk, object_type=None, box=None, date=None, data=None, loc
 	except Div.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
 
-	if d.lock and request.user.username != d.owner:
+	if d.lock and not userAllowed(request, d.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of div'})
 
 	if box:
@@ -1155,7 +1167,7 @@ def updateDiv(request, pk, object_type=None, box=None, date=None, data=None, loc
 		d.lock = None
 		d.owner = None
 		for area in lockedAreas:
-			if area.owner == request.user.username:
+			if userAllowed(request, area.owner):
 				# try:
 				# 	lock = Box.objects(planetX=planetX, planetY=planetY, point__geo_within_box=makeBox(points[0][0], points[0][1], points[2][0], points[2][1]) )
 				# except Box.DoesNotExist:
@@ -1189,7 +1201,7 @@ def deleteDiv(request, pk):
 	except Div.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': 'Element does not exist for this user.'})
 
-	if d.lock and request.user.username != d.owner:
+	if d.lock and not userAllowed(request, d.owner):
 		return json.dumps({'state': 'error', 'message': 'You are not the owner of this div.'})
 
 	# addAreaToUpdate( d.box['coordinates'][0], d.planetX, d.planetY )
@@ -1226,7 +1238,7 @@ def saveDrawing(request, clientId, date, pathPks, title, description):
 			if path.drawing:
 				return json.dumps({'state': 'error', 'message': 'One path is already part of a drawing.'})
 
-			if path.owner != request.user.username:
+			if not userAllowed(request, path.owner):
 				return json.dumps({'state': 'error', 'message': 'One path is not property of user.'})
 
 			if city != None and path.city != city or planetX != None and path.planetX != planetX or planetY != None and path.planetY != planetY:
@@ -1276,7 +1288,8 @@ def loadDrawing(request, pk):
 	
 	votes = []
 	for vote in d.votes:
-		votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk) })
+		if isinstance(vote, Vote):
+			votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk) } )
 
 	return json.dumps( {'state': 'success', 'votes': votes } )
 
@@ -1292,7 +1305,7 @@ def updateDrawing(request, pk, title, description):
 	except Drawing.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
 
-	if request.user.username != d.owner:
+	if not userAllowed(request, d.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
 
 	d.title = title
@@ -1313,7 +1326,7 @@ def deleteDrawing(request, pk):
 	except Drawing.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': 'Element does not exist for this user.'})
 
-	if request.user.username != d.owner:
+	if not userAllowed(request, d.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
 
 	d.delete()
@@ -1327,7 +1340,11 @@ def vote(request, pk, date, positive):
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
 
-	drawing = Drawing.objects.get(pk=pk)
+	drawing = None
+	try:
+		drawing = Drawing.objects.get(pk=pk)
+	except Drawing.DoesNotExist:
+		return json.dumps({'state': 'error', 'message': 'Drawing does not exist.', 'pk': pk})
 
 	if drawing.owner == request.user.username:
 		return json.dumps({'state': 'error', 'message': 'Cannot vote for own drawing.'})
@@ -1337,7 +1354,14 @@ def vote(request, pk, date, positive):
 
 	for vote in drawing.votes:
 		if vote.author.username == request.user.username:
-			return json.dumps({'state': 'error', 'message': 'You already voted for this drawing.'})
+			if vote.positive == positive:
+				# cancel vote: delete vote and return:
+				vote.delete()
+				return json.dumps({'state': 'success', 'message': 'Your vote was cancelled.', 'cancelled': True })
+			else:
+				# votes are different: delete vote and break (create a new one):
+				vote.delete()
+				break
 
 	user = None
 
@@ -1363,10 +1387,53 @@ def vote(request, pk, date, positive):
 		else:
 			nNegativeVotes += 1
 
-	if nPositiveVotes > 100 and nNegativeVotes < 20:
-		drawing.status = 'drawing'
+	validates = False
 
-	return json.dumps( {'state': 'success', 'owner': request.user.username, 'drawingPk':str(drawing.pk), 'votePk':str(vote.pk) } )
+	if nPositiveVotes >= positiveVoteThreshold and nNegativeVotes <= negativeVoteThreshold:
+
+		def timeout(drawingPk):
+			try:
+				drawing = Drawing.objects.get(pk=pk)
+			except Drawing.DoesNotExist:
+				return
+
+			if nPositiveVotes >= positiveVoteThreshold and nNegativeVotes <= negativeVoteThreshold:
+				drawing.status = 'drawing'
+				drawing.save()
+
+		t = Timer(60, timeout, args=[pk])
+		t.start()
+		validates = True
+
+	return json.dumps( {'state': 'success', 'owner': request.user.username, 'drawingPk':str(drawing.pk), 'votePk':str(vote.pk), 'validates': validates } )
+
+# --- Get Next Drawing To Be Drawn / Set Drawing Drawn --- #
+
+@checkDebug
+def getNextValidatedDrawing(request):
+	drawings = Drawing.objects(status='drawing')
+	drawing = drawings.first()
+	# get all path of the first drawing
+	paths = []
+	for path in drawing.paths:
+		paths.append(path.to_json())
+
+	return  json.dumps( {'state': 'success', 'pk': str(drawing.pk), 'items': paths } )
+
+@checkDebug
+def setDrawingStatusDrawn(request, pk, secret):
+	if secret != TIPIBOT_PASSWORD:
+		return json.dumps({'state': 'error', 'message': 'Secret invalid.'})
+
+	try:
+		drawing = Drawing.objects.get(pk=pk)
+	except Drawing.DoesNotExist:
+		return json.dumps({'state': 'error', 'message': 'Drawing does not exist.', 'pk': pk})
+	
+	drawing.status = 'drawn'
+	drawing.save()
+
+	return json.dumps( {'state': 'success', 'message': 'Drawing status successfully updated.' } )
 
 # --- rasters --- #
 
