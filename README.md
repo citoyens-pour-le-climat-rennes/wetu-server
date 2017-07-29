@@ -13,7 +13,8 @@ pip install ...
  - Django==1.9.13
  - django-allauth
  - django-paypal
- - gevent-socketio
+ - gevent==1.1b4 
+ - gevent-socketio 			# !!! check that it did not replace gevent with `pip show gevent` (should be version 1.1b4)
  - mongoengine
 
 
@@ -36,7 +37,6 @@ from importlib import import_module
 in
 
 lib/python2.7/site-packages/socketio/sdjango.py (line 6)
-
 
 ## Get js libraries
 
@@ -126,3 +126,10 @@ Add Github, Facebook, Google keys at http://comme-un-dessein.space/admin/sociala
 Update IDs:
 
 https://console.developers.google.com/
+
+## Note to fix websocket
+
+A bug in gevent can be fixed by reinstalling gevent version 1.1b4
+
+sudo pip uninstall gevent
+sudo pip install gevent==1.1b4

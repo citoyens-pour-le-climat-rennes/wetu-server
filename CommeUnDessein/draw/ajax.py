@@ -1335,6 +1335,22 @@ def deleteDrawing(request, pk):
 
 # --- votes --- #
 
+def computeVotes(drawing):
+	nPositiveVotes = 0
+	nNegativeVotes = 0
+	for vote in drawing.votes:
+		if vote.positive:
+			nPositiveVotes += 1
+		else:
+			nNegativeVotes += 1
+	return (nPositiveVotes, nNegativeVotes)
+
+def isDrawingValidated(nPositiveVotes, nNegativeVotes):
+	return nPositiveVotes >= positiveVoteThreshold and nNegativeVotes < negativeVoteThreshold
+
+def isDrawingRejected(nNegativeVotes):
+	return nNegativeVotes >= negativeVoteThreshold
+
 @checkDebug
 def vote(request, pk, date, positive):
 	if not request.user.is_authenticated():
@@ -1379,17 +1395,12 @@ def vote(request, pk, date, positive):
 	user.votes.append(vote)
 	user.save()
 
-	nPositiveVotes = 0
-	nNegativeVotes = 0
-	for vote in drawing.votes:
-		if vote.positive:
-			nPositiveVotes += 1
-		else:
-			nNegativeVotes += 1
+	(nPositiveVotes, nNegativeVotes) = computeVotes(drawing)
 
-	validates = False
+	validates = isDrawingValidated(nPositiveVotes, nNegativeVotes)
+	rejects = isDrawingRejected(nNegativeVotes)
 
-	if nPositiveVotes >= positiveVoteThreshold and nNegativeVotes <= negativeVoteThreshold:
+	if validates or rejects:
 
 		def timeout(drawingPk):
 			try:
@@ -1397,28 +1408,36 @@ def vote(request, pk, date, positive):
 			except Drawing.DoesNotExist:
 				return
 
-			if nPositiveVotes >= positiveVoteThreshold and nNegativeVotes <= negativeVoteThreshold:
+			(nPositiveVotes, nNegativeVotes) = computeVotes(drawing)
+
+			if isDrawingValidated(nPositiveVotes, nNegativeVotes):
 				drawing.status = 'drawing'
+				drawing.save()
+			elif isDrawingRejected(nNegativeVotes):
+				drawing.status = 'rejected'
 				drawing.save()
 
 		t = Timer(60, timeout, args=[pk])
 		t.start()
-		validates = True
 
-	return json.dumps( {'state': 'success', 'owner': request.user.username, 'drawingPk':str(drawing.pk), 'votePk':str(vote.pk), 'validates': validates } )
+	return json.dumps( {'state': 'success', 'owner': request.user.username, 'drawingPk':str(drawing.pk), 'votePk':str(vote.pk), 'validates': validates, 'rejects': rejects } )
 
 # --- Get Next Drawing To Be Drawn / Set Drawing Drawn --- #
 
 @checkDebug
 def getNextValidatedDrawing(request):
 	drawings = Drawing.objects(status='drawing')
-	drawing = drawings.first()
-	# get all path of the first drawing
-	paths = []
-	for path in drawing.paths:
-		paths.append(path.to_json())
 
-	return  json.dumps( {'state': 'success', 'pk': str(drawing.pk), 'items': paths } )
+	drawing = drawings.first()
+	if drawing is not None:
+		# get all path of the first drawing
+		paths = []
+		for path in drawing.paths:
+			paths.append(path.to_json())
+
+		return  json.dumps( {'state': 'success', 'pk': str(drawing.pk), 'items': paths } )
+	else:
+		return  json.dumps( {'state': 'success', 'message': 'no path' } )
 
 @checkDebug
 def setDrawingStatusDrawn(request, pk, secret):
@@ -1433,7 +1452,7 @@ def setDrawingStatusDrawn(request, pk, secret):
 	drawing.status = 'drawn'
 	drawing.save()
 
-	return json.dumps( {'state': 'success', 'message': 'Drawing status successfully updated.' } )
+	return json.dumps( {'state': 'success', 'message': 'Drawing status successfully updated.', 'pk': pk } )
 
 # --- rasters --- #
 
