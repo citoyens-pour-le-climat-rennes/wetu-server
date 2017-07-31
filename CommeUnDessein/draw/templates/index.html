@@ -146,13 +146,9 @@
 
                   <div class="panel panel-default in user">
                     <div class="panel-heading">
-                      <h4 class="panel-title" data-toggle="collapse" data-target="#User">
-                        <a>
-                          User
-                        </a>
-                      </h4>
+                      
                     </div>
-                    <div id="User" class="panel-collapse collapse in">
+                    <div id="User" class="">
                       <div class="panel-body">
 
                         <div id="user-profile" class="commeUnDessein-ui">
@@ -214,11 +210,13 @@
 
                 <div class="panel panel-default in">
                   <div class="panel-heading">
+                  <!-- 
                     <h4 class="panel-title" data-toggle="collapse" data-target="#FavoriteTools">
                       <a>
                         Tools
                       </a>
                     </h4>
+                     -->
                   </div>
 
                   <div id="FavoriteTools" class="panel-collapse collapse in">
@@ -268,7 +266,7 @@
  -->
 
 
-
+                <!-- 
                 <div class="panel panel-default">
                   <div class="panel-heading">
                     <h4 class="panel-title collapsed" data-toggle="collapse" data-target="#History">
@@ -288,6 +286,7 @@
                   </div>
 
                 </div>
+                -->
 
                 <div class="panel panel-default">
                   <div class="panel-heading">
@@ -395,7 +394,8 @@
           <canvas id="canvas" resize hidpi="off" data-pos-x="{{ x }}" data-pos-y="{{ y }}" data-points="{{ points }}" data-box="{{ box }}" data-site="{{ site }}" data-message="{{ message }}" data-load-entire-area="{{ loadEntireArea }}" data-city="{{ city }}" data-owner="{{ owner }}" data-github-login="{{ githubLogin }}"></canvas>
           <div id="rasters"></div>
 
-          <button class="hidden btn btn-success submit submit-drawing" type="button"><span class="glyphicon glyphicon-ok"></span>Submit drawing</button>
+          <button class="hidden btn btn-success submit mode-button submit-drawing" type="button"><span class="glyphicon glyphicon-ok"></span>Submit drawing</button>
+          <button class="btn btn-primary submit mode-button begin-drawing" type="button"><span class="glyphicon glyphicon-ok"></span>Begin drawing</button>
 
           <!-- <ul class="hidden commeUnDessein-ui selectable-item-list"></ul> -->
 
@@ -413,6 +413,7 @@
           <div class="container cd-column">
 
             <div class='header item'>
+              <h4 class="drawing-panel-title">Drawing</h4>
               <button class="btn btn-default close-panel" type="button"><span class="glyphicon glyphicon-remove"></span></button>
             </div>
 
@@ -420,25 +421,6 @@
 
               <div class="cd-row cd-grow">
 
-                <div class="votes cd-column cd-center">
-
-                  <span class="vote-button positive">
-                    <button class="btn btn-default vote-up" type="button"><span class="glyphicon glyphicon-triangle-top"></span></button>
-                    <span class="n-votes positive">0</span>
-                    <ul class="vote-list positive list-unstyled"></ul>
-                  </span>
-                  <span class="vote-button negative">
-                    <button class="btn btn-default vote-down" type="button"><span class="glyphicon glyphicon-triangle-bottom"></span></button>
-                    <span class="n-votes negative">0</span>
-                    <ul class="vote-list negative list-unstyled"></ul>
-                  </span>
-                  
-                  <div>
-                    <div><span class="n-votes total">0</span> votes</div>
-                    <div><span class="percentage-votes">0</span>% positive</div>
-                  </div>
-
-                </div>
 
                 <div class="cd-column cd-grow">
 
@@ -449,6 +431,8 @@
                   </div>
 
                   <form class="create modify cd-column cd-grow">
+                    <div class="thumbnail drawing-thumbnail">
+                    </div>
                     <div class="form-group">
                       <label for="drawing-title">Drawing title</label>
                       <input type="text" class="form-control" id="drawing-title" placeholder="Mandala">
@@ -457,6 +441,50 @@
                       <label for="drawing-description">Description</label>
                       <textarea class="form-control cd-grow" id="drawing-description" rows="5"></textarea>
                     </div>
+
+
+                    <div class="votes cd-row">
+
+                      <div class="cd-row cd-grow">
+
+                        <div class="cd-column cd-grow">
+                          <button class="btn btn-default btn-lg vote-up" type="button"><span class="glyphicon glyphicon-triangle-top"></span></button>
+                          <button class="btn btn-default btn-lg vote-down" type="button"><span class="glyphicon glyphicon-triangle-bottom"></span></button>
+                        </div>
+
+                        <div class="cd-column">
+
+                          <span class="vote-button positive">
+                            <span class="n-votes positive">0</span>
+                            <ul class="vote-list positive list-unstyled"></ul>
+                          </span>
+
+                          <span class="vote-button negative">
+                            <span class="n-votes negative">0</span>
+                            <ul class="vote-list negative list-unstyled"></ul>
+                          </span>
+
+                        </div>
+<!-- 
+                        <span class="vote-button positive">
+                          <button class="btn btn-default btn-lg vote-up" type="button"><span class="glyphicon glyphicon-triangle-top"></span></button>
+                          <span class="n-votes positive">0</span>
+                          <ul class="vote-list positive list-unstyled"></ul>
+                        </span>
+                        <span class="vote-button negative">
+                          <button class="btn btn-default btn-lg vote-down" type="button"><span class="glyphicon glyphicon-triangle-bottom"></span></button>
+                          <span class="n-votes negative">0</span>
+                          <ul class="vote-list negative list-unstyled"></ul>
+                        </span> -->
+                      </div>
+
+                      <div class="cd-column cd-justify-content-center vote-stats">
+                        <div class="vote-stat"><span class="n-votes total">0</span> votes</div>
+                        <div class="vote-stat"><span class="percentage-votes">0</span>% positive</div>
+                      </div>
+
+                    </div>
+
                     <div class="cd-row cd-end">
                       <button class="btn btn-danger cancel" type="button"><span class="glyphicon glyphicon-remove"></span>Cancel drawing</button>
                       <button class="btn btn-info modify" type="button"><span class="glyphicon glyphicon-ok"></span>Modify descrition</button>
@@ -470,6 +498,16 @@
 
               <div class="loading-animation">
                   <span class=""><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Loading...</span>
+              </div>
+
+
+              <div class="selected-drawings cd-column">
+                <div class="drawing-list-container cd-column cd-grow">
+                  <div class="mCustomScrollbar">
+                    <ul class="commeUnDessein-ui drawing-list">
+                    </ul>
+                  </div>
+                </div>
               </div>
 
             </div>
@@ -749,7 +787,7 @@
           </ul>
         </div>
 
-        <li class="layer">
+        <li class="layer closed">
           <div class="cd-row commeUnDessein-ui layer-header">
             <h6 class="title cd-grow"></h6>
             <span class="badge n-items">0</span>

@@ -636,7 +636,7 @@ body {
 		}
 	}
 
-	.submit-drawing {
+	.mode-button {
 		position: absolute;
 		right: 20px;
 		bottom: 20px;
@@ -1721,6 +1721,9 @@ li.tool-btn {
 // 	}
 // }
 
+.cd-flex {
+	display: flex;
+}
 
 .cd-column {
 	display: flex;
@@ -1740,8 +1743,19 @@ li.tool-btn {
     justify-content: center;
 }
 
+.cd-justify-content-center {
+	justify-content: center;
+}
+
 .cd-end {
 	justify-content: flex-end;
+}
+
+.cd-button {
+	cursor: pointer;
+	&:hover {
+		background-color: @hover-purple;
+	}
 }
 
 #drawingPanel {
@@ -1785,7 +1799,6 @@ li.tool-btn {
 		width: auto;
 		margin-right: 0;
 		padding-right: 20px;
-		padding-top: 30px;
 		padding-left: 10px;
 		padding-bottom: 10px;
 		
@@ -1798,6 +1811,9 @@ li.tool-btn {
 				width: 29px;
 				height: 29px;
 				margin: 2px;
+			}
+			h4 {
+
 			}
 			.close-panel {
 				position: absolute;
@@ -1812,10 +1828,13 @@ li.tool-btn {
 				margin-left: 5px;
 			}
 			.votes {
-    			margin-right: 10px;
+    			margin-bottom: 20px;
 
     			.vote-button {
     				position: relative;
+    				display: flex;
+    				flex-direction: row;
+    				margin: 3px;
     				.vote-list {
 	    				display: none;
 	    				position: absolute;
@@ -1833,9 +1852,60 @@ li.tool-btn {
 	    			.voted {
 	    				background-color: #ec971f;
 	    			}
+
+					.n-votes {
+						font-size: 1.8em;
+						line-height: 1.8em;
+						margin: 6px;
+					}
+				}
+				.glyphicon {
+					margin-right: 0px;
+				}
+
+				button {
+					padding: 10px 10px 6px 10px;
+					font-size: 18px;
+					flex-grow: 1;
+					align-items: center;
+					margin-top: 4px;
+					margin-bottom: 4px;
+					margin-left: 0px;
+				}
+
+    			.vote-stats {
+    				margin-left: 20px;
+
+    				.vote-stat {
+    					line-height: 2em;
+    				}
     			}
     			
 			}
+			
+			.selected-drawings {
+				.drawing-list-container {
+					min-height: 400px;
+					.mCustomScrollbar {
+						max-height: 100%;
+						ul {
+							padding-left: 0px;
+							padding-right: 0px;
+							li {
+								margin-bottom: 10px;
+								.thumbnail {
+									margin-bottom: 0px;
+								}
+								h4 {
+									padding-left: 10px;
+									padding-right: 10px;
+								}
+							}
+						}
+					}
+				}
+			}
+
 			.loading-animation {
 				flex-grow: 1;
 				display: block;

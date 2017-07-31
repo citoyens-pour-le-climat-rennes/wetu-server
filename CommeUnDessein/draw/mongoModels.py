@@ -103,7 +103,7 @@ class Path(Document):
     data = StringField(default='')
 
     meta = {
-        'indexes': [[ ("city", 1), ("planetX", 1), ("planetY", 1), ("points", "2dsphere") ]]
+        'indexes': [[ ("city", 1), ("planetX", 1), ("planetY", 1), ("points", "2dsphere"), ('owner', 1), ('drawing', 1) ]]
     }
 
 Path.register_delete_rule(Drawing, 'paths', PULL)

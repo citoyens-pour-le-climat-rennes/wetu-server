@@ -573,13 +573,13 @@ body {
 #stage.main .custom-div.website {
   cursor: url(../images/cursors/hand.png) 32 32, move;
 }
-#stage.main .submit-drawing {
+#stage.main .mode-button {
   position: absolute;
   right: 20px;
   bottom: 20px;
   border-radius: 0;
 }
-#stage.main .submit-drawing .glyphicon {
+#stage.main .mode-button .glyphicon {
   margin-right: 5px;
 }
 #user-profile .user-profile {
@@ -1516,6 +1516,10 @@ li.tool-btn.selected .favorite-btn {
 #urlModal .modal-footer {
   margin-top: 0;
 }
+.cd-flex {
+  display: -webkit-box;
+  display: flex;
+}
 .cd-column {
   display: -webkit-box;
   display: flex;
@@ -1540,9 +1544,19 @@ li.tool-btn.selected .favorite-btn {
   -webkit-box-pack: center;
           justify-content: center;
 }
+.cd-justify-content-center {
+  -webkit-box-pack: center;
+          justify-content: center;
+}
 .cd-end {
   -webkit-box-pack: end;
           justify-content: flex-end;
+}
+.cd-button {
+  cursor: pointer;
+}
+.cd-button:hover {
+  background-color: #6f5499;
 }
 #drawingPanel {
   left: 70%;
@@ -1595,7 +1609,6 @@ li.tool-btn.selected .favorite-btn {
   width: auto;
   margin-right: 0;
   padding-right: 20px;
-  padding-top: 30px;
   padding-left: 10px;
   padding-bottom: 10px;
 }
@@ -1628,10 +1641,16 @@ li.tool-btn.selected .favorite-btn {
   margin-left: 5px;
 }
 #drawingPanel .container .content .votes {
-  margin-right: 10px;
+  margin-bottom: 20px;
 }
 #drawingPanel .container .content .votes .vote-button {
   position: relative;
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+          flex-direction: row;
+  margin: 3px;
 }
 #drawingPanel .container .content .votes .vote-button .vote-list {
   display: none;
@@ -1647,6 +1666,51 @@ li.tool-btn.selected .favorite-btn {
 }
 #drawingPanel .container .content .votes .vote-button .voted {
   background-color: #ec971f;
+}
+#drawingPanel .container .content .votes .vote-button .n-votes {
+  font-size: 1.8em;
+  line-height: 1.8em;
+  margin: 6px;
+}
+#drawingPanel .container .content .votes .glyphicon {
+  margin-right: 0px;
+}
+#drawingPanel .container .content .votes button {
+  padding: 10px 10px 6px 10px;
+  font-size: 18px;
+  -webkit-box-flex: 1;
+          flex-grow: 1;
+  -webkit-box-align: center;
+          align-items: center;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  margin-left: 0px;
+}
+#drawingPanel .container .content .votes .vote-stats {
+  margin-left: 20px;
+}
+#drawingPanel .container .content .votes .vote-stats .vote-stat {
+  line-height: 2em;
+}
+#drawingPanel .container .content .selected-drawings .drawing-list-container {
+  min-height: 400px;
+}
+#drawingPanel .container .content .selected-drawings .drawing-list-container .mCustomScrollbar {
+  max-height: 100%;
+}
+#drawingPanel .container .content .selected-drawings .drawing-list-container .mCustomScrollbar ul {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+#drawingPanel .container .content .selected-drawings .drawing-list-container .mCustomScrollbar ul li {
+  margin-bottom: 10px;
+}
+#drawingPanel .container .content .selected-drawings .drawing-list-container .mCustomScrollbar ul li .thumbnail {
+  margin-bottom: 0px;
+}
+#drawingPanel .container .content .selected-drawings .drawing-list-container .mCustomScrollbar ul li h4 {
+  padding-left: 10px;
+  padding-right: 10px;
 }
 #drawingPanel .container .content .loading-animation {
   -webkit-box-flex: 1;

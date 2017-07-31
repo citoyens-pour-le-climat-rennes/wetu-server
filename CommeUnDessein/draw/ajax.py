@@ -1291,7 +1291,12 @@ def loadDrawing(request, pk):
 		if isinstance(vote, Vote):
 			votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk) } )
 
-	return json.dumps( {'state': 'success', 'votes': votes } )
+	paths = []
+	for path in d.paths:
+		if isinstance(path, Path):
+			paths.append(path.to_json())
+
+	return json.dumps( {'state': 'success', 'votes': votes, 'paths': paths } )
 
 # @dajaxice_register
 @checkDebug
@@ -1332,6 +1337,20 @@ def deleteDrawing(request, pk):
 	d.delete()
 
 	return json.dumps( { 'state': 'success', 'pk': pk } )
+
+# --- get drafts --- #
+@checkDebug
+def getDrafts(request):
+	if not request.user.is_authenticated():
+		return json.dumps({'state': 'not_logged_in'})
+
+	paths = Path.objects(owner=request.user.username, drawing=None)
+	items = []
+
+	for path in paths:
+		items.append(path.to_json())
+
+	return  json.dumps( {'state': 'success', 'items': items } )
 
 # --- votes --- #
 
