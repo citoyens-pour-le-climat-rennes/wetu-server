@@ -40,6 +40,7 @@ def index(request, site=None, owner=None, city=None, x=0, y=0):
 	# result['profileImageURL'] = profileImageURL
 	result['connectedToGithub'] = connectedToGithub
 	result['githubLogin'] = githubLogin
+
 	response = render_to_response(	"index.html", result, RequestContext(request) )
 	return response
 

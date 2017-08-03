@@ -1296,7 +1296,7 @@ def loadDrawing(request, pk):
 		if isinstance(path, Path):
 			paths.append(path.to_json())
 
-	return json.dumps( {'state': 'success', 'votes': votes, 'paths': paths } )
+	return json.dumps( {'state': 'success', 'votes': votes, 'paths': paths, 'drawing': d.to_json() } )
 
 # @dajaxice_register
 @checkDebug
@@ -1312,6 +1312,9 @@ def updateDrawing(request, pk, title, description):
 
 	if not userAllowed(request, d.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
+
+	if d.status != 'pending':
+		return json.dumps({'state': 'error', 'message': 'The drawing is already validated, it cannot be modified anymore.'})
 
 	d.title = title
 	d.description = description
@@ -1333,6 +1336,9 @@ def deleteDrawing(request, pk):
 
 	if not userAllowed(request, d.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
+
+	if d.status != 'pending':
+		return json.dumps({'state': 'error', 'message': 'The drawing is already validated, it cannot be cancelled anymore.'})
 
 	d.delete()
 

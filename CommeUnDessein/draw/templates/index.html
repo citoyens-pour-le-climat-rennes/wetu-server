@@ -59,26 +59,107 @@
 
   <body>
 
+    <div id="FavoriteTools" class="cd-row">
+      <h3 class="title"> <img class="title-img" src="{% static 'images/icons/logo48.png' %}" alt="commeUnDessein_logo"/><span> Comme un dessein</span></h3>
+
+      <div class="tool-container cd-row cd-grow">
+
+        <ul id="sortable2" class="favorite-tool-list tool-list connectedSortable module-list">
+          <!-- <li data-name="Precise path" class="tool-btn"><img src="{% static 'images/icons/inverted/editCurve.png' %}" alt="editCurve"></li>
+          <li data-name="Rectangle" data-cursor="rectangle" class="tool-btn"><img src="{% static 'images/icons/inverted/rectangle.png' %}" alt="rectangle"></li>
+          <li data-name="Spiral" data-cursor="spiral" class="tool-btn"><img src="{% static 'images/icons/inverted/spiral.png' %}" alt="spiral"></li> -->
+          <!-- <li data-name="Checkpoint"><span class="short-name">Ch.</span><span class="tool-name">Checkpoint</span></li> -->
+        </ul>
+
+        <div class="mode-buttons cd-row">
+            
+            <!-- <button class="hidden btn btn-danger submit mode-button icon-only cancel-drawing" type="button">
+              <span class="glyphicon glyphicon-remove"></span>
+            </button> -->
+
+            <button class="hidden btn btn-success submit mode-button submit-drawing" type="button">
+              <span class="glyphicon glyphicon-ok"></span>Submit drawing
+            </button>
+
+           <div id="user-profile" class="">
+
+            {% if request.user.is_authenticated %}
+
+
+                <div class="user-profile">
+
+                  <img class="user-img" src="{{ profileImageURL }}"/>
+
+                  <div class="btn-group">
+
+                    <button type="button" class="btn btn-transparent mode-button dropdown-toggle" data-toggle="dropdown">
+                      {% if request.user.first_name or request.user.last_name %}
+                        {{ request.user.first_name }} {{ request.user.last_name }}
+                      {% else %}
+                        {{ request.user.username }}
+                      {% endif %} <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="{% url 'account_logout' %}">Sign Out</a></li>
+                    </ul>
+                  </div>
+
+                </div>
+
+
+            {% else %}
+
+              <div id="user-login-group" class="btn-group">
+                <button type="button" class="btn btn-warning submit mode-button log-in dropdown-toggle" data-toggle="dropdown">
+                  <span class="glyphicon glyphicon-log-in"></span>Sign in / up
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                  <li><a href="{% provider_login_url "google" %}">Google</a></li>
+                  <li><a href="{% provider_login_url "github" %}">Github</a></li>
+                  <li><a href="/accounts/facebook/login/"><div class="fb">Facebook</div></a></li>
+                  <li><a href="{% url 'account_login' %}">CommeUnDessein</a></li>
+                  <li><a href="{% url 'account_signup' %}">Sign up</a></li>
+                </ul>
+              </div>
+
+              {% include "socialaccount/snippets/login_extra.html" %}
+
+            {% endif %}
+
+           </div>
+
+        </div>
+
+        <!-- <button class="btn btn-primary submit mode-button begin-drawing" type="button"><span class="glyphicon glyphicon-ok"></span>Begin drawing</button> -->
+
+      </div>
+    </div>
+
     <div id="CommeUnDessein_alerts" class="r-hidden">
 
-      <div class="alert-controls">
+      <div class="alert-controls cd-row">
 
-        <button type="button" class="btn btn-xs btn-up">
-          <span class="glyphicon glyphicon-chevron-up"></span>
-        </button>
+        <div class="cd-column">
+          <button type="button" class="btn btn-xs btn-up">
+            <span class="glyphicon glyphicon-chevron-up"></span>
+          </button>
+          <button type="button" class="btn btn-xs btn-down">
+            <span class="glyphicon glyphicon-chevron-down"></span>
+          </button>
+        </div>
+
         <div class="badge-xs alert-number"></div>
-        <button type="button" class="btn btn-xs btn-down">
-          <span class="glyphicon glyphicon-chevron-down"></span>
-        </button>
       </div>
 
       <div class="alert fade in">
         <p></p>
       </div>
 
-      <button type="button" class="btn btn-default btn-xs btn-down show">
-        <span class="glyphicon glyphicon-chevron-up"></span>
-      </button>
+      <div class="show-btn-container">
+        <button type="button" class="btn btn-default btn-xs btn-down show">
+          <span class="glyphicon glyphicon-chevron-up"></span>
+        </button>
+      </div>
 
     </div>
 
@@ -129,84 +210,16 @@
 
         <!-- Sidebar -->
 
-        <div id="sidebar" class="sidebar">
+        <div id="sidebar" class="sidebar r-hidden r-sidebar-hidden">
 
           <button type="button" class="sidebar-handle btn btn-default">
-            <span class="glyphicon glyphicon-chevron-left"></span>
+            <span class="glyphicon glyphicon-chevron-right"></span>
           </button>
-
-          <h3 class="title"> <img class="title-img" src="{% static 'images/icons/logo48.png' %}" alt="commeUnDessein_logo"/> Comme un dessein</h3>
 
           <div class="item-list">
             <div class="sidebar-scrollbar mCustomScrollbar">
 
               <div class="panel-group" id="accordion">
-
-                {% if request.user.is_authenticated %}
-
-                  <div class="panel panel-default in user">
-                    <div class="panel-heading">
-                      
-                    </div>
-                    <div id="User" class="">
-                      <div class="panel-body">
-
-                        <div id="user-profile" class="commeUnDessein-ui">
-
-                          <div class="user-profile">
-
-                            <img class="user-img" src="{{ profileImageURL }}"/>
-
-                            <div class="btn-group">
-
-                              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                                {% if request.user.first_name or request.user.last_name %}
-                                  {{ request.user.first_name }} {{ request.user.last_name }}
-                                {% else %}
-                                  {{ request.user.username }}
-                                {% endif %} <span class="caret"></span>
-                              </button>
-                              <ul class="dropdown-menu" role="menu">
-                                <li><a href="{% url 'account_logout' %}">Sign Out</a></li>
-                              </ul>
-                            </div>
-                          </div>
-
-                          <!--
-                          <div class="commeUnDesseinin">
-                            <div class="credit">
-                              <strong>Credit:{% if request.user.profile.commeUnDesseinCoins %} {{ request.user.profile.commeUnDesseinCoins }} {% else %} 0 {% endif %} ®</strong>
-                            </div>
-                            <button id="buyCommeUnDesseinCoins" type="button" class="btn btn-primary btn-xs">Buy commeUnDesseinCoins</button>
-                          </div>
-                           -->
-
-                          <div id="status">
-                          </div>
-
-                        </div>
-
-                      </div>
-                    </div>
-                  </div>
-
-                {% else %}
-
-                  <div id="user-login-group" class="btn-group">
-                    <button type="button" class="dropdown-toggle" data-toggle="dropdown">
-                      Sign in / up
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                      <li><a href="{% provider_login_url "google" %}">Google</a></li>
-                      <li><a href="{% provider_login_url "github" %}">Github</a></li>
-                      <li><a href="/accounts/facebook/login/"><div class="fb">Facebook</div></a></li>
-                      <li><a href="{% url 'account_login' %}">CommeUnDessein</a></li>
-                      <li><a href="{% url 'account_signup' %}">Sign up</a></li>
-                    </ul>
-                  </div>
-                  {% include "socialaccount/snippets/login_extra.html" %}
-
-                {% endif %}
 
                 <div class="panel panel-default in">
                   <div class="panel-heading">
@@ -218,20 +231,6 @@
                     </h4>
                      -->
                   </div>
-
-                  <div id="FavoriteTools" class="panel-collapse collapse in">
-                    <div class="panel-body">
-
-                      <ul id="sortable2" class="favorite-tool-list tool-list connectedSortable module-list">
-                        <!-- <li data-name="Precise path" class="tool-btn"><img src="{% static 'images/icons/inverted/editCurve.png' %}" alt="editCurve"></li>
-                        <li data-name="Rectangle" data-cursor="rectangle" class="tool-btn"><img src="{% static 'images/icons/inverted/rectangle.png' %}" alt="rectangle"></li>
-                        <li data-name="Spiral" data-cursor="spiral" class="tool-btn"><img src="{% static 'images/icons/inverted/spiral.png' %}" alt="spiral"></li> -->
-                        <!-- <li data-name="Checkpoint"><span class="short-name">Ch.</span><span class="tool-name">Checkpoint</span></li> -->
-                      </ul>
-
-                    </div>
-                  </div>
-
                 </div>
 
 
@@ -290,14 +289,14 @@
 
                 <div class="panel panel-default">
                   <div class="panel-heading">
-                    <h4 class="panel-title collapsed" data-toggle="collapse" data-target="#RItems">
+                    <h4 class="panel-title" data-toggle="collapse" data-target="#RItems">
                       <a>
                         Items
                       </a>
                     </h4>
                   </div>
 
-                  <div id="RItems" class="panel-collapse collapse">
+                  <div id="RItems" class="panel-collapse in">
                     <div class="panel-body">
                       <div class="mCustomScrollbar rItems tree">
                         <ul class="layers folder">
@@ -353,7 +352,7 @@
                         <p id="chatConnectingMessage">Connecting...</p>
 
                         <div id="messages">
-                          <p id="chatRoom"><span>Room:</span></p>
+                          <p id="chatRoom" class="hidden"><span>Room:</span></p>
                           <p id="chatUserNames"><span>Online:</span></p>
                           <div id="chatMessagesScroll" class="mCustomScrollbar"><div id="chatMessages" class=""></div></div>
                         </div>
@@ -391,124 +390,119 @@
           <div class="hidden text-separator"></div>
 
           <!-- <canvas id="background-canvas" resize hidpi="off"></canvas> -->
-          <canvas id="canvas" resize hidpi="off" data-pos-x="{{ x }}" data-pos-y="{{ y }}" data-points="{{ points }}" data-box="{{ box }}" data-site="{{ site }}" data-message="{{ message }}" data-load-entire-area="{{ loadEntireArea }}" data-city="{{ city }}" data-owner="{{ owner }}" data-github-login="{{ githubLogin }}"></canvas>
+          <canvas id="canvas" resize hidpi="off" data-pos-x="{{ x }}" data-pos-y="{{ y }}" data-points="{{ points }}" data-box="{{ box }}" data-site="{{ site }}" data-message="{{ message }}" data-load-entire-area="{{ loadEntireArea }}" data-city="{{ city }}" data-owner="{{ owner }}" data-github-login="{{ githubLogin }}" data-username="{{ request.user.username }}" data-is-authenticated="{{ request.user.is_authenticated }}"></canvas>
           <div id="rasters"></div>
-
-          <button class="hidden btn btn-success submit mode-button submit-drawing" type="button"><span class="glyphicon glyphicon-ok"></span>Submit drawing</button>
-          <button class="btn btn-primary submit mode-button begin-drawing" type="button"><span class="glyphicon glyphicon-ok"></span>Begin drawing</button>
 
           <!-- <ul class="hidden commeUnDessein-ui selectable-item-list"></ul> -->
 
         </div>
 
         <div id="drawingPanel" class="commeUnDessein-ui">
+
+          <!-- 
           <div class="handle panel-handle">
-            <button type="button" class="handle-left btn btn-default">
+            <button type="button" class="handle-left btn btn-default transparent">
               <span class="glyphicon glyphicon-chevron-left"></span>
             </button>
-            <button type="button" class="handle-right btn btn-default">
+            <button type="button" class="handle-right btn btn-default transparent">
               <span class="glyphicon glyphicon-chevron-right"></span>
             </button>
           </div>
-          <div class="container cd-column">
+          -->
+
+          <div class="container cd-column cd-grow">
 
             <div class='header item'>
               <h4 class="drawing-panel-title">Drawing</h4>
-              <button class="btn btn-default close-panel" type="button"><span class="glyphicon glyphicon-remove"></span></button>
+              <button class="btn btn-default icon-only transparent close-panel" type="button"><span class="glyphicon glyphicon-remove"></span></button>
             </div>
 
-            <div class="content cd-grow">
+            <div class="content-container cd-column cd-grow">
 
-              <div class="cd-row cd-grow">
+              <div class="content cd-column cd-grow">
+
+                <div class="main-content cd-column cd-grow mCustomScrollbar">
 
 
-                <div class="cd-column cd-grow">
+                  <div class="cd-column cd-grow">
 
-                  <div class="cd-column read">
-                    <h3 class="title"></h3>
-                    <h4 class="author"></h4>
-                    <p class="description"></p>
-                  </div>
-
-                  <form class="create modify cd-column cd-grow">
                     <div class="thumbnail drawing-thumbnail">
                     </div>
-                    <div class="form-group">
-                      <label for="drawing-title">Drawing title</label>
-                      <input type="text" class="form-control" id="drawing-title" placeholder="Mandala">
-                    </div>
-                    <div class="form-group cd-grow cd-column">
-                      <label for="drawing-description">Description</label>
-                      <textarea class="form-control cd-grow" id="drawing-description" rows="5"></textarea>
+
+                    <div class="cd-column read">
+                      <h3 class="title"></h3>
+                      <h4 class="author"></h4>
+                      <p class="description"></p>
                     </div>
 
-
-                    <div class="votes cd-row">
-
-                      <div class="cd-row cd-grow">
-
-                        <div class="cd-column cd-grow">
-                          <button class="btn btn-default btn-lg vote-up" type="button"><span class="glyphicon glyphicon-triangle-top"></span></button>
-                          <button class="btn btn-default btn-lg vote-down" type="button"><span class="glyphicon glyphicon-triangle-bottom"></span></button>
-                        </div>
-
-                        <div class="cd-column">
-
-                          <span class="vote-button positive">
-                            <span class="n-votes positive">0</span>
-                            <ul class="vote-list positive list-unstyled"></ul>
-                          </span>
-
-                          <span class="vote-button negative">
-                            <span class="n-votes negative">0</span>
-                            <ul class="vote-list negative list-unstyled"></ul>
-                          </span>
-
-                        </div>
-<!-- 
-                        <span class="vote-button positive">
-                          <button class="btn btn-default btn-lg vote-up" type="button"><span class="glyphicon glyphicon-triangle-top"></span></button>
-                          <span class="n-votes positive">0</span>
-                          <ul class="vote-list positive list-unstyled"></ul>
-                        </span>
-                        <span class="vote-button negative">
-                          <button class="btn btn-default btn-lg vote-down" type="button"><span class="glyphicon glyphicon-triangle-bottom"></span></button>
-                          <span class="n-votes negative">0</span>
-                          <ul class="vote-list negative list-unstyled"></ul>
-                        </span> -->
+                    <form class="create modify cd-column cd-grow" autocomplete="off">
+                      <div class="form-group">
+                        <label for="drawing-title">Drawing title</label>
+                        <input type="text" class="form-control" id="drawing-title" placeholder="Mandala">
+                      </div>
+                      <div class="form-group cd-grow cd-column textarea">
+                        <label for="drawing-description">Description</label>
+                        <textarea class="form-control cd-grow" id="drawing-description" rows="5"></textarea>
                       </div>
 
-                      <div class="cd-column cd-justify-content-center vote-stats">
-                        <div class="vote-stat"><span class="n-votes total">0</span> votes</div>
-                        <div class="vote-stat"><span class="percentage-votes">0</span>% positive</div>
+
+                      <div class="votes cd-row">
+
+                        <div class="cd-row cd-grow">
+
+                          <div class="cd-column cd-grow">
+                            <button class="btn btn-default transparent icon-only btn-lg vote-up" type="button"><span class="glyphicon glyphicon-triangle-top"></span></button>
+                            <button class="btn btn-default transparent icon-only btn-lg vote-down" type="button"><span class="glyphicon glyphicon-triangle-bottom"></span></button>
+                          </div>
+
+                          <div class="cd-column">
+
+                            <span class="vote-button positive">
+                              <span class="n-votes positive">0</span>
+                              <ul class="vote-list positive list-unstyled"></ul>
+                            </span>
+
+                            <span class="vote-button negative">
+                              <span class="n-votes negative">0</span>
+                              <ul class="vote-list negative list-unstyled"></ul>
+                            </span>
+
+                          </div>
+
+                        </div>
+
+                        <div class="cd-column cd-justify-content-center vote-stats">
+                          <div class="vote-stat"><span class="n-votes total">0</span> votes</div>
+                          <div class="vote-stat"><span class="percentage-votes">0</span>% positive</div>
+                        </div>
+
                       </div>
 
-                    </div>
+                    </form>
 
-                    <div class="cd-row cd-end">
-                      <button class="btn btn-danger cancel" type="button"><span class="glyphicon glyphicon-remove"></span>Cancel drawing</button>
-                      <button class="btn btn-info modify" type="button"><span class="glyphicon glyphicon-ok"></span>Modify descrition</button>
-                      <button class="btn btn-success submit" type="button"><span class="glyphicon glyphicon-ok"></span>Submit drawing</button>
-                    </div>
-                  </form>
+                  </div>
 
                 </div>
 
+                <div class="cd-row cd-end action-buttons">
+                  <button class="btn btn-danger original-color cancel" type="button"><span class="glyphicon glyphicon-remove"></span>Cancel drawing</button>
+                  <button class="btn btn-info original-color modify" type="button"><span class="glyphicon glyphicon-ok"></span>Modify description</button>
+                  <button class="btn btn-success original-color submit" type="button"><span class="glyphicon glyphicon-ok"></span>Submit drawing</button>
+                </div>
+
+
               </div>
 
-              <div class="loading-animation">
-                  <span class=""><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Loading...</span>
-              </div>
+                <div class="loading-animation">
+                    <span class=""><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Loading...</span>
+                </div>
 
-
-              <div class="selected-drawings cd-column">
-                <div class="drawing-list-container cd-column cd-grow">
-                  <div class="mCustomScrollbar">
-                    <ul class="commeUnDessein-ui drawing-list">
-                    </ul>
+                <div class="selected-drawings cd-column mCustomScrollbar">
+                  <div class="drawing-list-container cd-column cd-grow">
+                      <ul class="commeUnDessein-ui drawing-list">
+                      </ul>
                   </div>
                 </div>
-              </div>
 
             </div>
 
@@ -517,6 +511,7 @@
               <button class="btn btn-info submit" type="button"><span class="glyphicon glyphicon-ok"></span>Submit drawing</button>
             </div> -->
           </div>
+
         </div>
 
 <!--
@@ -882,6 +877,7 @@
     <script src="//ajax.googleapis.com/ajax/libs/webfont/1.5.10/webfont.js"></script>
     <script src="{% static 'libs/js.cookie.js' %}"></script>
     <script src="{% static 'libs/break-on-access.js' %}"></script>
+
     <script>WEB_SOCKET_SWF_LOCATION="{% static 'flashsocket/WebSocketMain.swf' %}"; window.room = "0";</script>
     <script data-main="{% static 'comme-un-dessein-client/js/App' %}" src="{% static 'libs/require.js' %}"></script>
 

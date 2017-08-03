@@ -46,6 +46,13 @@ body {
 .badge.rejected-color {
   background-color: #EB5A46;
 }
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  background-color: inherit;
+  background-image: none;
+  color: inherit;
+}
 .commeUnDessein-ui,
 .commeUnDessein-ui.open {
   background-color: #33383e;
@@ -55,16 +62,16 @@ body {
 }
 .commeUnDessein-ui input,
 .commeUnDessein-ui.open input,
-.commeUnDessein-ui button,
-.commeUnDessein-ui.open button,
 .commeUnDessein-ui textarea,
 .commeUnDessein-ui.open textarea {
   background: transparent;
 }
+.commeUnDessein-ui .transparent,
+.commeUnDessein-ui.open .transparent {
+  background: transparent;
+}
 .commeUnDessein-ui input,
 .commeUnDessein-ui.open input,
-.commeUnDessein-ui button,
-.commeUnDessein-ui.open button,
 .commeUnDessein-ui textarea,
 .commeUnDessein-ui.open textarea,
 .commeUnDessein-ui .dropdown-menu,
@@ -79,8 +86,6 @@ body {
 }
 .commeUnDessein-ui input .btn .caret,
 .commeUnDessein-ui.open input .btn .caret,
-.commeUnDessein-ui button .btn .caret,
-.commeUnDessein-ui.open button .btn .caret,
 .commeUnDessein-ui textarea .btn .caret,
 .commeUnDessein-ui.open textarea .btn .caret,
 .commeUnDessein-ui .dropdown-menu .btn .caret,
@@ -89,8 +94,6 @@ body {
 }
 .commeUnDessein-ui input:hover,
 .commeUnDessein-ui.open input:hover,
-.commeUnDessein-ui button:hover,
-.commeUnDessein-ui.open button:hover,
 .commeUnDessein-ui textarea:hover,
 .commeUnDessein-ui.open textarea:hover,
 .commeUnDessein-ui .dropdown-menu:hover,
@@ -100,8 +103,6 @@ body {
 }
 .commeUnDessein-ui input:focus,
 .commeUnDessein-ui.open input:focus,
-.commeUnDessein-ui button:focus,
-.commeUnDessein-ui.open button:focus,
 .commeUnDessein-ui textarea:focus,
 .commeUnDessein-ui.open textarea:focus,
 .commeUnDessein-ui .dropdown-menu:focus,
@@ -113,8 +114,6 @@ body {
 }
 .commeUnDessein-ui input:active,
 .commeUnDessein-ui.open input:active,
-.commeUnDessein-ui button:active,
-.commeUnDessein-ui.open button:active,
 .commeUnDessein-ui textarea:active,
 .commeUnDessein-ui.open textarea:active,
 .commeUnDessein-ui .dropdown-menu:active,
@@ -125,8 +124,6 @@ body {
 }
 .commeUnDessein-ui input .glyphicon,
 .commeUnDessein-ui.open input .glyphicon,
-.commeUnDessein-ui button .glyphicon,
-.commeUnDessein-ui.open button .glyphicon,
 .commeUnDessein-ui textarea .glyphicon,
 .commeUnDessein-ui.open textarea .glyphicon,
 .commeUnDessein-ui .dropdown-menu .glyphicon,
@@ -135,8 +132,6 @@ body {
 }
 .commeUnDessein-ui input li a,
 .commeUnDessein-ui.open input li a,
-.commeUnDessein-ui button li a,
-.commeUnDessein-ui.open button li a,
 .commeUnDessein-ui textarea li a,
 .commeUnDessein-ui.open textarea li a,
 .commeUnDessein-ui .dropdown-menu li a,
@@ -146,8 +141,6 @@ body {
 }
 .commeUnDessein-ui input li a span.glyphicon,
 .commeUnDessein-ui.open input li a span.glyphicon,
-.commeUnDessein-ui button li a span.glyphicon,
-.commeUnDessein-ui.open button li a span.glyphicon,
 .commeUnDessein-ui textarea li a span.glyphicon,
 .commeUnDessein-ui.open textarea li a span.glyphicon,
 .commeUnDessein-ui .dropdown-menu li a span.glyphicon,
@@ -156,50 +149,34 @@ body {
 }
 .commeUnDessein-ui input li a:hover,
 .commeUnDessein-ui.open input li a:hover,
-.commeUnDessein-ui button li a:hover,
-.commeUnDessein-ui.open button li a:hover,
 .commeUnDessein-ui textarea li a:hover,
 .commeUnDessein-ui.open textarea li a:hover,
 .commeUnDessein-ui .dropdown-menu li a:hover,
 .commeUnDessein-ui.open .dropdown-menu li a:hover {
   color: white;
 }
-.commeUnDessein-ui button:hover,
-.commeUnDessein-ui.open button:hover {
-  color: #eeeeee;
-  border-color: rgba(255, 255, 255, 0.6);
+.commeUnDessein-ui button,
+.commeUnDessein-ui.open button {
+  border-radius: 0;
+  height: 50px;
 }
-.commeUnDessein-ui button.btn-default:hover,
-.commeUnDessein-ui.open button.btn-default:hover {
-  color: #333;
+.commeUnDessein-ui button .glyphicon,
+.commeUnDessein-ui.open button .glyphicon {
+  margin-right: 5px;
+}
+.commeUnDessein-ui button.icon-only,
+.commeUnDessein-ui.open button.icon-only {
+  color: white;
+  font-size: 10px;
+  padding: 0;
+}
+.commeUnDessein-ui button.icon-only .glyphicon,
+.commeUnDessein-ui.open button.icon-only .glyphicon {
+  margin-right: 0;
 }
 .commeUnDessein-ui button:focus,
 .commeUnDessein-ui.open button:focus {
   outline: none;
-  background-color: inherit;
-  color: inherit;
-  border-color: inherit;
-}
-.commeUnDessein-ui button:active,
-.commeUnDessein-ui.open button:active {
-  background-color: inherit;
-  color: inherit;
-  border-color: inherit;
-}
-.commeUnDessein-ui button:active:hover,
-.commeUnDessein-ui.open button:active:hover,
-.commeUnDessein-ui button:focus:hover,
-.commeUnDessein-ui.open button:focus:hover {
-  color: #eeeeee;
-  border-color: rgba(255, 255, 255, 0.6);
-}
-.commeUnDessein-ui button.btn-default:active:hover,
-.commeUnDessein-ui.open button.btn-default:active:hover,
-.commeUnDessein-ui button.btn-default:focus:hover,
-.commeUnDessein-ui.open button.btn-default:focus:hover {
-  color: #333;
-  border-color: rgba(255, 255, 255, 0.6);
-  background-color: #e6e6e6;
 }
 .commeUnDessein-ui .dropdown-menu,
 .commeUnDessein-ui.open .dropdown-menu {
@@ -236,12 +213,15 @@ body {
 .layer .commeUnDessein-ui .btn {
   height: 23px;
   border: none;
-  margin-top: 3px;
   border-radius: 10px;
+  margin-top: 2px;
   margin-left: 4px;
   margin-right: 4px;
   padding-left: 6px;
   padding-right: 4px;
+  padding-top: 4px;
+  background-color: transparent;
+  color: #f0f0f0;
 }
 .layer .commeUnDessein-ui .btn:hover {
   color: #787878;
@@ -256,36 +236,171 @@ body {
   width: auto;
   display: inline;
 }
+button:hover,
+button:active,
+button:focus,
+.btn:hover,
+.btn:active,
+.btn:focus,
+button:active:hover,
+.btn:active:hover {
+  outline: none;
+}
+.mode-button {
+  border-radius: 0;
+  height: 50px;
+  margin-right: -4px;
+}
+.mode-button .glyphicon {
+  margin-right: 5px;
+}
+.mode-button.icon-only .glyphicon {
+  margin-right: 2px;
+}
+.mode-button:focus {
+  outline: none;
+}
+.btn-transparent {
+  color: white;
+  background-color: transparent;
+}
+.btn-transparent:hover,
+.btn-transparent:focus {
+  color: #efefef;
+}
+#FavoriteTools {
+  font-family: 'Lucida Grande', sans-serif;
+  z-index: 1001;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 50px;
+  background-color: #33383e;
+}
+#FavoriteTools .tool-container {
+  height: 50px;
+}
+#FavoriteTools h3.title {
+  width: 265px;
+  margin-top: 0;
+  margin-bottom: 6px;
+  color: white;
+  font-family: 'Bitter', serif;
+  padding: 10px;
+  font-size: 18px;
+}
+#FavoriteTools h3.title img {
+  width: 36px;
+  top: -2px;
+  position: relative;
+  margin-right: 5px;
+}
+@media (max-width: 850px) {
+  #FavoriteTools h3.title {
+    width: 45px;
+  }
+  #FavoriteTools h3.title span {
+    display: none;
+  }
+}
+#FavoriteTools ul.tool-list {
+  float: left;
+  list-style-type: none;
+  display: -webkit-box;
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  min-height: 30px;
+}
+#FavoriteTools ul.tool-list.drag-over {
+  border: 1px solid #2fa1d6;
+}
+#FavoriteTools ul.tool-list ul {
+  list-style-type: none;
+  clear: both;
+  padding: 0;
+}
+#FavoriteTools ul.tool-list li.tool-btn,
+#FavoriteTools ul.tool-list ul li {
+  cursor: pointer;
+  float: left;
+  padding: 10px;
+}
+#FavoriteTools ul.tool-list li.tool-btn img,
+#FavoriteTools ul.tool-list ul li img {
+  width: 30px;
+  height: 30px;
+  margin-right: 0px;
+}
+#FavoriteTools ul.tool-list li.tool-btn span.glyphicon,
+#FavoriteTools ul.tool-list ul li span.glyphicon {
+  width: 30px;
+  height: 30px;
+  font-size: 25px;
+  text-align: center;
+  -webkit-box-pack: center;
+          justify-content: center;
+  line-height: 25px;
+}
+#FavoriteTools ul.tool-list li.tool-btn:hover,
+#FavoriteTools ul.tool-list ul li:hover {
+  background-color: #6f5499;
+}
+#FavoriteTools ul.tool-list li.tool-btn.text-btn,
+#FavoriteTools ul.tool-list ul li.text-btn {
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  line-height: 24px;
+  font-size: 25px;
+  padding-top: 13px;
+  padding-left: 6px;
+  padding-bottom: 0px;
+  padding-right: 0px;
+}
+#FavoriteTools ul.tool-list li.tool-btn span.tool-name,
+#FavoriteTools ul.tool-list ul li span.tool-name {
+  display: none;
+}
+#FavoriteTools ul.tool-list li.tool-btn .favorite-btn,
+#FavoriteTools ul.tool-list ul li .favorite-btn {
+  display: none;
+}
+#FavoriteTools ul.tool-list .glyphicon {
+  color: white;
+}
 #CommeUnDessein_alerts {
   position: absolute;
-  top: -75px;
-  left: 265px;
+  bottom: -50px;
+  left: 0;
   right: 0;
-  height: 75px;
+  height: 50px;
   background-color: #33383e;
   color: white;
   text-align: left;
   z-index: 2000;
-  -khtml-transition: left 0.5s ease-out, top 0.25s linear;
-  transition: left 0.5s ease-out, top 0.25s linear;
+  -khtml-transition: left 0.5s ease-out, bottom 0.25s linear;
+  transition: left 0.5s ease-out, bottom 0.25s linear;
 }
 #CommeUnDessein_alerts .alert-controls {
   position: absolute;
   top: 5px;
   left: 5px;
-  width: 25px;
-  height: 65px;
+  width: 50px;
+  height: 40px;
   vertical-align: top;
   border-width: 1px;
   border-style: solid;
   border-color: rgba(255, 255, 255, 0.2);
 }
 #CommeUnDessein_alerts .alert-controls .btn {
-  height: 25px;
+  height: 10px;
   font-size: 10px;
   display: block;
   color: white;
-  margin: auto;
+  margin: 5px;
+  margin-left: 10px;
   padding: 0;
   border: none;
   background: none;
@@ -293,8 +408,8 @@ body {
 #CommeUnDessein_alerts .alert-controls .btn:focus {
   outline: 0;
 }
-#CommeUnDessein_alerts .alert-controls .btn.btn-up {
-  padding-left: 2px;
+#CommeUnDessein_alerts .alert-controls .btn .glyphicon {
+  top: -1px;
 }
 #CommeUnDessein_alerts .alert-controls .btn-down.nav {
   margin-top: -4px;
@@ -302,8 +417,9 @@ body {
 #CommeUnDessein_alerts .alert-controls .alert-number {
   text-align: center;
   font-size: 12px;
-  height: 15px;
-  line-height: 16px;
+  height: 40px;
+  line-height: 40px;
+  margin-left: 6px;
 }
 #CommeUnDessein_alerts .alert {
   position: absolute;
@@ -311,7 +427,7 @@ body {
   -webkit-transform: translateY(-50%);
   -khtml-transform: translateY(-50%);
   transform: translateY(-50%);
-  left: 25px;
+  left: 50px;
   right: 0;
   margin: 0;
   margin-left: 12px;
@@ -321,45 +437,55 @@ body {
   max-height: 60px;
   overflow-y: overlay;
 }
+#CommeUnDessein_alerts .show-btn-container {
+  position: absolute;
+  top: 0px;
+  width: 100%;
+}
 #CommeUnDessein_alerts .btn.show {
+  margin: auto;
+  margin-top: -15px;
   width: 200px;
   height: 15px;
-  margin: auto;
-  margin-top: 75px;
   font-size: 9px;
   line-height: 10px;
   border-radius: 0;
   border: 0;
-  opacity: 0.5;
+  opacity: 0.75;
   color: white;
   background-color: #33383e;
   -khtml-transition: opacity 0.25s linear;
   transition: opacity 0.25s linear;
 }
-#CommeUnDessein_alerts.activated.show,
-#CommeUnDessein_alerts.activated:hover {
-  top: 0px;
+#CommeUnDessein_alerts .btn.show:hover,
+#CommeUnDessein_alerts .btn.show:active,
+#CommeUnDessein_alerts .btn.show:focus {
+  outline: none;
 }
-#CommeUnDessein_alerts.activated.show .btn.show,
-#CommeUnDessein_alerts.activated:hover .btn.show {
+#CommeUnDessein_alerts.activated.show {
+  bottom: 0px;
+}
+#CommeUnDessein_alerts.activated.show .btn.show {
   opacity: 0;
 }
 #CommeUnDessein_alerts.r-sidebar-hidden {
-  left: 25px;
+  left: 0px;
 }
 #CommeUnDessein_alerts.r-hidden {
   opacity: 0;
 }
 #stage.main {
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+  background-color: white;
+  opacity: 1;
+  z-index: 10;
   position: absolute;
-  top: 0;
+  top: 50px;
   left: 0;
   bottom: 0;
   right: 0;
+  padding: 0;
+  width: 100%;
+  overflow: hidden;
   -webkit-user-select: none;
   -khtml-user-select: none;
   -o-user-select: none;
@@ -369,6 +495,8 @@ body {
   position: absolute;
   top: 0;
   left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 0;
 }
 #stage.main #canvas .pointer {
@@ -573,33 +701,19 @@ body {
 #stage.main .custom-div.website {
   cursor: url(../images/cursors/hand.png) 32 32, move;
 }
-#stage.main .mode-button {
+#user-profile {
+  align-self: flex-end;
   position: absolute;
-  right: 20px;
-  bottom: 20px;
-  border-radius: 0;
-}
-#stage.main .mode-button .glyphicon {
-  margin-right: 5px;
+  top: 0;
+  right: 0;
 }
 #user-profile .user-profile {
   padding: 0;
   margin: 0;
 }
 #user-profile .user-profile .user-img {
-  width: 64px;
-  border-color: rgba(255, 255, 255, 0.2);
-  border-width: 1px;
-  border-style: solid;
-}
-#user-profile .user-profile button.dropdown-toggle {
-  width: 147px;
-  border-color: rgba(255, 255, 255, 0.1);
-  margin-left: -4px;
-  height: 64px;
-}
-#user-profile .user-profile button.dropdown-toggle:hover {
-  border-color: rgba(255, 255, 255, 0.6);
+  padding: 0px;
+  width: 50px;
 }
 #user-profile .user-profile .dropdown-menu {
   width: 147px;
@@ -794,7 +908,6 @@ li.tool-btn.selected .favorite-btn {
   list-style: none;
   padding: 0;
   margin-bottom: 0;
-  margin-left: 10px;
 }
 .mCustomScrollbar.tree .mCSB_inside > .mCSB_container {
   margin-right: 20px;
@@ -838,9 +951,9 @@ li.tool-btn.selected .favorite-btn {
 .sidebar {
   width: 265px;
   position: fixed;
-  top: 0;
+  top: 50px;
   left: 0;
-  bottom: 0;
+  bottom: 0px;
   z-index: 1000;
   display: block;
   padding: 5px;
@@ -851,8 +964,8 @@ li.tool-btn.selected .favorite-btn {
   -khtml-user-select: none;
   -o-user-select: none;
   user-select: none;
-  -khtml-transition: left 0.5s ease-out;
-  transition: left 0.5s ease-out;
+  -khtml-transition: left 0.5s ease-out, bottom 0.25s linear;
+  transition: left 0.5s ease-out, bottom 0.25s linear;
   /*
 	.option-list {
 		clear: both;
@@ -942,17 +1055,23 @@ li.tool-btn.selected .favorite-btn {
   font-family: 'Lucida Grande', sans-serif;
   font-size: 11px;
 }
+.sidebar.r-alert {
+  bottom: 50px;
+}
 .sidebar.r-hidden {
   left: -265px;
 }
 .sidebar.r-hidden .sidebar-handle {
   right: -20px;
 }
+.sidebar.r-hidden .sidebar-handle .glyphicon {
+  left: -3px;
+}
 .sidebar .sidebar-handle {
   position: absolute;
-  height: 75px;
+  height: 50px;
   top: 0;
-  right: 0px;
+  right: 0;
   width: 20px;
   padding-top: 10px;
   padding-left: 5px;
@@ -961,6 +1080,7 @@ li.tool-btn.selected .favorite-btn {
   background: #33383e;
   border: none;
   border-radius: 0;
+  z-index: 2001;
   -khtml-transition: right 0.5s ease-out;
   transition: right 0.5s ease-out;
 }
@@ -971,7 +1091,7 @@ li.tool-btn.selected .favorite-btn {
   outline: none;
 }
 .sidebar .sidebar-handle .glyphicon {
-  left: -3px;
+  left: -1px;
 }
 .sidebar #mCSB_1_container {
   margin-left: 4px;
@@ -1025,7 +1145,7 @@ li.tool-btn.selected .favorite-btn {
 }
 .sidebar .mCustomScrollbar.history,
 .sidebar .mCustomScrollbar.rItems {
-  max-height: 200px;
+  max-height: 400px;
   border: 1px solid rgba(128, 128, 128, 0.61);
   padding: 3px;
 }
@@ -1083,85 +1203,6 @@ li.tool-btn.selected .favorite-btn {
   margin-top: 0px;
   margin-bottom: 0px;
   margin-left: 3px;
-  margin-right: 5px;
-}
-.sidebar ul.tool-list {
-  float: left;
-  list-style-type: none;
-  display: -webkit-box;
-  display: flex;
-  flex-wrap: wrap;
-  margin: 0;
-  padding: 0;
-  min-height: 30px;
-  min-width: 100%;
-}
-.sidebar ul.tool-list.drag-over {
-  border: 1px solid #2fa1d6;
-}
-.sidebar ul.tool-list ul {
-  list-style-type: none;
-  clear: both;
-  padding: 0;
-}
-.sidebar ul.tool-list li.tool-btn,
-.sidebar ul.tool-list ul li {
-  cursor: pointer;
-  float: left;
-  padding: 10px;
-}
-.sidebar ul.tool-list li.tool-btn img,
-.sidebar ul.tool-list ul li img {
-  width: 30px;
-  height: 30px;
-  margin-right: 0px;
-}
-.sidebar ul.tool-list li.tool-btn span.glyphicon,
-.sidebar ul.tool-list ul li span.glyphicon {
-  width: 30px;
-  height: 30px;
-  font-size: 25px;
-  text-align: center;
-  -webkit-box-pack: center;
-          justify-content: center;
-  line-height: 25px;
-}
-.sidebar ul.tool-list li.tool-btn:hover,
-.sidebar ul.tool-list ul li:hover {
-  background-color: #6f5499;
-}
-.sidebar ul.tool-list li.tool-btn.text-btn,
-.sidebar ul.tool-list ul li.text-btn {
-  width: 50px;
-  height: 50px;
-  text-align: center;
-  line-height: 24px;
-  font-size: 25px;
-  padding-top: 13px;
-  padding-left: 6px;
-  padding-bottom: 0px;
-  padding-right: 0px;
-}
-.sidebar ul.tool-list li.tool-btn span.tool-name,
-.sidebar ul.tool-list ul li span.tool-name {
-  display: none;
-}
-.sidebar ul.tool-list li.tool-btn .favorite-btn,
-.sidebar ul.tool-list ul li .favorite-btn {
-  display: none;
-}
-.sidebar h3.title {
-  margin-top: 0;
-  margin-bottom: 6px;
-  color: white;
-  font-family: 'Bitter', serif;
-  width: 245px;
-  padding: 10px;
-  font-size: 18px;
-}
-.sidebar h3.title img {
-  top: -2px;
-  position: relative;
   margin-right: 5px;
 }
 .sidebar .panel .panel-heading {
@@ -1235,6 +1276,7 @@ li.tool-btn.selected .favorite-btn {
 }
 .sidebar #chatContent #chatMessages {
   height: 100%;
+  min-height: 250px;
   display: block;
   border-radius: 0;
 }
@@ -1248,7 +1290,7 @@ li.tool-btn.selected .favorite-btn {
   border-width: 1px;
   padding: 4px;
   border-style: solid;
-  max-height: 200px;
+  max-height: 300px;
   height: inherit;
   -webkit-touch-callout: text;
   -webkit-user-select: text;
@@ -1261,6 +1303,24 @@ li.tool-btn.selected .favorite-btn {
 }
 .sidebar #chatContent #chatMessagesScroll .mCSB_scrollTools {
   right: -5px;
+}
+.sidebar #chatContent #chatSendMessageSubmit {
+  height: 29px;
+  padding-top: 0;
+  padding-bottom: 0;
+  background-color: #33383e;
+  border-color: gray;
+  color: white;
+}
+.sidebar #chatContent #chatSendMessageSubmit:active,
+.sidebar #chatContent #chatSendMessageSubmit:hover,
+.sidebar #chatContent #chatSendMessageSubmit:focus,
+.sidebar #chatContent #chatSendMessageSubmit:visited {
+  outline: none;
+  color: white;
+}
+.sidebar #chatContent #chatSendMessageSubmit:active {
+  background-color: #24282d;
 }
 .sidebar .panel {
   border-radius: 0;
@@ -1490,9 +1550,10 @@ li.tool-btn.selected .favorite-btn {
 }
 .item-list {
   position: absolute;
-  top: 75px;
+  top: 5px;
   bottom: 0;
   left: 0;
+  right: 10px;
 }
 .item-list .sidebar-scrollbar.mCustomScrollbar {
   height: 100%;
@@ -1558,26 +1619,52 @@ li.tool-btn.selected .favorite-btn {
 .cd-button:hover {
   background-color: #6f5499;
 }
+::-webkit-scrollbar {
+  width: 12px;
+}
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.95);
+}
 #drawingPanel {
-  left: 70%;
   position: absolute;
-  top: 0px;
+  top: 50px;
   bottom: 0px;
   right: 0px;
-  background-color: rgba(38, 42, 47, 0.97);
+  background-color: #33383e;
   color: white;
   display: none;
   padding: 5px;
   padding-right: 0;
   z-index: 999;
-  min-width: 150px;
+  min-width: 200px;
+  width: 350px;
   overflow: hidden;
-  -khtml-transition: left 0.5s ease-out;
-  transition: left 0.5s ease-out;
+  -khtml-transition: left 0.5s ease-out, bottom 0.25s linear;
+  transition: left 0.5s ease-out, bottom 0.25s linear;
   -webkit-user-select: none;
   -khtml-user-select: none;
   -o-user-select: none;
   user-select: none;
+}
+#drawingPanel .content-container {
+  height: 100%;
+}
+#drawingPanel .content-container .content {
+  height: 100%;
+}
+#drawingPanel .content-container .content .main-content {
+  height: 100%;
+}
+#drawingPanel .content-container .content .main-content .cd-column {
+  height: 100%;
+}
+#drawingPanel.r-alert {
+  bottom: 50px;
 }
 #drawingPanel .panel-handle {
   float: left;
@@ -1600,19 +1687,21 @@ li.tool-btn.selected .favorite-btn {
   border: none;
 }
 #drawingPanel .container {
+  height: 100%;
   display: -webkit-box;
   display: flex;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
           flex-direction: column;
-  height: 100%;
+  min-height: 100%;
   width: auto;
   margin-right: 0;
-  padding-right: 20px;
+  padding-right: 10px;
   padding-left: 10px;
   padding-bottom: 10px;
 }
 #drawingPanel .container .header {
+  min-height: 40px;
   display: -webkit-box;
   display: flex;
   -webkit-box-orient: horizontal;
@@ -1625,6 +1714,7 @@ li.tool-btn.selected .favorite-btn {
   width: 29px;
   height: 29px;
   margin: 2px;
+  background-color: #33383e;
 }
 #drawingPanel .container .header .close-panel {
   position: absolute;
@@ -1632,13 +1722,27 @@ li.tool-btn.selected .favorite-btn {
   right: 5px;
 }
 #drawingPanel .container .content {
+  height: 100%;
+  max-height: 100%;
   -webkit-box-flex: 1;
           flex-grow: 1;
   display: -webkit-box;
   display: flex;
 }
+#drawingPanel .container .content .drawing-thumbnail img {
+  max-height: 300px;
+}
 #drawingPanel .container .content .btn {
   margin-left: 5px;
+}
+#drawingPanel .container .content button {
+  min-height: 50px;
+}
+#drawingPanel .container .content .form-group.textarea {
+  min-height: 110px;
+}
+#drawingPanel .container .content .form-group.textarea textarea {
+  min-height: 100px;
 }
 #drawingPanel .container .content .votes {
   margin-bottom: 20px;
@@ -1651,6 +1755,7 @@ li.tool-btn.selected .favorite-btn {
   -webkit-box-direction: normal;
           flex-direction: row;
   margin: 3px;
+  margin-top: 6px;
 }
 #drawingPanel .container .content .votes .vote-button .vote-list {
   display: none;
@@ -1658,7 +1763,7 @@ li.tool-btn.selected .favorite-btn {
   top: 0;
   left: 30px;
   padding: 10px;
-  background-color: rgba(38, 42, 47, 0.97);
+  background-color: #33383e;
   z-index: 1;
 }
 #drawingPanel .container .content .votes .vote-button:hover .vote-list {
@@ -1687,30 +1792,38 @@ li.tool-btn.selected .favorite-btn {
   margin-left: 0px;
 }
 #drawingPanel .container .content .votes .vote-stats {
+  margin-top: 33px;
   margin-left: 20px;
 }
 #drawingPanel .container .content .votes .vote-stats .vote-stat {
   line-height: 2em;
 }
+#drawingPanel .container .content .selected-drawings {
+  width: 100%;
+}
 #drawingPanel .container .content .selected-drawings .drawing-list-container {
   min-height: 400px;
 }
-#drawingPanel .container .content .selected-drawings .drawing-list-container .mCustomScrollbar {
-  max-height: 100%;
-}
-#drawingPanel .container .content .selected-drawings .drawing-list-container .mCustomScrollbar ul {
+#drawingPanel .container .content .selected-drawings .drawing-list-container ul {
   padding-left: 0px;
   padding-right: 0px;
 }
-#drawingPanel .container .content .selected-drawings .drawing-list-container .mCustomScrollbar ul li {
+#drawingPanel .container .content .selected-drawings .drawing-list-container ul li {
   margin-bottom: 10px;
 }
-#drawingPanel .container .content .selected-drawings .drawing-list-container .mCustomScrollbar ul li .thumbnail {
+#drawingPanel .container .content .selected-drawings .drawing-list-container ul li .thumbnail {
   margin-bottom: 0px;
 }
-#drawingPanel .container .content .selected-drawings .drawing-list-container .mCustomScrollbar ul li h4 {
+#drawingPanel .container .content .selected-drawings .drawing-list-container ul li .thumbnail img {
+  max-height: 150px;
+}
+#drawingPanel .container .content .selected-drawings .drawing-list-container ul li h4 {
   padding-left: 10px;
   padding-right: 10px;
+}
+#drawingPanel .container .content .selected-drawings .drawing-list-container ul li button {
+  padding: 5px;
+  height: inherit;
 }
 #drawingPanel .container .content .loading-animation {
   -webkit-box-flex: 1;
