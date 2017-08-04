@@ -421,12 +421,19 @@ def getCity(request, cityObject=None):
 			return None
 	return str(city.pk)
 
-def checkAddItem(item, items, itemsDates=None):
+def checkAddItem(item, items, itemsDates=None, owner=None):
 	if not item.pk in items:
-		items[item.pk] = item.to_json()
+		if owner is None:
+			items[item.pk] = item.to_json()
+		else:
+			itemIsDraft = type(item) is Path and item.drawing is None
+			if itemIsDraft and item.owner != owner:
+				return
+			else:
+				items[item.pk] = item.to_json()
 	return
 
-def checkAddItemRasterizer(item, items, itemsDates):
+def checkAddItemRasterizer(item, items, itemsDates, owner=None):
 	pk = item.pk
 	itemLastUpdate = unix_time_millis(item.lastUpdate)
 	if not pk in items and (not pk in itemsDates or itemsDates[pk]<itemLastUpdate):
@@ -435,7 +442,7 @@ def checkAddItemRasterizer(item, items, itemsDates):
 			del itemsDates[pk]
 	return
 
-def getItems(models, areasToLoad, qZoom, city, checkAddItemFunction, itemDates=None):
+def getItems(models, areasToLoad, qZoom, city, checkAddItemFunction, itemDates=None, owner=None):
 	items = {}
 	for area in areasToLoad:
 
@@ -451,7 +458,7 @@ def getItems(models, areasToLoad, qZoom, city, checkAddItemFunction, itemDates=N
 			itemsQuerySet = globals()[model].objects(city=city, planetX=planetX, planetY=planetY, box__geo_intersects=geometry)
 
 			for item in itemsQuerySet:
-				checkAddItemFunction(item, items, itemDates)
+				checkAddItemFunction(item, items, itemDates, owner)
 
 	return items
 
@@ -466,7 +473,7 @@ def load(request, rectangle, areasToLoad, qZoom, city=None):
 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
 
 	models = ['Path', 'Div', 'Box', 'AreaToUpdate', 'Drawing']
-	items = getItems(models, areasToLoad, qZoom, cityPk, checkAddItem)
+	items = getItems(models, areasToLoad, qZoom, cityPk, checkAddItem, None, request.user.username)
 
 	# load rasters
 	rasters = []
@@ -1272,11 +1279,13 @@ def saveDrawing(request, clientId, date, pathPks, title, description):
 	d = Drawing(clientId=clientId, city=city, planetX=planetX, planetY=planetY, box=[points], owner=request.user.username, paths=paths, date=datetime.datetime.fromtimestamp(date/1000.0), title=title, description=description)
 	d.save()
 
+	pathPks = []
 	for path in paths:
 		path.drawing = d
 		path.save()
+		pathPks.append(path.pk)
 
-	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk) } )
+	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk), 'pathPks': pathPks } )
 
 # @dajaxice_register
 @checkDebug
@@ -1444,10 +1453,47 @@ def vote(request, pk, date, positive):
 
 		t = Timer(60, timeout, args=[pk])
 		t.start()
+	
+	votes = []
+	for vote in drawing.votes:
+		if isinstance(vote, Vote):
+			votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk) } )
 
-	return json.dumps( {'state': 'success', 'owner': request.user.username, 'drawingPk':str(drawing.pk), 'votePk':str(vote.pk), 'validates': validates, 'rejects': rejects } )
+	return json.dumps( {'state': 'success', 'owner': request.user.username, 'drawingPk':str(drawing.pk), 'votePk':str(vote.pk), 'validates': validates, 'rejects': rejects, 'votes': votes } )
 
 # --- Get Next Drawing To Be Drawn / Set Drawing Drawn --- #
+
+# @checkDebug
+# def loadItems(request, itemType, pks):
+
+# 	if itemType not in ['Path', 'Div', 'Box', 'AreaToUpdate', 'Drawing']:
+# 		return json.dumps({'state': 'error', 'message': 'Can only load Paths, Divs, Boxs, AreaToUpdates or Drawings.'})
+
+# 	itemsQuerySet = globals()[itemType].objects(pk__in=pks)
+
+# 	items = []
+# 	for item in itemsQuerySet:
+# 		items.append(item.to_json())
+
+# 	return json.dumps( {'state': 'success', 'items': items } )
+
+@checkDebug
+def loadItems(request, itemsToLoad):
+	items = []
+
+	for itemToLoad in itemsToLoad:
+		itemType = itemToLoad['itemType']
+		pks = itemToLoad['pks']
+		
+		if itemType not in ['Path', 'Div', 'Box', 'AreaToUpdate', 'Drawing']:
+			return json.dumps({'state': 'error', 'message': 'Can only load Paths, Divs, Boxs, AreaToUpdates or Drawings.'})
+
+		itemsQuerySet = globals()[itemType].objects(pk__in=pks)
+	
+		for item in itemsQuerySet:
+			items.append(item.to_json())
+
+	return json.dumps( {'state': 'success', 'items': items } )
 
 @checkDebug
 def getNextValidatedDrawing(request):

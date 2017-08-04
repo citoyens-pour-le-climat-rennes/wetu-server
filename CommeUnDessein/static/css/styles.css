@@ -1652,18 +1652,6 @@ li.tool-btn.selected .favorite-btn {
   -o-user-select: none;
   user-select: none;
 }
-#drawingPanel .content-container {
-  height: 100%;
-}
-#drawingPanel .content-container .content {
-  height: 100%;
-}
-#drawingPanel .content-container .content .main-content {
-  height: 100%;
-}
-#drawingPanel .content-container .content .main-content .cd-column {
-  height: 100%;
-}
 #drawingPanel.r-alert {
   bottom: 50px;
 }
@@ -1802,7 +1790,6 @@ li.tool-btn.selected .favorite-btn {
   margin-left: 0px;
 }
 #drawingPanel .container .content .votes .vote-stats {
-  margin-top: 25px;
   margin-left: 5px;
   margin-right: 10px;
 }

@@ -168,6 +168,10 @@ class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
         print "bounce: " + str(data)
         self.emit_to_room(self.room, 'bounce', data)
 
+    def on_drawing_change(self, data):
+        print "drawing change: " + str(data)
+        self.emit_to_room(self.room, 'drawing change', data)
+
     # def on_beginDiv(self, user, p):
     #     self.log(u'{0} begin div: {1}'.format(user, p))
     #     self.emit_to_room(self.room, 'beginDiv', user, p)
