@@ -60,6 +60,11 @@ select:-webkit-autofill {
   font-size: 11px;
   color: #eeeeee;
 }
+.commeUnDessein-ui .form-control[readonly],
+.commeUnDessein-ui.open .form-control[readonly] {
+  background-color: inherit;
+  opacity: inherit;
+}
 .commeUnDessein-ui input,
 .commeUnDessein-ui.open input,
 .commeUnDessein-ui textarea,
@@ -248,7 +253,7 @@ button:active:hover,
 }
 .mode-button {
   border-radius: 0;
-  height: 50px;
+  height: 100%;
   margin-right: -4px;
 }
 .mode-button .glyphicon {
@@ -274,26 +279,23 @@ button:active:hover,
   position: fixed;
   top: 0;
   width: 100%;
-  height: 50px;
   background-color: #33383e;
 }
 #FavoriteTools .tool-container {
-  height: 50px;
+  -webkit-box-flex: 1;
+          flex: auto;
 }
 #FavoriteTools h3.title {
   width: 265px;
   margin-top: 0;
-  margin-bottom: 6px;
+  margin-bottom: 0;
   color: white;
   font-family: 'Bitter', serif;
-  padding: 10px;
   font-size: 18px;
 }
 #FavoriteTools h3.title img {
-  width: 36px;
-  top: -2px;
-  position: relative;
-  margin-right: 5px;
+  width: 50px;
+  padding: 10px;
 }
 @media (max-width: 850px) {
   #FavoriteTools h3.title {
@@ -701,25 +703,24 @@ button:active:hover,
 #stage.main .custom-div.website {
   cursor: url(../images/cursors/hand.png) 32 32, move;
 }
-#user-profile {
-  align-self: flex-end;
-  position: absolute;
-  top: 0;
-  right: 0;
-}
 #user-profile .user-profile {
   padding: 0;
   margin: 0;
+  margin-right: 10px;
 }
 #user-profile .user-profile .user-img {
   padding: 0px;
-  width: 50px;
+  width: 48px;
+}
+#user-profile .user-profile button.dropdown-toggle {
+  padding: 0;
+  height: 100%;
+  padding-right: 10px;
 }
 #user-profile .user-profile .dropdown-menu {
-  width: 147px;
-  min-width: 140px;
+  width: 100%;
+  min-width: 100%;
   position: absolute;
-  left: -4px;
   margin: none;
 }
 #user-profile .dropdown-menu {
@@ -1686,6 +1687,15 @@ li.tool-btn.selected .favorite-btn {
   padding-bottom: 5px;
   border: none;
 }
+#drawingPanel textarea {
+  resize: vertical;
+}
+#drawingPanel button.disabled:active,
+#drawingPanel button.disabled:focus,
+#drawingPanel button.disabled:hover,
+#drawingPanel button.disabled:visited {
+  background-color: transparent;
+}
 #drawingPanel .container {
   height: 100%;
   display: -webkit-box;
@@ -1730,7 +1740,7 @@ li.tool-btn.selected .favorite-btn {
   display: flex;
 }
 #drawingPanel .container .content .drawing-thumbnail img {
-  max-height: 300px;
+  max-height: 250px;
 }
 #drawingPanel .container .content .btn {
   margin-left: 5px;
@@ -1792,46 +1802,54 @@ li.tool-btn.selected .favorite-btn {
   margin-left: 0px;
 }
 #drawingPanel .container .content .votes .vote-stats {
-  margin-top: 33px;
-  margin-left: 20px;
+  margin-top: 25px;
+  margin-left: 5px;
+  margin-right: 10px;
 }
 #drawingPanel .container .content .votes .vote-stats .vote-stat {
   line-height: 2em;
 }
-#drawingPanel .container .content .selected-drawings {
+#drawingPanel .container .loading-animation {
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-flex: 1;
+          flex-grow: 1;
+  align-self: center;
+  -webkit-box-pack: center;
+          justify-content: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+          flex-direction: column;
+}
+#drawingPanel .container .selected-drawings {
   width: 100%;
 }
-#drawingPanel .container .content .selected-drawings .drawing-list-container {
+#drawingPanel .container .selected-drawings .drawing-list-container {
   min-height: 400px;
 }
-#drawingPanel .container .content .selected-drawings .drawing-list-container ul {
+#drawingPanel .container .selected-drawings .drawing-list-container ul {
   padding-left: 0px;
   padding-right: 0px;
 }
-#drawingPanel .container .content .selected-drawings .drawing-list-container ul li {
+#drawingPanel .container .selected-drawings .drawing-list-container ul li {
   margin-bottom: 10px;
 }
-#drawingPanel .container .content .selected-drawings .drawing-list-container ul li .thumbnail {
+#drawingPanel .container .selected-drawings .drawing-list-container ul li .thumbnail {
   margin-bottom: 0px;
 }
-#drawingPanel .container .content .selected-drawings .drawing-list-container ul li .thumbnail img {
+#drawingPanel .container .selected-drawings .drawing-list-container ul li .thumbnail img {
   max-height: 150px;
 }
-#drawingPanel .container .content .selected-drawings .drawing-list-container ul li h4 {
+#drawingPanel .container .selected-drawings .drawing-list-container ul li h4 {
   padding-left: 10px;
   padding-right: 10px;
 }
-#drawingPanel .container .content .selected-drawings .drawing-list-container ul li button {
+#drawingPanel .container .selected-drawings .drawing-list-container ul li button {
+  height: 100%;
   padding: 5px;
+  width: 30px;
+  margin-left: 10px;
   height: inherit;
-}
-#drawingPanel .container .content .loading-animation {
-  -webkit-box-flex: 1;
-          flex-grow: 1;
-  display: block;
-  width: 100%;
-  text-align: center;
-  margin: auto;
 }
 #drawingPanel .container .footer {
   display: -webkit-box;
@@ -2255,4 +2273,58 @@ body.allauth .container.allauth .checkbox {
 }
 .acediff-copy-left div:hover {
   color: #c98100;
+}
+@media (max-width: 650px) {
+  #FavoriteTools h3.title {
+    display: none;
+  }
+  #FavoriteTools #user-profile .user-profile {
+    margin-right: 10px;
+  }
+  #FavoriteTools #user-profile .username {
+    display: none;
+  }
+  #FavoriteTools #user-profile .dropdown-menu > li > a {
+    padding: 3px 5px;
+  }
+  #FavoriteTools .mode-button .text {
+    display: none;
+  }
+}
+@media (max-width: 480px) {
+  #FavoriteTools ul.tool-list {
+    width: 300px;
+  }
+  .sidebar {
+    top: 100px;
+  }
+  #drawingPanel {
+    top: 100px;
+  }
+}
+@media (max-width: 350px) {
+  #FavoriteTools h3.title {
+    display: none;
+  }
+  #FavoriteTools ul.tool-list {
+    width: 200px;
+  }
+  #FavoriteTools ul.tool-list li.tool-btn {
+    padding: 6px;
+  }
+  .sidebar {
+    top: 84px;
+    width: 100%;
+  }
+  .sidebar.r-hidden {
+    left: -100%;
+  }
+  .sidebar .panel {
+    width: 100%;
+  }
+  #drawingPanel {
+    top: 84px;
+    z-index: 2000;
+    width: 100%;
+  }
 }

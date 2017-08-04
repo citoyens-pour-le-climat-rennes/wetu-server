@@ -1391,7 +1391,7 @@ def vote(request, pk, date, positive):
 		return json.dumps({'state': 'error', 'message': 'Cannot vote for own drawing.'})
 
 	if drawing.status != 'pending':
-		return json.dumps({'state': 'error', 'message': 'The drawing is not in vote mode.'})
+		return json.dumps({'state': 'error', 'message': 'The drawing is already validated.'})
 
 	for vote in drawing.votes:
 		if vote.author.username == request.user.username:

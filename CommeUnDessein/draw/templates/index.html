@@ -71,33 +71,37 @@
           <!-- <li data-name="Checkpoint"><span class="short-name">Ch.</span><span class="tool-name">Checkpoint</span></li> -->
         </ul>
 
-        <div class="mode-buttons cd-row">
+        <div class="mode-buttons cd-row cd-grow">
             
             <!-- <button class="hidden btn btn-danger submit mode-button icon-only cancel-drawing" type="button">
               <span class="glyphicon glyphicon-remove"></span>
             </button> -->
 
             <button class="hidden btn btn-success submit mode-button submit-drawing" type="button">
-              <span class="glyphicon glyphicon-ok"></span>Submit drawing
+              <span class="glyphicon glyphicon-ok"></span><span class="text">Submit drawing</span>
             </button>
 
-           <div id="user-profile" class="">
+           <div id="user-profile" class="cd-row cd-grow cd-end">
 
             {% if request.user.is_authenticated %}
 
 
-                <div class="user-profile">
+                <div class="user-profile cd-row">
+                </div>
 
-                  <img class="user-img" src="{{ profileImageURL }}"/>
+                <div class="user-profile cd-row">
+
 
                   <div class="btn-group">
 
                     <button type="button" class="btn btn-transparent mode-button dropdown-toggle" data-toggle="dropdown">
+                    <img class="user-img" src="{{ profileImageURL }}"/>
+                    <span class="username">
                       {% if request.user.first_name or request.user.last_name %}
                         {{ request.user.first_name }} {{ request.user.last_name }}
                       {% else %}
                         {{ request.user.username }}
-                      {% endif %} <span class="caret"></span>
+                      {% endif %} </span><span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
                       <li><a href="{% url 'account_logout' %}">Sign Out</a></li>
@@ -429,20 +433,26 @@
                     <div class="thumbnail drawing-thumbnail">
                     </div>
 
-                    <div class="cd-column read">
+<!--                     <div class="cd-column read">
                       <h3 class="title"></h3>
                       <h4 class="author"></h4>
                       <p class="description"></p>
-                    </div>
+                    </div> -->
 
-                    <form class="create modify cd-column cd-grow" autocomplete="off">
+                    <form class="create cd-column cd-grow" autocomplete="off">
+
                       <div class="form-group">
-                        <label for="drawing-title">Drawing title</label>
-                        <input type="text" class="form-control" id="drawing-title" placeholder="Mandala">
+                        <label for="drawing-author">Author</label>
+                        <input type="text" class="form-control" id="drawing-author" placeholder="" readonly>
+                      </div>
+
+                      <div class="form-group">
+                        <label for="drawing-title">Title</label>
+                        <input type="text" class="form-control modify" id="drawing-title" placeholder="Mandala">
                       </div>
                       <div class="form-group cd-grow cd-column textarea">
                         <label for="drawing-description">Description</label>
-                        <textarea class="form-control cd-grow" id="drawing-description" rows="5"></textarea>
+                        <textarea class="form-control cd-grow modify" id="drawing-description" rows="5"></textarea>
                       </div>
 
 
@@ -472,6 +482,7 @@
                         </div>
 
                         <div class="cd-column cd-justify-content-center vote-stats">
+                          <div class="vote-stat">Status: <span class="status"></span></div>
                           <div class="vote-stat"><span class="n-votes total">0</span> votes</div>
                           <div class="vote-stat"><span class="percentage-votes">0</span>% positive</div>
                         </div>

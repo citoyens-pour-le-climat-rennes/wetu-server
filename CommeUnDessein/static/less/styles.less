@@ -60,6 +60,11 @@ input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill {
 	font-family: 'Lucida Grande', sans-serif;
 	font-size: 11px;
 	color: rgb(238, 238, 238);
+	
+	.form-control[readonly] {
+		background-color: inherit;
+		opacity: inherit;
+	}
 
 	input, textarea {
 		background: transparent; //@sidebar-background-color;
@@ -245,7 +250,7 @@ button:hover, button:active, button:focus, .btn:hover, .btn:active, .btn:focus, 
 }
 .mode-button {
 	border-radius: 0;
-    height: 50px;
+    height: 100%;
     margin-right: -4px;
 	.glyphicon {
 		margin-right: 5px;
@@ -270,17 +275,19 @@ button:hover, button:active, button:focus, .btn:hover, .btn:active, .btn:focus, 
 }
 
 #FavoriteTools {
+
 	font-family: 'Lucida Grande', sans-serif;
 	z-index: 1001;
 	position: fixed;
 	top: 0;
 	width: 100%;
-	height: 50px;
+	// height: 50px;
 	background-color: @sidebar-background-color;
 
 	.tool-container {
+		flex: auto;
 		// width: auto;
-		height: 50px;
+		// height: 50px;
 		// margin: auto;
 	}
 
@@ -288,19 +295,16 @@ button:hover, button:active, button:focus, .btn:hover, .btn:active, .btn:focus, 
 	h3.title {
     	width: 265px;
 		margin-top: 0;
-		margin-bottom: 6px;
+		margin-bottom: 0;
 		color: white;
 		// font-family: 'Lucida Grande', sans-serif;
 		// font-family: 'Pacifico', cursive;
 		font-family: 'Bitter', serif;
 		// width: 245px;
-		padding: 10px;
     	font-size: 18px;
 		img {
-    		width: 36px;
-			top: -2px;
-			position: relative;
-			margin-right: 5px;
+    		width: 50px;
+    		padding: 10px;
 		}
 	}
 	@media (max-width: 850px) {
@@ -395,6 +399,7 @@ button:hover, button:active, button:focus, .btn:hover, .btn:active, .btn:focus, 
 			color: white;
 		}
 	}
+
 }
 
 #CommeUnDessein_alerts {
@@ -822,36 +827,24 @@ button:hover, button:active, button:focus, .btn:hover, .btn:active, .btn:focus, 
 }
 
 #user-profile {
-	align-self: flex-end;
-	position: absolute;
-	top: 0;
-	right: 0;
+
 	.user-profile {
 		padding: 0;
 		margin: 0;
+    	margin-right: 10px;
 		.user-img {
 			padding: 0px;
-			width: 50px;
-			// border-color: rgba(255,255,255,0.2);
-			// border-width: 1px;
-			// border-style: solid;
+    		width: 48px;
 		}
 		button.dropdown-toggle {
-			// width: 147px;
-			// border-color: rgba(255,255,255,0.1);
-			// margin-left: -4px;
-			// // background-color: transparent;
-			// height: 50px;
-
-			// &:hover {
-			// 	border-color: rgba(255,255,255,0.6);
-			// }
+			padding: 0;
+			height: 100%;
+			padding-right: 10px;
 		}
 		.dropdown-menu {
-			width: 147px;
-			min-width: 140px;
+			width: 100%;
+			min-width: 100%;
 			position: absolute;
-			left: -4px;
 			margin: none;
 		}
 	}
@@ -1926,6 +1919,15 @@ li.tool-btn {
 		}
 	}
 
+	textarea {
+		resize: vertical;
+	}
+	button.disabled {
+		&:active, &:focus, &:hover, &:visited {
+			background-color: transparent;
+		}
+	}
+
 	.container {
     	height: 100%;
 		// overflow-y: auto;
@@ -1963,9 +1965,11 @@ li.tool-btn {
 			max-height: 100%;
 			flex-grow: 1;
 			display: flex;
+
+
 			.drawing-thumbnail {
 				img {
-					max-height: 300px;
+					max-height: 250px;
 				}
 			}
 			.btn {
@@ -2031,9 +2035,9 @@ li.tool-btn {
 
     			.vote-stats {
 
-					margin-top: 33px;
-
-    				margin-left: 20px;
+					margin-top: 25px;
+					margin-left: 5px;
+					margin-right: 10px;
 
     				.vote-stat {
     					line-height: 2em;
@@ -2041,43 +2045,49 @@ li.tool-btn {
     			}
     			
 			}
-			
-			.selected-drawings {
-				width: 100%;
-				.drawing-list-container {
-					min-height: 400px;
-					ul {
-						padding-left: 0px;
-						padding-right: 0px;
-						li {
-							margin-bottom: 10px;
-							.thumbnail {
-								margin-bottom: 0px;
-								img {
-									max-height: 150px;
-								}
+
+		}
+
+		.loading-animation {
+		    display: flex;
+		    flex-grow: 1;
+		    align-self: center;
+		    justify-content: center;
+		    flex-direction: column;
+		}
+
+		.selected-drawings {
+
+			width: 100%;
+			.drawing-list-container {
+				min-height: 400px;
+				ul {
+					padding-left: 0px;
+					padding-right: 0px;
+					li {
+    					margin-bottom: 10px;
+						.thumbnail {
+							margin-bottom: 0px;
+							img {
+								max-height: 150px;
 							}
-							h4 {
-								padding-left: 10px;
-								padding-right: 10px;
-							}
-							button {
-								padding: 5px;
-								height: inherit;
-							}
+						}
+						h4 {
+							padding-left: 10px;
+							padding-right: 10px;
+						}
+						button {
+							height: 100%;
+							padding: 5px;
+						    width: 30px;
+						    margin-left: 10px;
+							height: inherit;
 						}
 					}
 				}
 			}
-
-			.loading-animation {
-				flex-grow: 1;
-				display: block;
-				width: 100%;
-				text-align: center;
-				margin: auto;
-			}
 		}
+
 		.footer {
 			display: flex;
 			flex-direction: row;
@@ -2544,4 +2554,78 @@ body.allauth {
 }
 .acediff-copy-left div:hover {
     color: #c98100;
+}
+
+
+@media (max-width: 650px) {
+
+
+	#FavoriteTools {
+		h3.title {
+			display: none;
+		}
+
+		#user-profile {
+			.user-profile {
+				margin-right: 10px;
+			}
+			.username {
+				display: none;
+			}
+			.dropdown-menu > li > a {
+				padding: 3px 5px;
+			}
+		}
+		.mode-button {
+			.text {
+				display: none;
+			}
+		}
+	}
+}
+
+@media (max-width: 480px) {
+
+	#FavoriteTools {
+		ul.tool-list {
+    		width: 300px;
+		}
+	}
+	.sidebar {
+		top: 100px;
+	}
+	#drawingPanel {
+		top: 100px;
+	}
+}
+
+@media (max-width: 350px) {
+
+
+	#FavoriteTools {
+		h3.title {
+			display: none;
+		}
+		ul.tool-list {
+    		width: 200px;
+    		li.tool-btn {
+				padding: 6px;
+			}
+		}
+	}
+	.sidebar {
+		top: 84px;
+		width: 100%;
+		&.r-hidden {
+			left: -100%;
+		}
+		.panel {
+			width: 100%;
+		}
+	}
+	#drawingPanel {
+		top: 84px;
+		z-index: 2000;
+    	width: 100%;
+	}
 }
