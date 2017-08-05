@@ -85,10 +85,6 @@
 
             {% if request.user.is_authenticated %}
 
-
-                <div class="user-profile cd-row">
-                </div>
-
                 <div class="user-profile cd-row">
 
 
@@ -115,14 +111,14 @@
 
               <div id="user-login-group" class="btn-group">
                 <button type="button" class="btn btn-warning submit mode-button log-in dropdown-toggle" data-toggle="dropdown">
-                  <span class="glyphicon glyphicon-log-in"></span>Sign in / up
+                  <span class="glyphicon glyphicon-log-in"></span><span class="text">Sign in / up</span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
                   <li><a href="{% provider_login_url "google" %}">Google</a></li>
                   <li><a href="{% provider_login_url "github" %}">Github</a></li>
                   <li><a href="/accounts/facebook/login/"><div class="fb">Facebook</div></a></li>
-                  <li><a href="{% url 'account_login' %}">CommeUnDessein</a></li>
-                  <li><a href="{% url 'account_signup' %}">Sign up</a></li>
+                  <li><a href="{% url 'account_login' %}">Comme un Dessein</a></li>
+                  <li class="sign-up"><a href="{% url 'account_signup' %}">Sign up</a></li>
                 </ul>
               </div>
 
@@ -525,6 +521,58 @@
 
         </div>
 
+<!--     {% if not request.user.is_authenticated %}
+
+      <div id="splash-screen">
+        <div class="mCustomScrollbar">
+          <div class="cd-column">
+
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h4 class="modal-title" id="screenshotModalLabel">Welcome to Comme un Dessein</h4>
+            </div>
+
+            <p>
+              Comme un dessein is a participative piece created by the french collective IDLV (Indiens dans la Ville). With the help of a simple web interface and a monumental plotter, everyone can submit a drawing which takes part of a larger pictural composition, thus compose a collective utopian artwork.
+            </p>
+
+
+
+
+            <div class="cd-row">
+
+              <button type="button" class="btn btn-info mode-button">
+                <span class="glyphicon glyphicon-sunglasses"></span>Just visit</a>
+              </button>
+
+              <div class="btn-group">
+                <button type="button" class="btn btn-primary mode-button log-in dropdown-toggle" data-toggle="dropdown">
+                  <span class="glyphicon glyphicon-log-in"></span>Sign in
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                  <li><a href="{% provider_login_url "google" %}">Google</a></li>
+                  <li><a href="{% provider_login_url "github" %}">Github</a></li>
+                  <li><a href="/accounts/facebook/login/"><div class="fb">Facebook</div></a></li>
+                  <li><a href="{% url 'account_login' %}">CommeUnDessein</a></li>
+                </ul>
+              </div>
+
+              <button type="button" class="btn btn-success submit mode-button log-in">
+                <span class="glyphicon glyphicon-user"></span><a href="{% url 'account_signup' %}">Sign up</a>
+              </button>
+
+              {% include "socialaccount/snippets/login_extra.html" %}
+
+            </div>
+
+
+          
+          </div>
+        </div>
+      </div>
+
+    {% endif %} -->
+
 <!--
         <ul id="dragTest" style="
     position: absolute;
@@ -656,7 +704,7 @@
 
                 <div class="form-group name-group">
 
-                  <p>CommeUnDesseinCoins enable you to add links and protect content from others. The money you give helps to pay the server and is distributed among all contributors of CommeUnDessein.</p>
+                  <p>CommeUnDesseinCoins enable you to add links and protect content from others. The money you give helps to pay the server and is distributed among all contributors of Comme un Dessein.</p>
 
                   <!-- <form id="paypalForm" target="paypal" action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
                     <input type="hidden" name="cmd" value="_s-xclick">

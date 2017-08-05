@@ -1,29 +1,39 @@
+{% load static %}
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="{% static 'images/icons/logo32.png' %}">
+
+
+    <link href='/static/libs/bootstrap/css/bootstrap.min.css' rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href='/static/css/styles.css'/>
+
     <title>{% block head_title %}{% endblock %}</title>
     {% block extra_head %}
 
     {% endblock %}
 
-    <link href='/static/libs/bootstrap/css/bootstrap.min.css' rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href='/static/css/styles.css'/>
-
   </head>
 
   <body class="allauth">
-    <div class="container allauth">
+    <div class="">
 
       {% block body %}
       <div class="menu">
-        <ul>
+        <ul class="button-list">
         	{% if user.is_authenticated %}
-        	<li><a href="{% url 'account_email' %}">Change E-mail</a></li>
-        	<li><a href="{% url 'account_logout' %}">Sign Out</a></li>
+        	<li><a href="{% url 'account_email' %}"><div>Change E-mail</div></a></li>
+        	<li><a href="{% url 'account_logout' %}"><div>Sign Out</div></a></li>
         	{% else %}
-        	<li><a href="{% url 'account_login' %}">Sign In</a></li>
-        	<li><a href="{% url 'account_signup' %}">Sign Up</a></li>
+        	<li><a href="{% url 'account_login' %}"><div>Sign In</div></a></li>
+        	<li><a href="{% url 'account_signup' %}"><div>Sign Up</div></a></li>
         	{% endif %}
         </ul>
       </div>

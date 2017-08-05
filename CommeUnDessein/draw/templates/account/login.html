@@ -2,6 +2,7 @@
 
 {% load i18n %}
 {% load account %}
+{% load socialaccount %}
 
 {% block head_title %}{% trans "Sign In" %}{% endblock %}
 
@@ -11,13 +12,27 @@
 
 
 <form class="login form-signin" method="POST" action="{% url 'account_login' %}" role="form">
+
   {% csrf_token %}
+
   {{ form.as_p }}
+
   {% if redirect_field_value %}
   <input type="hidden" class="form-control" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
   {% endif %}
   <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
-  <button class="btn btn-lg btn-primary btn-block" class="primaryAction" type="submit">{% trans "Sign In" %}</button>
+  <button class="btn btn-lg btn-primary primaryAction" type="submit">{% trans "Sign In" %}</button>
+  <p>or log in using another account</p>
+	
+	<ul class="button-list cd-column">
+		<li><a href="{% provider_login_url "google" %}"><div>Google</div></a></li>
+		<li><a href="{% provider_login_url "github" %}"><div>Github</div></a></li>
+		<li><a href="/accounts/facebook/login/"><div class="fb">Facebook</div></a></li>
+	</ul>
+
 </form>
+
+
+{% include "socialaccount/snippets/login_extra.html" %}
 
 {% endblock %}

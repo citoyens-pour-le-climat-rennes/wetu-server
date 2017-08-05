@@ -828,10 +828,9 @@ button:hover, button:active, button:focus, .btn:hover, .btn:active, .btn:focus, 
 
 #user-profile {
 
-	.user-profile {
+	.user-profile, #user-login-group {
 		padding: 0;
 		margin: 0;
-    	margin-right: 10px;
 		.user-img {
 			padding: 0px;
     		width: 48px;
@@ -840,11 +839,13 @@ button:hover, button:active, button:focus, .btn:hover, .btn:active, .btn:focus, 
 			padding: 0;
 			height: 100%;
 			padding-right: 10px;
+    		padding-left: 10px;
 		}
 		.dropdown-menu {
-			width: 100%;
 			min-width: 100%;
 			position: absolute;
+    		right: 2px;
+    		left: auto;
 			margin: none;
 		}
 	}
@@ -1794,13 +1795,56 @@ li.tool-btn {
 	}
 }
 
+.modal.fade .modal-dialog {
+    transition: transform .1s ease-out;
+    transform: translate(0,0);
+    .in {
+    	transform: translate(0,0);
+    }
+}
+
 .modal {
 	overflow: hidden;
-	margin-top: 10%;
+	z-index: -1;
+	&.in {
+		z-index: 100000;
+	}
+	display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .modal-content {
+        border-radius: 0;
+    	border: 0;
+    	-webkit-box-shadow: none;
+    	box-shadow: none;
+    	.modal-footer {
+    		padding-top: 10px;
+    		.btn {
+    			margin-top: 5px;
+	    		margin-left: 5px;
+				border-radius: 0;
+				.glyphicon {
+	    			padding-right: 10px;
+				}
+	    	}
+	    	.dropdown-menu { 
+	    		left: auto;
+				top: 96%;
+				right: 47px;
+	    	}
+    	}
+    }
+
 	.error-message {
 		color: red;
 		font-style: italic;
 	}
+}
+
+.modal-backdrop.in {
+	opacity: 0.25;
 }
 
 #urlModal {
@@ -2343,9 +2387,63 @@ li.tool-btn {
 
 
 // Django allauth pages:
-body.allauth {
-	background-color: #eee;
 
+body.allauth {
+
+
+	margin-top: 100px;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	
+	& > div {
+    	max-width: 500px;
+	}
+	
+	button {
+	    color: #fff;
+	    background-color: #337ab7;
+	    border: none;
+    	padding: 8px 20px;
+	}
+
+	ul.button-list {
+		list-style-type: none;
+		padding: 0;
+		margin-bottom: 0px;
+    	li {
+			padding: 0;
+			margin-bottom: 5px;
+	    	a {
+			    div {
+			    	background-color: #337ab7;
+			    	color: #fff;
+			    	padding: 8px 20px;
+			    	width: 100;
+			    }
+			    &:hover {
+			    	text-decoration: none;
+			    }
+	    	}
+    	}
+	}
+
+	input {
+    	padding: 6px 12px;
+		border: 1px solid lightgray;
+		outline: none;
+		&:focus, &:active {
+			outline-width: 1px;
+		    outline-width: 2px;
+		    outline-color: #03A9F4;
+		}
+	}
+
+	.container.allauth {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
 	.menu {
 		ul {
 			list-style: none;
@@ -2356,88 +2454,113 @@ body.allauth {
 			}
 		}
 	}
-
-	.container.allauth {
-		padding-top: 40px;
-		padding-bottom: 40px;
-
-		max-width: 330px;
-		padding: 15px;
-		margin: 0 auto;
-		font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-
-		h1 {
-			font-size: 30px;
-		}
-
-		.form-signin {
-			color: rgb(51, 51, 51);
-			label[for="id_login"], label[for="id_password"] {
-				display: none;
-			}
-			input {
-				width: 100%;
-				// height: 44px;
-				padding: 10px;
-				border: solid 1px rgb(153, 190, 218);
-				color: rgb(85, 85, 85);
-				&:focus {
-					.vendor(box-shadow, ~"rgba(0, 0, 0, 0.0745098) 0px 1px 1px 0px inset, rgba(104, 174, 231, 0.298039) 0px 0px 3.97034692764282px 0px");
-				}
-				outline: none;
-			}
-			p {
-				margin-bottom: 0px;
-			}
-			#id_login {
-				border-top-left-radius: 4px;
-				border-top-right-radius: 4px;
-				border-bottom: 0;
-			}
-			#id_password {
-				border-bottom-left-radius: 4px;
-				border-bottom-right-radius: 4px;
-				// margin-top: -11px;
-			}
-			#id_remember {
-				width: initial;
-				margin-top: 10px;
-			}
-			button[type="submit"] {
-				margin-top: 10px;
-			}
-
-			.form-control {
-				position: relative;
-				height: auto;
-				.vendor(box-sizing, border-box);
-				padding: 10px;
-				font-size: 16px;
-			}
-			.form-control:focus {
-				z-index: 2;
-			}
-
-			.form-signin input[type="email"] {
-				margin-bottom: -1px;
-				border-bottom-right-radius: 0;
-				border-bottom-left-radius: 0;
-			}
-			.form-signin input[type="password"] {
-				margin-bottom: 10px;
-				border-top-left-radius: 0;
-				border-top-right-radius: 0;
-			}
-		}
-
-		.form-signin-heading, .checkbox {
-		  margin-bottom: 10px;
-		}
-		.checkbox {
-			font-weight: normal;
-		}
-
+	
+	input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill {
+	    background-color: white;
+	    background-image: none;
+	    color: black;
 	}
+
+	button {
+    	border-radius: 0;
+	}
+	.btn-primary {
+		width: 100%;
+	    margin-top: 5px;
+	    margin-bottom: 5px;
+	}
+	p {
+		input[type="text"], input[type="password"], input[type="email"] {
+			display: block;
+			width: 100%;
+		}
+	}
+
+	// background-color: #eee;
+
+
+
+	// .container.allauth {
+	// 	padding-top: 40px;
+	// 	padding-bottom: 40px;
+
+	// 	width: 330px;
+	// 	padding: 15px;
+	// 	margin: 0 auto;
+	// 	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+	// 	h1 {
+	// 		font-size: 30px;
+	// 	}
+
+	// 	.form-signin {
+	// 		color: rgb(51, 51, 51);
+	// 		label[for="id_login"], label[for="id_password"] {
+	// 			display: none;
+	// 		}
+	// 		input {
+	// 			width: 100%;
+	// 			// height: 44px;
+	// 			padding: 10px;
+	// 			border: solid 1px rgb(153, 190, 218);
+	// 			color: rgb(85, 85, 85);
+	// 			&:focus {
+	// 				.vendor(box-shadow, ~"rgba(0, 0, 0, 0.0745098) 0px 1px 1px 0px inset, rgba(104, 174, 231, 0.298039) 0px 0px 3.97034692764282px 0px");
+	// 			}
+	// 			outline: none;
+	// 		}
+	// 		p {
+	// 			margin-bottom: 0px;
+	// 		}
+	// 		#id_login {
+	// 			border-top-left-radius: 4px;
+	// 			border-top-right-radius: 4px;
+	// 			border-bottom: 0;
+	// 		}
+	// 		#id_password {
+	// 			border-bottom-left-radius: 4px;
+	// 			border-bottom-right-radius: 4px;
+	// 			// margin-top: -11px;
+	// 		}
+	// 		#id_remember {
+	// 			width: initial;
+	// 			margin-top: 10px;
+	// 		}
+	// 		button[type="submit"] {
+	// 			margin-top: 10px;
+	// 		}
+
+	// 		.form-control {
+	// 			position: relative;
+	// 			height: auto;
+	// 			.vendor(box-sizing, border-box);
+	// 			padding: 10px;
+	// 			font-size: 16px;
+	// 		}
+	// 		.form-control:focus {
+	// 			z-index: 2;
+	// 		}
+
+	// 		.form-signin input[type="email"] {
+	// 			margin-bottom: -1px;
+	// 			border-bottom-right-radius: 0;
+	// 			border-bottom-left-radius: 0;
+	// 		}
+	// 		.form-signin input[type="password"] {
+	// 			margin-bottom: 10px;
+	// 			border-top-left-radius: 0;
+	// 			border-top-right-radius: 0;
+	// 		}
+	// 	}
+
+	// 	.form-signin-heading, .checkbox {
+	// 	  margin-bottom: 10px;
+	// 	}
+	// 	.checkbox {
+	// 		font-weight: normal;
+	// 	}
+
+	// }
 
 }
 
@@ -2569,6 +2692,19 @@ body.allauth {
 			}
 		}
 	}
+
+	.modal {
+	    .modal-content {
+	    	.modal-footer {
+	        	.dropdown-menu {
+	        		top: auto;
+	        		left: auto;
+					bottom: 50px;
+					right: 50px;
+		    	}
+	    	}
+	    }
+	}
 }
 
 @media (max-width: 480px) {
@@ -2584,9 +2720,10 @@ body.allauth {
 	#drawingPanel {
 		top: 100px;
 	}
+
 }
 
-@media (max-width: 350px) {
+@media (max-width: 370px) {
 
 
 	#FavoriteTools {
@@ -2615,4 +2752,6 @@ body.allauth {
 		z-index: 2000;
     	width: 100%;
 	}
+
+
 }
