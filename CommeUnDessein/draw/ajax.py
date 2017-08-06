@@ -46,7 +46,7 @@ import base64
 import functools
 
 debugMode = False
-positiveVoteThreshold = 3
+positiveVoteThreshold = 2
 negativeVoteThreshold = 2
 
 def administratorName(): 		# function to make it const
@@ -1283,7 +1283,7 @@ def saveDrawing(request, clientId, date, pathPks, title, description):
 	for path in paths:
 		path.drawing = d
 		path.save()
-		pathPks.append(path.pk)
+		pathPks.append(str(path.pk))
 
 	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk), 'pathPks': pathPks } )
 
@@ -1405,6 +1405,8 @@ def vote(request, pk, date, positive):
 	for vote in drawing.votes:
 		if vote.author.username == request.user.username:
 			if vote.positive == positive:
+				if datetime.datetime.now() - vote.date < datetime.timedelta(minutes=1):
+					return json.dumps({'state': 'error', 'message': 'You must wait one minute before cancelling your vote.', 'cancelled': False })
 				# cancel vote: delete vote and return:
 				vote.delete()
 				return json.dumps({'state': 'success', 'message': 'Your vote was cancelled.', 'cancelled': True })
@@ -1451,7 +1453,7 @@ def vote(request, pk, date, positive):
 				drawing.status = 'rejected'
 				drawing.save()
 
-		t = Timer(60, timeout, args=[pk])
+		t = Timer(1, timeout, args=[pk])
 		t.start()
 	
 	votes = []
