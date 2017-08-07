@@ -49,11 +49,17 @@ debugMode = False
 positiveVoteThreshold = 2
 negativeVoteThreshold = 2
 
+drawingModes = ['free', 'ortho', 'orthoDiag', 'pixel', 'image']
+drawingMode = 'image'
+
 def administratorName(): 		# function to make it const
     return "arthur44"
 
+def isAdministrator(request):
+	return request.user.username == administratorName()
+
 def userAllowed(request, owner):
-	return request.user.username == owner or request.user.username == administratorName()
+	return request.user.username == owner or isAdministrator()
 
 if settings.DEBUG:
 	import pdb
@@ -128,8 +134,31 @@ defaultPathTools = ["Precise path", "Thickness path", "Meander", "Grid path", "G
 
 # @dajaxice_register
 def setDebugMode(request, debug):
+	if not isAdministrator():
+		return json.dumps({"status": "error", "message": "not_admin"})
 	global debugMode
 	debugMode = debug
+	return json.dumps({"message": "success"})
+
+def setDrawingMode(request, mode):
+	if not isAdministrator():
+		return json.dumps({"status": "error", "message": "not_admin"})
+	global drawingMode
+	drawingMode = mode
+	return json.dumps({"message": "success"})
+
+def setPositiveVoteThreshold(request, voteThreshold):
+	if not isAdministrator():
+		return json.dumps({"status": "error", "message": "not_admin"})
+	global positiveVoteThreshold
+	positiveVoteThreshold = voteThreshold
+	return json.dumps({"message": "success"})
+
+def setNegativeVoteThreshold(request, voteThreshold):
+	if not isAdministrator():
+		return json.dumps({"status": "error", "message": "not_admin"})
+	global negativeVoteThreshold
+	negativeVoteThreshold = voteThreshold
 	return json.dumps({"message": "success"})
 
 # @dajaxice_register

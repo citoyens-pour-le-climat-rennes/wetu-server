@@ -13,8 +13,6 @@ import json
 # from sockets import ChatNamespace, DrawNamespace
 # from socketio import socketio_manage
 
-drawingModes = ['free', 'ortho', 'orthoDiag', 'pixel', 'image']
-
 def index(request, site=None, owner=None, city=None, x=0, y=0):
 
 	profileImageURL = ''
@@ -42,7 +40,7 @@ def index(request, site=None, owner=None, city=None, x=0, y=0):
 	# result['profileImageURL'] = profileImageURL
 	result['connectedToGithub'] = connectedToGithub
 	result['githubLogin'] = githubLogin
-	result['drawingMode'] = 'image'
+	result['drawingMode'] = getattr(ajax, 'drawingMode')
 
 	response = render_to_response(	"index.html", result, RequestContext(request) )
 	return response
