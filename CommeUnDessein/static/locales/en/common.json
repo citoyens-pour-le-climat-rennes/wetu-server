@@ -1,0 +1,10 @@
+{
+	"Welcome to Comme Un Dessein": "Welcome to Comme un Dessein !",
+	"welcome message": "Comme un dessein is a participative piece created by the french collective IDLV (Indiens dans la Ville). With the help of a simple web interface and a monumental plotter, everyone can submit a drawing which takes part of a larger pictural composition, thus compose a collective utopian artwork.",
+	"Participate !": "Participate !",
+	"Just visit": "Just visit",
+	"Sign in": "Sign in",
+	"Sign up": "Sign up",
+	"You are logged as username": "You are logged as {{username}}",
+    "key": "{{what}} is {{how}}"
+}

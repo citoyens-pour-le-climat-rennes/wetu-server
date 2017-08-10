@@ -265,6 +265,9 @@ button:active:hover,
 .mode-button:focus {
   outline: none;
 }
+.btn {
+  font-size: 13px;
+}
 .btn-transparent {
   color: white;
   background-color: transparent;

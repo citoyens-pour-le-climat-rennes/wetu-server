@@ -78,7 +78,7 @@
             </button> -->
 
             <button class="hidden btn btn-success submit mode-button submit-drawing" type="button">
-              <span class="glyphicon glyphicon-ok"></span><span class="text">Submit drawing</span>
+              <span class="glyphicon glyphicon-ok"></span><span class="text" data-i18n="Submit drawing">Submit drawing</span>
             </button>
 
            <div id="user-profile" class="cd-row cd-grow cd-end">
@@ -100,7 +100,7 @@
                       {% endif %} </span><span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
-                      <li><a href="{% url 'account_logout' %}">Sign Out</a></li>
+                      <li><a href="{% url 'account_logout' %}" data-i18n="Sign Out">Sign Out</a></li>
                     </ul>
                   </div>
 
@@ -111,7 +111,7 @@
 
               <div id="user-login-group" class="btn-group">
                 <button type="button" class="btn btn-warning submit mode-button log-in dropdown-toggle" data-toggle="dropdown">
-                  <span class="glyphicon glyphicon-log-in"></span><span class="text">Sign in / up</span>
+                  <span class="glyphicon glyphicon-log-in"></span><span class="text" data-i18n="Sign in / up">Sign in / up</span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
                   <li><a href="{% provider_login_url "google" %}">Google</a></li>
@@ -290,7 +290,7 @@
                 <div class="panel panel-default">
                   <div class="panel-heading">
                     <h4 class="panel-title" data-toggle="collapse" data-target="#RItems">
-                      <a>
+                      <a data-i18n='Items'>
                         Items
                       </a>
                     </h4>
@@ -333,10 +333,10 @@
                         <div id="chatLogin">
 
                           <p class="default-username-message"></p>
-                          <p><a class="sign-in" href="">Sign in</a> or <a class="change-username" href="">choose another user name</a></p>
+                          <p><a class="sign-in" href="" data-i18n='Sign in'>Sign in</a> <span data-i18n='or'>or</span> <a class="change-username" href="" data-i18n='choose another user name'>choose another user name</a></p>
 
                           <div id="chatUserName" class="input-group commeUnDessein-ui">
-                            <input id="chatUserNameInput" type="text" class="form-control" placeholder="Username">
+                            <input id="chatUserNameInput" type="text" class="form-control" data-i18n="[placeholder]Username" placeholder="Username">
                             <span class="input-group-btn">
                               <button id="chatUserNameSubmit" class="btn btn-default" type="button">Chat</button>
                             </span>
@@ -345,22 +345,22 @@
                         </div>
                       {% endif %}
 
-                      <p class="hidden" id="chatUserNameError">Error setting username.</p>
+                      <p class="hidden" id="chatUserNameError" data-i18n="Error setting username.">Error setting username.</p>
 
                       <div id="chatMain" class="hidden">
 
-                        <p id="chatConnectingMessage">Connecting...</p>
+                        <p id="chatConnectingMessage" ><span data-i18n="Connecting">Connecting</span>...</p>
 
                         <div id="messages">
-                          <p id="chatRoom" class="hidden"><span>Room:</span></p>
-                          <p id="chatUserNames"><span>Online:</span></p>
+                          <p id="chatRoom" class="hidden"><span data-i18n="Room">Room</span>:</p>
+                          <p id="chatUserNames"><span data-i18n="Online">Online</span>:</p>
                           <div id="chatMessagesScroll" class="mCustomScrollbar"><div id="chatMessages" class=""></div></div>
                         </div>
 
                         <div id="chatSendMessage" class="input-group commeUnDessein-ui">
                           <input id="chatSendMessageInput" type="text" class="form-control">
                           <span class="input-group-btn">
-                            <button id="chatSendMessageSubmit" class="btn btn-default" type="button">Send</button>
+                            <button id="chatSendMessageSubmit" class="btn btn-default" type="button" data-i18n="Send">Send</button>
                           </span>
                         </div>
 
@@ -413,7 +413,7 @@
           <div class="container cd-column cd-grow">
 
             <div class='header item'>
-              <h4 class="drawing-panel-title">Drawing</h4>
+              <h4 class="drawing-panel-title" data-i18n="Drawing">Drawing</h4>
               <button class="btn btn-default icon-only transparent close-panel" type="button"><span class="glyphicon glyphicon-remove"></span></button>
             </div>
 
@@ -438,16 +438,16 @@
                     <form class="create cd-column cd-grow" autocomplete="off">
 
                       <div class="form-group">
-                        <label for="drawing-author">Author</label>
+                        <label for="drawing-author" data-i18n="Author">Author</label>
                         <input type="text" class="form-control" id="drawing-author" placeholder="" readonly>
                       </div>
 
                       <div class="form-group">
-                        <label for="drawing-title">Title</label>
-                        <input type="text" class="form-control modify" id="drawing-title" placeholder="Mandala">
+                        <label for="drawing-title" data-i18n="Title">Title</label>
+                        <input type="text" class="form-control modify" id="drawing-title" data-i18n="[placeholder]Mandala" placeholder="Mandala">
                       </div>
                       <div class="form-group cd-grow cd-column textarea">
-                        <label for="drawing-description">Description</label>
+                        <label for="drawing-description"  data-i18n="Description">Description</label>
                         <textarea class="form-control cd-grow modify" id="drawing-description" rows="5"></textarea>
                       </div>
 
@@ -478,9 +478,9 @@
                         </div>
 
                         <div class="cd-column cd-justify-content-center vote-stats">
-                          <div class="vote-stat">Status: <span class="status"></span></div>
+                          <div class="vote-stat"><span data-i18n='Status'>Status</span>: <span class="status"></span></div>
                           <div class="vote-stat"><span class="n-votes total">0</span> votes</div>
-                          <div class="vote-stat"><span class="percentage-votes">0</span>% positive</div>
+                          <div class="vote-stat"><span class="percentage-votes">0</span>% <span data-i18n='positive'>positive</span></div>
                         </div>
 
                       </div>
@@ -492,16 +492,16 @@
                 </div>
 
                 <div class="cd-row cd-end action-buttons">
-                  <button class="btn btn-danger original-color cancel" type="button"><span class="glyphicon glyphicon-remove"></span>Cancel drawing</button>
-                  <button class="btn btn-info original-color modify" type="button"><span class="glyphicon glyphicon-ok"></span>Modify description</button>
-                  <button class="btn btn-success original-color submit" type="button"><span class="glyphicon glyphicon-ok"></span>Submit drawing</button>
+                  <button class="btn btn-danger original-color cancel" type="button"><span class="glyphicon glyphicon-remove"></span><span data-i18n='Cancel drawing'>Cancel drawing</span></button>
+                  <button class="btn btn-info original-color modify" type="button"><span class="glyphicon glyphicon-ok"></span><span data-i18n='Modify description'>Modify description</span></button>
+                  <button class="btn btn-success original-color submit" type="button"><span class="glyphicon glyphicon-ok"></span><span data-i18n='Submit drawing'>Submit drawing</span></button>
                 </div>
 
 
               </div>
 
                 <div class="loading-animation">
-                    <span class=""><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Loading...</span>
+                    <span class=""><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> <span data-i18n="Loading...">Loading</span>...</span>
                 </div>
 
                 <div class="selected-drawings cd-column mCustomScrollbar">
@@ -590,8 +590,8 @@
     </div>
 
     <!-- <div id="loadingBar"><img src="static/images/loader.GIF"></div> -->
-    <div id="drawingBar">Drawing...</div>
-    <div id="loadingBar"><div id="spinner"></div><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Loading...</div>
+    <div id="drawingBar" ><span data-i18n='Drawing'>Drawing</span>...</div>
+    <div id="loadingBar"><div id="spinner"></div><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> <span data-i18n='Loading'>Loading</span>...</div>
     <!-- <canvas id="loadingBar"></canvas> -->
 
     <div id="templates">
