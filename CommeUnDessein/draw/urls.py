@@ -10,6 +10,15 @@ urlpatterns = [
     url(r'^draw/index\.html', views.index, name='index'),
     url(r'^index\.html', views.index, name='index'),
 
+    url(r'^debug\.html', views.index, {'useDebugFiles': True}, name='index'),
+
+    url(r'^free\.html', views.index, {'drawingMode': 'free'}, name='index'),
+    url(r'^pixel\.html', views.index, {'drawingMode': 'pixel'}, name='index'),
+    url(r'^image\.html', views.index, {'drawingMode': 'image'}, name='index'),
+    url(r'^ortho\.html', views.index, {'drawingMode': 'ortho'}, name='index'),
+    url(r'^ortho-diag\.html', views.index, {'drawingMode': 'orthoDiag'}, name='index'),
+    url(r'^line\.html', views.index, {'drawingMode': 'line'}, name='index'),
+
     url(r'^$', views.index, name='index'),
     url(r'^ajaxCall/$', views.ajaxCall),
     url(r'^ajaxCallNoCSRF/$', views.ajaxCallNoCSRF),

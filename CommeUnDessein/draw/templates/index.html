@@ -920,82 +920,23 @@
       <param name="onload" value="pluginLoaded" />
     </object>
 
-    <!-- Bootstrap core JavaScript ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <!-- online for fast caching-->
-    <!-- <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>-->
-    <!-- <script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>-->
-    <!-- static for offine -->
-    <!-- data-pos-x="{{ x }}" data-pos-y="{{ y }}" data-points="{{ points }}" data-box="{{ box }}" data-site="{{ site }}" data-message="{{ message }}" data-load-entire-area="{{ loadEntireArea }}" data-city="{{ city }}" data-owner="{{ owner }}" data-github-login="{{ githubLogin }} -->
     <script>
         var R = {};
         R.city = { owner: '{{ owner }}', name: '{{ city }}', site: '{{ site }}' };
         R.loadEntireArea = '{{ loadEntireArea }}' === 'True';
         R.loadedBox = '{{ box }}'.length>0?JSON.parse('{{ box }}'):null;
     </script>
+
     <script src="//ajax.googleapis.com/ajax/libs/webfont/1.5.10/webfont.js"></script>
-    <script src="{% static 'libs/js.cookie.js' %}"></script>
     <script src="{% static 'libs/break-on-access.js' %}"></script>
-
     <script>WEB_SOCKET_SWF_LOCATION="{% static 'flashsocket/WebSocketMain.swf' %}"; window.room = "0";</script>
-    <script data-main="{% static 'comme-un-dessein-client/js/App' %}" src="{% static 'libs/require.js' %}"></script>
 
 
-    <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js"></script> -->
-    <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/tinycolor/0.11.1/tinycolor.min.js"></script> -->
-    <!-- <script src="{% static 'libs/jquery.nanoscroller.js' %}"></script> -->
-    <!-- <script src="{% static 'libs/howler.min.js' %}"></script> -->
-    <!-- <script src="{% static 'libs/howler.js' %}"></script> -->
-    <!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.15.0/plugins/CSSPlugin.min.js"></script> -->
-    <!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.15.0/easing/EasePack.min.js"></script> -->
-    <!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.15.0/TweenLite.min.js"></script> -->
-    <!-- <script src="{% static 'libs/soundjs-0.5.2.min.js' %}"></script> -->
-    <!-- <script src="{% static 'libs/pace/pace.js' %}" data-pace-options='{ "ajax": false, "document": false, "eventLag": false, "elements": false, "restartOnPushState": false, "restartOnRequestAfter": false }'></script> -->
-    <!-- <script src="{% static 'libs/ace/src-min-noconflict/ace.js' %}"></script> -->
-    <!--  <script src="{% static 'libs/fabric/all.js' %}"> -->
+    {% if useDebugFiles %}
+      <script data-main="{% static 'comme-un-dessein-client/js/App' %}" src="{% static 'libs/require.js' %}"></script>
+    {% else %}
+      <script src="{% static 'comme-un-dessein-client/js/App-built.js' %}"></script>
+    {% endif %}
 
-<!--
-    <script src="{% static 'libs/jquery-1.10.2.js' %}"></script>
-    <script src="{% static 'libs/jquery-ui.min.js' %}"></script>
-    <script src="{% static 'libs/jquery.mousewheel.min.js' %}"></script>
-    <script src="{% static 'libs/socket.io.js' %}"></script>
-    <script src="{% static 'libs/bootstrap/js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'libs/tinycolor.js' %}"></script>
-    <script src="{% static 'libs/bootstrap-colorpickersliders/bootstrap.colorpickersliders.nocielch.js' %}"></script>
-    <script src="{% static 'libs/dat.gui.js' %}"></script>
-    <script src="{% static 'libs/paper/paper-full.js' %}"></script>
-    <script src="{% static 'libs/jquery.mCustomScrollbar.concat.min.js' %}"></script>
-    <script src="{% static 'libs/jquery.oembed.js' %}"></script>
-    <script src="{% static 'libs/typeahead.bundle.min.js' %}"></script>
-    <script src="{% static 'libs/coffee-script.js' %}"></script>
-    <script src="{% static 'libs/ace/src-min-noconflict/ace.js' %}"></script>
-    <script src="{% static 'libs/ZeroClipboard/ZeroClipboard.js' %}"></script>
-    <script src="{% static 'libs/RequestAnimationFrame.js' %}"></script>
-    <script src="{% static 'libs/tween.min.js' %}"></script>
-    <script async defer src="//assets.pinterest.com/js/pinit.js"></script>
- -->
-<!--
-    <script src="{% static 'js/utils.js' %}"></script>
-    <script src="{% static 'js/coordinateSystems.js' %}"></script>
-    <script src="{% static 'js/global.js' %}"></script>
-    <script src="{% static 'js/command.js' %}"></script>
-    <script src="{% static 'js/sound.js' %}"></script>
-    <script src="{% static 'js/editor.js' %}"></script>
-    <script src="{% static 'js/modal.js' %}"></script>
-    <script src="{% static 'js/rasterizer.js' %}"></script>
-    <script src="{% static 'js/item.js' %}"></script>
-    <script src="{% static 'js/path.js' %}"></script>
-    <script src="{% static 'js/div.js' %}"></script>
-    <script src="{% static 'js/lock.js' %}"></script>
-    <script src="{% static 'js/socket.js' %}"></script>
-    <script src="{% static 'js/ajax.js' %}"></script>
-    <script src="{% static 'js/options.js' %}"></script>
-    <script src="{% static 'js/tools.js' %}"></script>
-    <script src="{% static 'js/main.js' %}"></script>
- -->
   </body>
 </html>
-
-    <!--
-    <div class="tt-suggestion"><p style="white-space: normal;"><strong>A</strong>BeeZee</p></div><div class="tt-suggestion"><p style="white-space: normal;"><strong>A</strong>bel</p></div><div class="tt-suggestion"><p style="white-space: normal;"><strong>A</strong>bril F<strong>a</strong>tf<strong>a</strong>ce</p></div><div class="tt-suggestion"><p style="white-space: normal;"><strong>A</strong>clonic<strong>a</strong></p></div><div class="tt-suggestion"><p style="white-space: normal;"><strong>A</strong>cme</p></div>
--->

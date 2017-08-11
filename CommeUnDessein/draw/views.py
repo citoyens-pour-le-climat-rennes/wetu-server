@@ -13,7 +13,7 @@ import json
 # from sockets import ChatNamespace, DrawNamespace
 # from socketio import socketio_manage
 
-def index(request, site=None, owner=None, city=None, x=0, y=0):
+def index(request, site=None, owner=None, city=None, x=0, y=0, useDebugFiles=False, drawingMode=None):
 
 	profileImageURL = ''
 
@@ -40,7 +40,8 @@ def index(request, site=None, owner=None, city=None, x=0, y=0):
 	# result['profileImageURL'] = profileImageURL
 	result['connectedToGithub'] = connectedToGithub
 	result['githubLogin'] = githubLogin
-	result['drawingMode'] = getattr(ajax, 'drawingMode')
+	result['drawingMode'] = drawingMode
+	result['useDebugFiles'] = useDebugFiles
 
 	response = render_to_response(	"index.html", result, RequestContext(request) )
 	return response

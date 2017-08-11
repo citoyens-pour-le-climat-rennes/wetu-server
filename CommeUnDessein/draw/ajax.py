@@ -50,16 +50,9 @@ positiveVoteThreshold = 2
 negativeVoteThreshold = 2
 
 drawingModes = ['free', 'ortho', 'orthoDiag', 'pixel', 'image']
-drawingMode = 'image'
-
-def administratorName(): 		# function to make it const
-    return "arthur44"
-
-def isAdministrator(request):
-	return request.user.username == administratorName()
 
 def userAllowed(request, owner):
-	return request.user.username == owner or isAdministrator()
+	return request.user.username == owner or isAdmin(request.user)
 
 if settings.DEBUG:
 	import pdb
@@ -134,28 +127,28 @@ defaultPathTools = ["Precise path", "Thickness path", "Meander", "Grid path", "G
 
 # @dajaxice_register
 def setDebugMode(request, debug):
-	if not isAdministrator():
+	if not isAdmin(request.user):
 		return json.dumps({"status": "error", "message": "not_admin"})
 	global debugMode
 	debugMode = debug
 	return json.dumps({"message": "success"})
 
 def setDrawingMode(request, mode):
-	if not isAdministrator():
+	if not isAdmin(request.user):
 		return json.dumps({"status": "error", "message": "not_admin"})
 	global drawingMode
 	drawingMode = mode
 	return json.dumps({"message": "success"})
 
 def setPositiveVoteThreshold(request, voteThreshold):
-	if not isAdministrator():
+	if not isAdmin(request.user):
 		return json.dumps({"status": "error", "message": "not_admin"})
 	global positiveVoteThreshold
 	positiveVoteThreshold = voteThreshold
 	return json.dumps({"message": "success"})
 
 def setNegativeVoteThreshold(request, voteThreshold):
-	if not isAdministrator():
+	if not isAdmin(request.user):
 		return json.dumps({"status": "error", "message": "not_admin"})
 	global negativeVoteThreshold
 	negativeVoteThreshold = voteThreshold
@@ -182,6 +175,43 @@ def debugDatabase(request):
 	# 		obj.save()
 	return
 
+
+@checkDebug
+def deleteItems(request, itemsToDelete, confirm):
+	if not isAdmin(request.user):
+		return json.dumps( {'state': 'error', 'message': 'not admin' } )
+
+	if confirm != 'confirm':
+		return json.dumps( {'state': 'error', 'message': 'please confirm' } )
+	
+	for itemToDelete in itemsToDelete:
+		itemType = itemToDelete['itemType']
+		pks = itemToDelete['pks']
+		
+		if itemType not in ['Path', 'Div', 'Box', 'AreaToUpdate', 'Drawing']:
+			return json.dumps({'state': 'error', 'message': 'Can only delete Paths, Divs, Boxs, AreaToUpdates or Drawings.'})
+
+		itemsQuerySet = globals()[itemType].objects(pk__in=pks)
+	
+		itemsQuerySet.delete()
+
+	return json.dumps( {'state': 'success', 'message': 'items successfully deleted' } )
+
+@checkDebug
+def deleteAllItems(request, confirm):
+	if not isAdmin(request.user):
+		return json.dumps( {'state': 'error', 'message': 'not admin' } )
+
+	if confirm != 'confirm':
+		return json.dumps( {'state': 'error', 'message': 'please confirm' } )
+
+	for itemType in ['Path', 'Div', 'Box', 'AreaToUpdate', 'Drawing']:
+		
+		itemsQuerySet = globals()[itemType].objects()
+	
+		itemsQuerySet.delete()
+
+	return json.dumps( {'state': 'success', 'message': 'items successfully deleted' } )
 
 # @dajaxice_register
 @checkDebug
@@ -450,19 +480,17 @@ def getCity(request, cityObject=None):
 			return None
 	return str(city.pk)
 
-def checkAddItem(item, items, itemsDates=None, owner=None):
+def checkAddItem(item, items, itemsDates=None, ignoreDrafts=False):
 	if not item.pk in items:
-		if owner is None:
-			items[item.pk] = item.to_json()
-		else:
+		if ignoreDrafts:
 			itemIsDraft = type(item) is Path and item.drawing is None
-			if itemIsDraft and item.owner != owner:
-				return
-			else:
+			if not itemIsDraft:
 				items[item.pk] = item.to_json()
+		else:
+			items[item.pk] = item.to_json()
 	return
 
-def checkAddItemRasterizer(item, items, itemsDates, owner=None):
+def checkAddItemRasterizer(item, items, itemsDates, ignoreDrafts=False):
 	pk = item.pk
 	itemLastUpdate = unix_time_millis(item.lastUpdate)
 	if not pk in items and (not pk in itemsDates or itemsDates[pk]<itemLastUpdate):
@@ -471,7 +499,7 @@ def checkAddItemRasterizer(item, items, itemsDates, owner=None):
 			del itemsDates[pk]
 	return
 
-def getItems(models, areasToLoad, qZoom, city, checkAddItemFunction, itemDates=None, owner=None):
+def getItems(models, areasToLoad, qZoom, city, checkAddItemFunction, itemDates=None, owner=None, loadDrafts=True):
 	items = {}
 	for area in areasToLoad:
 
@@ -484,10 +512,19 @@ def getItems(models, areasToLoad, qZoom, city, checkAddItemFunction, itemDates=N
 		geometry = makeBox(tlX, tlY, tlX+qZoom, tlY+qZoom)
 
 		for model in models:
+
 			itemsQuerySet = globals()[model].objects(city=city, planetX=planetX, planetY=planetY, box__geo_intersects=geometry)
 
 			for item in itemsQuerySet:
-				checkAddItemFunction(item, items, itemDates, owner)
+				checkAddItemFunction(item, items, itemDates, loadDrafts)
+
+	if loadDrafts:
+		# add drafts
+		if owner is not None:
+			drafts = Path.objects(city=city, drawing=None, owner=owner)
+			for draft in drafts:
+				if not draft.pk in items:
+					items[draft.pk] = draft.to_json()
 
 	return items
 

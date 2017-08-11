@@ -42,6 +42,7 @@
 	"Drawing info": "Information sur le dessin",
 	"Select a single drawing": "Veuillez sélectionner un seul dessin",
 	"No path loaded": "Aucun tracé chargé",
+	"Your drawing cannot be bigger than 1000x1000 pixels.": "Le dessin ne peut pas faire plus de 1000x1000 pixels",
 
 	"You must be logged in to update drawings to the database.": "Vous devez être connecté pour mettre à jour un dessin",
 	
