@@ -17,7 +17,10 @@ import json
 from mongoengine import *
 connect('CommeUnDessein')
 
-SITE_ID = 4
+with open('/data/settings.json') as f:
+    localSettings = json.loads(f.read().strip())
+
+SITE_ID = localSettings['SITE_ID']
 
 PROJECT_DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -31,9 +34,6 @@ DEBUG = True
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
-with open('/data/settings.json') as f:
-    localSettings = json.loads(f.read().strip())
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
