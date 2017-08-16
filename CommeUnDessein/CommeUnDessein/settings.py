@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 from django.conf import global_settings
 import sys
 import os
+import json
 from mongoengine import *
 connect('CommeUnDessein')
 
@@ -30,6 +31,9 @@ DEBUG = True
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
+with open('/data/settings.json') as f:
+    localSettings = json.loads(f.read().strip())
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
@@ -51,10 +55,9 @@ with open('/data/secret_key.txt') as f:
 # SECRET_KEY = '*(iy*i+rt4bq$bu9%3r0er8$01e^$gpv@jwljecm$96=ggb35='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = localSettings['DEBUG']
 
-ALLOWED_HOSTS = ['comme-un-dessein.space', 'comme-un-dessein.io', 'localhost', '192.168.0.25']
-
+ALLOWED_HOSTS = ['commeundessein.co', 'localhost'] + localSettings['ALLOWED_HOSTS']
 
 # Application definition
 
@@ -199,6 +202,12 @@ MEDIA_URL = '/media/'
 # APPEND_SLASH=False
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+EMAIL_HOST = 'smtp.mailgun.org'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'postmaster@mg.commeundessein.co'
+EMAIL_HOST_PASSWORD = localSettings['EMAIL_HOST_PASSWORD']
+EMAIL_USE_TLS = True
+
 # DAJAXICE_MEDIA_PREFIX="dajaxice"
 
 # ---- ALLAUTH ---- #
@@ -213,8 +222,9 @@ AUTHENTICATION_BACKENDS = (
 LOGIN_REDIRECT_URL = '/'
 
 SOCIALACCOUNT_QUERY_EMAIL = True
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_REQUIRED = localSettings['ACCOUNT_EMAIL_REQUIRED']
+ACCOUNT_EMAIL_VERIFICATION = localSettings['ACCOUNT_EMAIL_VERIFICATION'] # "mandatory"
+
 # ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 
 # Dictionary containing provider specific settings.
