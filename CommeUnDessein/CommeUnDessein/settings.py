@@ -22,13 +22,15 @@ with open('/data/settings.json') as f:
 
 SITE_ID = localSettings['SITE_ID']
 
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = localSettings['DEBUG']
+
 PROJECT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-DEBUG = True
 # TEMPLATE_DEBUG = DEBUG
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -54,8 +56,6 @@ with open('/data/secret_key.txt') as f:
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = '*(iy*i+rt4bq$bu9%3r0er8$01e^$gpv@jwljecm$96=ggb35='
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = localSettings['DEBUG']
 
 ALLOWED_HOSTS = ['commeundessein.co', 'localhost'] + localSettings['ALLOWED_HOSTS']
 
