@@ -200,7 +200,9 @@ MEDIA_URL = '/media/'
 
 
 # APPEND_SLASH=False
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = localSettings['EMAIL_BACKEND']
 
 EMAIL_HOST = 'smtp.mailgun.org'
 EMAIL_PORT = 587
