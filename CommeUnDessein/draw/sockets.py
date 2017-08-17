@@ -9,7 +9,7 @@ from django.core import serializers
 from django.contrib.auth.models import User
 from django.db.models import F
 from models import Path, Box, Div, UserProfile, Drawing
-from ajax import TIPIBOT_PASSWORD
+from ajax import TIPIBOT_PASSWORD, drawingValidated
 from pprint import pprint
 from django.contrib.auth import authenticate, login, logout
 from paypal.standard.ipn.signals import payment_was_successful, payment_was_flagged, payment_was_refunded, payment_was_reversed
@@ -17,6 +17,8 @@ from math import *
 
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
+
+from django.dispatch import receiver
 
 from socketio.namespace import BaseNamespace
 from socketio.mixins import RoomsMixin, BroadcastMixin
@@ -29,6 +31,16 @@ from django.utils.html import escape
 # import pdb; pdb.set_trace()
 # import pudb; pu.db
 
+chatNamespace = None
+
+# --- Receive signals from ajax --- #
+@receiver(drawingValidated)
+def on_drawing_validated(sender, **kwargs):
+    if kwargs is not None and 'drawingId' in kwargs and 'status' in kwargs:
+        print "drawing change: " + str(kwargs['drawingId']) + ", " + str(kwargs['status'])
+        # chatNamespace.emit_to_room(chatNamespace.room, 'drawing change', {'type': 'status', 'drawingId': kwargs['drawingId'], 'status': kwargs['status']})
+        chatNamespace.broadcast_event('drawing change', {'type': 'status', 'drawingId': kwargs['drawingId'], 'status': kwargs['status']})
+
 @namespace('/chat')
 class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
     nicknames = []
@@ -37,6 +49,9 @@ class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
     def initialize(self):
         self.logger = logging.getLogger("socketio.chat")
         self.log("Socketio chat session started")
+        global chatNamespace
+        chatNamespace = self
+
 
     def log(self, message):
         self.logger.info(u"[{0}] {1}".format(self.socket.sessid, message))

@@ -6,6 +6,7 @@ import shutil
 import os.path
 import errno
 import json
+
 # from django.utils import json
 # from dajaxice.decorators import dajaxice_register
 from django.core import serializers
@@ -22,6 +23,7 @@ import random
 import re
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
+import django.dispatch
 
 from mongoengine import ValidationError
 from mongoengine.queryset import Q
@@ -469,12 +471,12 @@ def loadCity(request, pk):
 	return json.dumps( { 'state': 'succes', 'city': city.to_json() } )
 
 def getCity(request, cityObject=None):
-	if not cityObject or not ('name' in cityObject and 'owner' in cityObject) or (cityObject['name'] == '' or cityObject['owner'] == ''):
+	if not cityObject or not ('name' in cityObject) or (cityObject['name'] == ''):
 		city = commeUnDesseinCity
 	else:
 		try:
-			city = City.objects.get(name=cityObject['name'], owner=cityObject['owner'])
-			if not city.public and request.user.username != city.owner:
+			city = City.objects.get(name=cityObject['name'])
+			if not city.public:
 				return None
 		except City.DoesNotExist:
 			return None
@@ -1342,8 +1344,11 @@ def saveDrawing(request, clientId, date, pathPks, title, description):
 
 	points = [ [xMin, yMin], [xMax, yMin], [xMax, yMax], [xMin, yMax], [xMin, yMin] ]
 
-	d = Drawing(clientId=clientId, city=city, planetX=planetX, planetY=planetY, box=[points], owner=request.user.username, paths=paths, date=datetime.datetime.fromtimestamp(date/1000.0), title=title, description=description)
-	d.save()
+	try:
+		d = Drawing(clientId=clientId, city=city, planetX=planetX, planetY=planetY, box=[points], owner=request.user.username, paths=paths, date=datetime.datetime.fromtimestamp(date/1000.0), title=title, description=description)
+		d.save()
+	except NotUniqueError:
+		return json.dumps({'state': 'error', 'message': 'A drawing with this name already exists.'})
 
 	pathPks = []
 	for path in paths:
@@ -1451,6 +1456,8 @@ def isDrawingValidated(nPositiveVotes, nNegativeVotes):
 def isDrawingRejected(nNegativeVotes):
 	return nNegativeVotes >= negativeVoteThreshold
 
+drawingValidated = django.dispatch.Signal(providing_args=["drawingId", "status"])
+
 @checkDebug
 def vote(request, pk, date, positive):
 	if not request.user.is_authenticated():
@@ -1502,6 +1509,8 @@ def vote(request, pk, date, positive):
 	validates = isDrawingValidated(nPositiveVotes, nNegativeVotes)
 	rejects = isDrawingRejected(nNegativeVotes)
 
+	delay = 1
+
 	if validates or rejects:
 
 		def timeout(drawingPk):
@@ -1519,7 +1528,14 @@ def vote(request, pk, date, positive):
 				drawing.status = 'rejected'
 				drawing.save()
 
-		t = Timer(1, timeout, args=[pk])
+			drawingValidated.send(sender=None, drawingId=drawing.clientId, status=drawing.status)
+
+			return
+
+		if datetime.datetime.now() - drawing.date < datetime.timedelta(hours=6):
+			delay = (drawing.date + datetime.timedelta(hours=6) - datetime.datetime.now()).total_seconds()
+		
+		t = Timer(delay, timeout, args=[pk])
 		t.start()
 	
 	votes = []
@@ -1527,7 +1543,7 @@ def vote(request, pk, date, positive):
 		if isinstance(vote, Vote):
 			votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk) } )
 
-	return json.dumps( {'state': 'success', 'owner': request.user.username, 'drawingPk':str(drawing.pk), 'votePk':str(vote.pk), 'validates': validates, 'rejects': rejects, 'votes': votes } )
+	return json.dumps( {'state': 'success', 'owner': request.user.username, 'drawingPk':str(drawing.pk), 'votePk':str(vote.pk), 'validates': validates, 'rejects': rejects, 'votes': votes, 'delay': delay } )
 
 # --- Get Next Drawing To Be Drawn / Set Drawing Drawn --- #
 

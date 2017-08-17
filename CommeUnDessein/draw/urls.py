@@ -12,6 +12,13 @@ urlpatterns = [
 
     url(r'^debug\.html', views.index, {'useDebugFiles': True}, name='index'),
 
+    url(r'^debug-free\.html', views.index, {'drawingMode': 'free', 'useDebugFiles': True}, name='index'),
+    url(r'^debug-pixel\.html', views.index, {'drawingMode': 'pixel', 'useDebugFiles': True}, name='index'),
+    url(r'^debug-image\.html', views.index, {'drawingMode': 'image', 'useDebugFiles': True}, name='index'),
+    url(r'^debug-ortho\.html', views.index, {'drawingMode': 'ortho', 'useDebugFiles': True}, name='index'),
+    url(r'^debug-ortho-diag\.html', views.index, {'drawingMode': 'orthoDiag', 'useDebugFiles': True}, name='index'),
+    url(r'^debug-line\.html', views.index, {'drawingMode': 'line', 'useDebugFiles': True}, name='index'),
+
     url(r'^free\.html', views.index, {'drawingMode': 'free'}, name='index'),
     url(r'^pixel\.html', views.index, {'drawingMode': 'pixel'}, name='index'),
     url(r'^image\.html', views.index, {'drawingMode': 'image'}, name='index'),
