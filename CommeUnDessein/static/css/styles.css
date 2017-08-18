@@ -265,8 +265,11 @@ button:active:hover,
 .mode-button:focus {
   outline: none;
 }
+h4 {
+  font-size: 14px;
+}
 .btn {
-  font-size: 13px;
+  font-size: 12px;
 }
 .btn-transparent {
   color: white;
@@ -1748,9 +1751,9 @@ li.tool-btn.selected .favorite-btn {
   min-height: 100%;
   width: auto;
   margin-right: 0;
-  padding-right: 10px;
-  padding-left: 10px;
-  padding-bottom: 10px;
+  padding-right: 7px;
+  padding-left: 7px;
+  padding-bottom: 7px;
 }
 #drawingPanel .container .header {
   min-height: 40px;
@@ -1763,8 +1766,8 @@ li.tool-btn.selected .favorite-btn {
   margin-right: -5px;
 }
 #drawingPanel .container .header button {
-  width: 29px;
-  height: 29px;
+  width: 30px;
+  height: 30px;
   margin: 2px;
   background-color: #33383e;
 }
