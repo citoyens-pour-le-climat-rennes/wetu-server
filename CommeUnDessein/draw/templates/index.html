@@ -291,7 +291,7 @@
                   <div class="panel-heading">
                     <h4 class="panel-title collapsed file" data-toggle="collapse" data-target="#City">
                       <a>
-                        City
+                        <span data-i18n='Modes'>Modes</span>
                       </a>
                     </h4>
                   </div>
@@ -300,16 +300,16 @@
                     <div class="panel-body romanesco-ui">
 
                       <div class="mCustomScrollbar cities romanesco-ui">
-                        <h6>Your cities</h6>
-                        <ul class="city-list user-cities">
+                        <h6 class="hidden">Your cities</h6>
+                        <ul class="city-list user-cities hidden">
                         </ul>
-                        <h6>Public cities</h6>
+                        <h6 class="hidden">Public cities</h6>
                         <ul class="city-list public-cities ">
                         </ul>
                       </div>
                       <div class='footer'>
                         <!-- <button class="btn btn-success open" type="button"><span class="glyphicon glyphicon-open" aria-hidden="true"></span>List cities</button> -->
-                        <button class="btn btn-success create-city" type="button"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Create city</button>
+                        <button class="btn btn-success create-city" type="button"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span><span data-i18n='Create mode'>Create mode</span></button>
                       </div>
                     </div>
                   </div>
@@ -949,16 +949,8 @@
       <param name="onload" value="pluginLoaded" />
     </object>
 
-    <script>
-        var R = {};
-        R.city = { owner: '{{ owner }}', name: '{{ city }}', site: '{{ site }}' };
-        R.loadEntireArea = '{{ loadEntireArea }}' === 'True';
-        R.loadedBox = '{{ box }}'.length>0?JSON.parse('{{ box }}'):null;
-    </script>
-
-    <script src="//ajax.googleapis.com/ajax/libs/webfont/1.5.10/webfont.js"></script>
     <script src="{% static 'libs/break-on-access.js' %}"></script>
-    <script>WEB_SOCKET_SWF_LOCATION="{% static 'flashsocket/WebSocketMain.swf' %}"; window.room = "0";</script>
+    <script>WEB_SOCKET_SWF_LOCATION="{% static 'flashsocket/WebSocketMain.swf' %}";</script>
 
 
     {% if useDebugFiles %}

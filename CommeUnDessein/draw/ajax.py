@@ -1426,11 +1426,16 @@ def deleteDrawing(request, pk):
 
 # --- get drafts --- #
 @checkDebug
-def getDrafts(request):
+def getDrafts(request, city=None):
+
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
 
-	paths = Path.objects(owner=request.user.username, drawing=None)
+	cityPk = getCity(request, city)
+	if not cityPk:
+		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
+
+	paths = Path.objects(owner=request.user.username, drawing=None, city=cityPk)
 	items = []
 
 	for path in paths:
@@ -1580,8 +1585,13 @@ def loadItems(request, itemsToLoad):
 	return json.dumps( {'state': 'success', 'items': items } )
 
 @checkDebug
-def getNextValidatedDrawing(request):
-	drawings = Drawing.objects(status='drawing')
+def getNextValidatedDrawing(request, city=None):
+	
+	cityPk = getCity(request, city)
+	if not cityPk:
+		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
+	
+	drawings = Drawing.objects(status='drawing', city=cityPk)
 
 	drawing = drawings.first()
 	if drawing is not None:

@@ -123,5 +123,10 @@
     "Can only load Paths, Divs, Boxs, AreaToUpdates or Drawings.": "Can only load Paths, Divs, Boxs, AreaToUpdates or Drawings.",
     "A drawing with this name already exists.": "Un dessin avec ce nom existe déjà.",
     "You successfully voted, the drawing will be rejected": "Votre vote a bien été pris en compte ! Le dessin sera rejeté dans {{duration}} si personne n'annule son vote...",
-    "You successfully voted, the drawing will be validated": "Votre vote a bien été pris en compte ! Le dessin sera validé dans {{duration}} si personne n'annule son vote..."
+    "You successfully voted, the drawing will be validated": "Votre vote a bien été pris en compte ! Le dessin sera validé dans {{duration}} si personne n'annule son vote...",
+    "Create mode": "Créer un mode",
+    "Modes": "Modes",
+    "line": "ligne",
+    "orthoDiag": "ortho-diag",
+    "lineOrthoDiag": "ligne-ortho-diag"
 }
