@@ -204,6 +204,8 @@ MEDIA_URL = '/media/'
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_BACKEND = localSettings['EMAIL_BACKEND']
 
+DEFAULT_FROM_EMAIL = 'contact@commeundessein.co'
+
 EMAIL_HOST = 'smtp.mailgun.org'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'postmaster@mg.commeundessein.co'
