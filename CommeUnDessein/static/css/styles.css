@@ -1,6 +1,7 @@
 body {
   background-color: white;
   overflow: hidden;
+  font-family: 'Open Sans', sans-serif;
 }
 .glyphicon-refresh-animate {
   -animation: spin 1.25s infinite linear;
@@ -56,7 +57,6 @@ select:-webkit-autofill {
 .commeUnDessein-ui,
 .commeUnDessein-ui.open {
   background-color: #33383e;
-  font-family: 'Lucida Grande', sans-serif;
   font-size: 11px;
   color: #eeeeee;
 }
@@ -213,7 +213,7 @@ select:-webkit-autofill {
   font-weight: 300;
 }
 .layer .layer-header:hover {
-  background-color: #6f5499;
+  background-color: #5cb85c;
 }
 .layer .commeUnDessein-ui .btn {
   height: 23px;
@@ -279,8 +279,22 @@ h4 {
 .btn-transparent:focus {
   color: #efefef;
 }
+body.line #FavoriteTools ul.tool-list li.tool-btn,
+body.line #FavoriteTools ul.tool-list ul li {
+  padding: 4px;
+  margin: 1px;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+body.line #FavoriteTools ul.tool-list li.tool-btn img,
+body.line #FavoriteTools ul.tool-list ul li img {
+  width: 42px;
+  height: 42px;
+}
+body.line #FavoriteTools ul.tool-list li.tool-btn:hover,
+body.line #FavoriteTools ul.tool-list ul li:hover {
+  background-color: #5cb85c;
+}
 #FavoriteTools {
-  font-family: 'Lucida Grande', sans-serif;
   z-index: 1001;
   position: fixed;
   top: 0;
@@ -293,11 +307,13 @@ h4 {
 }
 #FavoriteTools h3.title {
   width: 265px;
+  text-align: center;
+  padding-top: 4px;
   margin-top: 0;
   margin-bottom: 0;
   color: white;
-  font-family: 'Bitter', serif;
-  font-size: 18px;
+  font-family: 'Amatic SC', cursive;
+  font-size: 36px;
 }
 #FavoriteTools h3.title img {
   width: 50px;
@@ -305,10 +321,8 @@ h4 {
 }
 @media (max-width: 850px) {
   #FavoriteTools h3.title {
-    width: 45px;
-  }
-  #FavoriteTools h3.title span {
-    display: none;
+    width: 68px;
+    font-size: 16px;
   }
 }
 #FavoriteTools ul.tool-list {
@@ -353,7 +367,7 @@ h4 {
 }
 #FavoriteTools ul.tool-list li.tool-btn:hover,
 #FavoriteTools ul.tool-list ul li:hover {
-  background-color: #6f5499;
+  background-color: #5cb85c;
 }
 #FavoriteTools ul.tool-list li.tool-btn.text-btn,
 #FavoriteTools ul.tool-list ul li.text-btn {
@@ -806,7 +820,7 @@ h4 {
   opacity: 0.9;
 }
 .mCustomScrollbar.code .files.commeUnDessein-ui .jqtree-tree .jqtree-element:hover {
-  background-color: #6f5499;
+  background-color: #5cb85c;
 }
 .mCustomScrollbar.code .files.commeUnDessein-ui .jqtree-tree .jqtree-element:hover button.close {
   display: block;
@@ -816,7 +830,7 @@ h4 {
   background-color: #24282d;
 }
 .mCustomScrollbar.code .files.commeUnDessein-ui .jqtree-tree .jqtree-folder > .jqtree-element:first-child:hover {
-  background-color: #6f5499;
+  background-color: #5cb85c;
 }
 .mCustomScrollbar.code .files.commeUnDessein-ui .jqtree-tree .jqtree-folder.jqtree-selected > .jqtree-element:first-child {
   background-color: rgba(95, 72, 132, 0.5);
@@ -839,7 +853,6 @@ h4 {
   text-shadow: none;
 }
 .mCustomScrollbar.code .files.commeUnDessein-ui .jqtree-tree .jqtree-title {
-  font-family: 'Lucida Grande', sans-serif;
   font-size: 11px;
   color: #eeeeee;
   margin-left: 5px;
@@ -880,7 +893,7 @@ li.tool-btn {
   padding: 6px;
 }
 li.tool-btn:hover {
-  background-color: #6f5499;
+  background-color: #5cb85c;
 }
 li.tool-btn img {
   width: 25px;
@@ -939,7 +952,7 @@ li.tool-btn.selected .favorite-btn {
   background-image: url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlI+hKgFxoCgAOw==);
 }
 .mCustomScrollbar.tree li .title:hover {
-  background-color: #6f5499;
+  background-color: #5cb85c;
 }
 .mCustomScrollbar.tree li .title.no-arrow {
   background-image: none;
@@ -1064,7 +1077,6 @@ li.tool-btn.selected .favorite-btn {
 		}
 	}*/
   color: #eeeeee;
-  font-family: 'Lucida Grande', sans-serif;
   font-size: 11px;
 }
 .sidebar.r-alert {
@@ -1143,7 +1155,7 @@ li.tool-btn.selected .favorite-btn {
   margin-right: 0;
 }
 .sidebar #City .mCustomScrollbar .city-list li:hover {
-  background-color: #6f5499;
+  background-color: #5cb85c;
 }
 .sidebar #City .mCustomScrollbar .city-list li:hover button {
   display: block;
@@ -1158,7 +1170,6 @@ li.tool-btn.selected .favorite-btn {
 .sidebar .mCustomScrollbar.history,
 .sidebar .mCustomScrollbar.rItems {
   max-height: 400px;
-  border: 1px solid rgba(128, 128, 128, 0.61);
   padding: 3px;
 }
 .sidebar .mCustomScrollbar.history ul.command-list,
@@ -1202,7 +1213,7 @@ li.tool-btn.selected .favorite-btn {
 .sidebar .mCustomScrollbar.rItems ul.rDiv-list li:hover,
 .sidebar .mCustomScrollbar.history ul.rPath-list li:hover,
 .sidebar .mCustomScrollbar.rItems ul.rPath-list li:hover {
-  background-color: #6f5499;
+  background-color: #5cb85c;
 }
 .sidebar .mCustomScrollbar.history ul.rDiv-list,
 .sidebar .mCustomScrollbar.rItems ul.rDiv-list,
@@ -1342,7 +1353,6 @@ li.tool-btn.selected .favorite-btn {
   border: 0;
   background: #33383e;
   color: #eeeeee;
-  font-family: 'Lucida Grande', sans-serif;
   font-size: 11px;
   font-style: normal;
   font-variant: normal;
@@ -1352,13 +1362,9 @@ li.tool-btn.selected .favorite-btn {
   padding: 0;
 }
 .sidebar .panel .panel-heading .panel-title {
-  border-bottom-color: rgba(255, 255, 255, 0.2);
-  border-bottom-style: solid;
-  border-bottom-width: 1px;
   box-sizing: border-box;
   cursor: pointer;
   color: #eeeeee;
-  font-family: 'Lucida Grande', sans-serif;
   font-size: 11px;
   display: list-item;
   height: 27px;
@@ -1382,7 +1388,7 @@ li.tool-btn.selected .favorite-btn {
   background-image: url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlGIWqMCbWAEAOw==);
 }
 .sidebar .panel .panel-body {
-  padding-left: 20px;
+  padding: 10px;
   border-top: none !important;
 }
 .sidebar #user-login-group {
@@ -1403,7 +1409,6 @@ li.tool-btn.selected .favorite-btn {
   box-sizing: border-box;
   cursor: pointer;
   color: #eeeeee;
-  font-family: 'Lucida Grande', sans-serif;
   font-size: 11px;
   display: list-item;
   height: 27px;
@@ -1423,7 +1428,6 @@ li.tool-btn.selected .favorite-btn {
 }
 .sidebar #user-login-group .dropdown-menu li > a {
   color: #eeeeee;
-  font-family: 'Lucida Grande', sans-serif;
   font-size: 11px;
   line-height: 27px;
 }
@@ -1472,7 +1476,7 @@ li.tool-btn.selected .favorite-btn {
 .dat-gui .dg.main .dg .c select,
 .dat-gui .dg.main .dg .c textarea {
   color: #eee;
-  font: 11px 'Lucida Grande', sans-serif;
+  font-size: 11px;
   text-shadow: 0 -1px 0 #111111;
   background-color: #24282d;
 }
@@ -1675,7 +1679,7 @@ li.tool-btn.selected .favorite-btn {
   cursor: pointer;
 }
 .cd-button:hover {
-  background-color: #6f5499;
+  background-color: #5cb85c;
 }
 ::-webkit-scrollbar {
   width: 12px;
@@ -2103,7 +2107,6 @@ li.tool-btn.selected .favorite-btn {
           align-items: center;
   -webkit-box-pack: center;
           justify-content: center;
-  font-family: 'Lucida Grande';
   font-size: 20px;
   position: fixed;
   top: 0;
