@@ -48,8 +48,10 @@ import base64
 import functools
 
 debugMode = False
-positiveVoteThreshold = 2
-negativeVoteThreshold = 2
+positiveVoteThreshold = 50
+negativeVoteThreshold = 5
+voteValidationDelay = datetime.timedelta(minutes=1) 		# once the drawing gets positiveVoteThreshold votes, the duration before the drawing gets validated (the drawing is not immediately validated in case the user wants to cancel its vote)
+voteMinDuration = datetime.timedelta(hours=6)				# the minimum duration the vote will last (to make sure a good moderation happens)
 
 drawingModes = ['free', 'ortho', 'orthoDiag', 'pixel', 'image']
 
@@ -154,6 +156,20 @@ def setNegativeVoteThreshold(request, voteThreshold):
 		return json.dumps({"status": "error", "message": "not_admin"})
 	global negativeVoteThreshold
 	negativeVoteThreshold = voteThreshold
+	return json.dumps({"message": "success"})
+
+def setVoteValidationDelay(request, hours, minutes, seconds):
+	if not isAdmin(request.user):
+		return json.dumps({"status": "error", "message": "not_admin"})
+	global voteValidationDelay
+	voteValidationDelay = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds)
+	return json.dumps({"message": "success"})
+
+def setVoteMinDuration(request, hours, minutes, seconds):
+	if not isAdmin(request.user):
+		return json.dumps({"status": "error", "message": "not_admin"})
+	global voteMinDuration
+	voteMinDuration = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds)
 	return json.dumps({"message": "success"})
 
 # @dajaxice_register
@@ -1486,10 +1502,14 @@ def vote(request, pk, date, positive):
 				if datetime.datetime.now() - vote.date < datetime.timedelta(minutes=1):
 					return json.dumps({'state': 'error', 'message': 'You must wait one minute before cancelling your vote.', 'cancelled': False })
 				# cancel vote: delete vote and return:
+				vote.author.votes.remove(vote)
+				drawing.votes.remove(vote)
 				vote.delete()
 				return json.dumps({'state': 'success', 'message': 'Your vote was cancelled.', 'cancelled': True })
 			else:
 				# votes are different: delete vote and break (create a new one):
+				vote.author.votes.remove(vote)
+				drawing.votes.remove(vote)
 				vote.delete()
 				break
 
@@ -1514,7 +1534,7 @@ def vote(request, pk, date, positive):
 	validates = isDrawingValidated(nPositiveVotes, nNegativeVotes)
 	rejects = isDrawingRejected(nNegativeVotes)
 
-	delay = 1
+	delay = voteValidationDelay.total_seconds()
 
 	if validates or rejects:
 
@@ -1537,8 +1557,8 @@ def vote(request, pk, date, positive):
 
 			return
 
-		if datetime.datetime.now() - drawing.date < datetime.timedelta(hours=6):
-			delay = (drawing.date + datetime.timedelta(hours=6) - datetime.datetime.now()).total_seconds()
+		if datetime.datetime.now() - drawing.date < voteMinDuration:
+			delay = (drawing.date + voteMinDuration - datetime.datetime.now()).total_seconds()
 		
 		t = Timer(delay, timeout, args=[pk])
 		t.start()
@@ -1616,6 +1636,8 @@ def setDrawingStatusDrawn(request, pk, secret):
 	
 	drawing.status = 'drawn'
 	drawing.save()
+
+	drawingValidated.send(sender=None, drawingId=drawing.clientId, status=drawing.status)
 
 	return json.dumps( {'state': 'success', 'message': 'Drawing status successfully updated.', 'pk': pk } )
 
