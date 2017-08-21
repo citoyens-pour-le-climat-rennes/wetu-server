@@ -57,7 +57,7 @@ with open('/data/secret_key.txt') as f:
 # SECRET_KEY = '*(iy*i+rt4bq$bu9%3r0er8$01e^$gpv@jwljecm$96=ggb35='
 
 
-ALLOWED_HOSTS = ['commeundessein.co', 'localhost'] + localSettings['ALLOWED_HOSTS']
+ALLOWED_HOSTS = ['commeundessein.co', 'localhost', '127.0.0.1'] + localSettings['ALLOWED_HOSTS']
 
 # Application definition
 
