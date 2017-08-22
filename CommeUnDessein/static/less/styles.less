@@ -299,6 +299,27 @@ body.line {
 			}
 		}
 	}
+
+	#drawingPanel .container .content .votes button {
+		span.glyphicon {
+			display: none;
+		}
+		img.line {
+		    display: inline-block;
+		}
+	}
+}
+
+body.hand {
+
+	#drawingPanel .container .content .votes button {
+		span.glyphicon {
+			display: none;
+		}
+		img.hand {
+		    display: inline-block;
+		}
+	}
 }
 
 #FavoriteTools {
@@ -334,6 +355,13 @@ body.line {
 		img {
     		width: 50px;
     		padding: 10px;
+		}
+		a {
+			color: white;
+			&:hover, &:visited, &:active {
+				color: white;
+				text-decoration: none;
+			}
 		}
 	}
 	@media (max-width: 850px) {
@@ -2078,18 +2106,30 @@ li.tool-btn {
 						margin: 6px;
 					}
 				}
-				.glyphicon {
-					margin-right: 0px;
+				.glyphicon {    
+					margin-right: 8px;
 				}
 
 				button {
-					padding: 10px 10px 6px 10px;
-					font-size: 18px;
+					// padding: 10px 10px 6px 10px;
+					font-size: 12px;
 					flex-grow: 1;
 					align-items: center;
 					margin-top: 4px;
 					margin-bottom: 4px;
 					margin-left: 0px;
+
+					img {
+    					margin-right: 8px;
+    					width: 30px;
+    					display: none;
+					}
+
+					&.voted {
+						background-color: rgb(238, 162, 54);
+						border-color: rgb(238, 162, 54);
+					}
+
 				}
 
     			.vote-stats {

@@ -294,6 +294,18 @@ body.line #FavoriteTools ul.tool-list li.tool-btn:hover,
 body.line #FavoriteTools ul.tool-list ul li:hover {
   background-color: #5cb85c;
 }
+body.line #drawingPanel .container .content .votes button span.glyphicon {
+  display: none;
+}
+body.line #drawingPanel .container .content .votes button img.line {
+  display: inline-block;
+}
+body.hand #drawingPanel .container .content .votes button span.glyphicon {
+  display: none;
+}
+body.hand #drawingPanel .container .content .votes button img.hand {
+  display: inline-block;
+}
 #FavoriteTools {
   z-index: 1001;
   position: fixed;
@@ -318,6 +330,15 @@ body.line #FavoriteTools ul.tool-list ul li:hover {
 #FavoriteTools h3.title img {
   width: 50px;
   padding: 10px;
+}
+#FavoriteTools h3.title a {
+  color: white;
+}
+#FavoriteTools h3.title a:hover,
+#FavoriteTools h3.title a:visited,
+#FavoriteTools h3.title a:active {
+  color: white;
+  text-decoration: none;
 }
 @media (max-width: 850px) {
   #FavoriteTools h3.title {
@@ -1837,11 +1858,10 @@ li.tool-btn.selected .favorite-btn {
   margin: 6px;
 }
 #drawingPanel .container .content .votes .glyphicon {
-  margin-right: 0px;
+  margin-right: 8px;
 }
 #drawingPanel .container .content .votes button {
-  padding: 10px 10px 6px 10px;
-  font-size: 18px;
+  font-size: 12px;
   -webkit-box-flex: 1;
           flex-grow: 1;
   -webkit-box-align: center;
@@ -1849,6 +1869,15 @@ li.tool-btn.selected .favorite-btn {
   margin-top: 4px;
   margin-bottom: 4px;
   margin-left: 0px;
+}
+#drawingPanel .container .content .votes button img {
+  margin-right: 8px;
+  width: 30px;
+  display: none;
+}
+#drawingPanel .container .content .votes button.voted {
+  background-color: #eea236;
+  border-color: #eea236;
 }
 #drawingPanel .container .content .votes .vote-stats {
   margin-left: 5px;

@@ -236,7 +236,7 @@ ACCOUNT_EMAIL_VERIFICATION = localSettings['ACCOUNT_EMAIL_VERIFICATION'] # "mand
 # Dictionary containing provider specific settings.
 SOCIALACCOUNT_PROVIDERS = {
     'facebook': {
-        'SCOPE': ['email', 'publish_stream'],
+        'SCOPE': ['email', 'publish_actions'],
         'METHOD': 'js_sdk'  # instead of 'oauth2'
     },
     'google': {
