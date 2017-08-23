@@ -78,6 +78,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.github',
     'paypal.standard.ipn',
+    'anymail',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -211,6 +212,11 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'postmaster@mg.commeundessein.co'
 EMAIL_HOST_PASSWORD = localSettings['EMAIL_HOST_PASSWORD']
 EMAIL_USE_TLS = True
+
+ANYMAIL = {
+    "MAILGUN_API_KEY": localSettings['MAILGUN_API_KEY'],
+    "MAILGUN_SENDER_DOMAIN": 'mg.commeundessein.co',  # your Mailgun domain, if needed
+}
 
 # DAJAXICE_MEDIA_PREFIX="dajaxice"
 
