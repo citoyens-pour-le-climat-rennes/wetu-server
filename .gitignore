@@ -72,3 +72,5 @@ CommeUnDessein/CommeUnDessein/static/
 CommeUnDessein/rasterizer/
 
 .DS_Store
+
+pip-selfcheck.json
