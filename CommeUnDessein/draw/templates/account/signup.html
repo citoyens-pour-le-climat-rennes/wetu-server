@@ -2,10 +2,10 @@
 
 {% load i18n %}
 
-{% block head_title %}{% trans "Signup" %}{% endblock %}
+{% block head_title %}Créer un compte{% endblock %}
 
 {% block content %}
-<h1 class="form-signin-heading">{% trans "Sign Up" %}</h1>
+<h1 class="form-signin-heading">Créer un compte</h1>
 
 <form class="form-signin signup" id="signup_form" method="post" action="{% url 'account_signup' %}" role="form">
   {% csrf_token %}
@@ -13,7 +13,7 @@
   {% if redirect_field_value %}
   <input type="hidden" class="form-control" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
   {% endif %}
-  <button class="btn btn-lg btn-primary btn-block" type="submit">{% trans "Sign Up" %}</button>
+  <button class="btn btn-lg btn-primary btn-block" type="submit">Créer un compte</button>
 </form>
 
 

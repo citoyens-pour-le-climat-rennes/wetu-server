@@ -29,11 +29,11 @@
       <div class="menu">
         <ul class="button-list">
         	{% if user.is_authenticated %}
-        	<li><a href="{% url 'account_email' %}"><div>Change E-mail</div></a></li>
-        	<li><a href="{% url 'account_logout' %}"><div>Sign Out</div></a></li>
+        	<li><a href="{% url 'account_email' %}"><div>Changer d'adresse E-mail</div></a></li>
+        	<li><a href="{% url 'account_logout' %}"><div>Se déconnecter</div></a></li>
         	{% else %}
-        	<li><a href="{% url 'account_login' %}"><div>Sign In</div></a></li>
-        	<li><a href="{% url 'account_signup' %}"><div>Sign Up</div></a></li>
+        	<li><a href="{% url 'account_login' %}"><div>Se connecter</div></a></li>
+        	<li><a href="{% url 'account_signup' %}"><div>Créer un compte</div></a></li>
         	{% endif %}
         </ul>
       </div>
