@@ -216,6 +216,8 @@ EMAIL_USE_TLS = True
 ANYMAIL = {
     "MAILGUN_API_KEY": localSettings['MAILGUN_API_KEY'],
     "MAILGUN_SENDER_DOMAIN": 'mg.commeundessein.co',  # your Mailgun domain, if needed
+    "MAILJET_API_KEY": localSettings['MAILJET_API_KEY'],
+    "MAILJET_SECRET_KEY": localSettings['MAILJET_SECRET_KEY'],
 }
 
 # DAJAXICE_MEDIA_PREFIX="dajaxice"
