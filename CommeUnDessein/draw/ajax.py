@@ -1372,7 +1372,7 @@ def saveDrawing(request, clientId, date, pathPks, title, description):
 		path.save()
 		pathPks.append(str(path.pk))
 
-	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk), 'pathPks': pathPks } )
+	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk), 'pathPks': pathPks, 'negativeVoteThreshold': negativeVoteThreshold, 'positiveVoteThreshold': positiveVoteThreshold, 'voteMinDuration': voteMinDuration } )
 
 # @dajaxice_register
 @checkDebug
@@ -1499,13 +1499,13 @@ def vote(request, pk, date, positive):
 	for vote in drawing.votes:
 		if vote.author.username == request.user.username:
 			if vote.positive == positive:
-				if datetime.datetime.now() - vote.date < datetime.timedelta(minutes=1):
-					return json.dumps({'state': 'error', 'message': 'You must wait one minute before cancelling your vote.', 'cancelled': False })
+				if datetime.datetime.now() - vote.date < voteValidationDelay:
+					return json.dumps({'state': 'error', 'message': 'You must wait before cancelling your vote', 'cancelled': False, 'voteValidationDelay': voteValidationDelay.total_seconds(), 'messageOptions': ['voteValidationDelay'] })
 				# cancel vote: delete vote and return:
 				vote.author.votes.remove(vote)
 				drawing.votes.remove(vote)
 				vote.delete()
-				return json.dumps({'state': 'success', 'message': 'Your vote was cancelled.', 'cancelled': True })
+				return json.dumps({'state': 'success', 'message': 'Your vote was cancelled', 'cancelled': True })
 			else:
 				# votes are different: delete vote and break (create a new one):
 				vote.author.votes.remove(vote)

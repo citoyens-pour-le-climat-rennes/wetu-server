@@ -46,6 +46,16 @@ def index(request, site=None, owner=None, city=None, x=0, y=0, useDebugFiles=Fal
 	response = render_to_response(	"index.html", result, RequestContext(request) )
 	return response
 
+def about(request):
+	return render_to_response(	"about.html", {}, RequestContext(request) )
+
+def termsOfService(request):
+	return render_to_response(	"terms-of-service.html", {}, RequestContext(request) )
+
+def privacyPolicy(request):
+	return render_to_response(	"privacy-policy.html", {}, RequestContext(request) )
+
+
 def ajaxCall(request):
 	# import pdb; pdb.set_trace()
 	if request.is_ajax():

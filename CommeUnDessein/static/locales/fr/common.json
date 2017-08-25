@@ -62,7 +62,7 @@
     "Error: a path has not been saved yet, please wait until the path is saved before creating the drawing": "Erreur: un tracé n'a pas encore été sauvegardé. Veuillez attendre que le tracé soit sauvegardé avant de soumettre le dessin.",
     "Your item overlaps with two planets": "Le tracé sors du cadre",
     "Error: The drawing is empty": "Le dessin est vide",
-    "Drawing successfully submitted": "Le dessin à été soumis au vote, il sera dessiné s'il reçoit 100 votes",
+    "Drawing successfully submitted": "Le dessin à été soumis au vote, il sera dessiné s'il reçoit {{positiveVoteThreshold}} votes",
     "Drawing successfully modified": "Dessin modifié avec succès",
     "Drawing successfully cancelled": "Dessin annulé avec succès",
     "Position invalid": "Position non valide",
@@ -120,7 +120,7 @@
     "The user does not exist": "L'utilisateur n'existe pas",
     "Username does not exist": "Le nom d'utilisateur n'existe pas",
     "Your vote was cancelled": "Votre a été annulé",
-    "You must wait one minute before cancelling your vote": "Veuillez attendre une minute avant d'annuler votre vote",
+    "You must wait before cancelling your vote": "Veuillez attendre {{voteValidationDelay}} secondes avant d'annuler votre vote",
     "Cannot vote for own drawing": "Vous ne pouvez pas voter pour votre propre dessin",
     "Drawing does not exist": "Le dessin n'existe pas",
     "Not owner of drawing": "Vous n'être pas l'auteur de ce dessin",
@@ -144,5 +144,9 @@
     "cross": "croix",
     "lineOrthoDiag": "ligne-ortho-diag",
     "Please zoom before drawing": "Veuillez zommer avant de dessiner",
-    "Please cancel the drawing before deleting its paths": "Veuillez annuler le dessin avant de supprimer tous ses tracés"
+    "Please cancel the drawing before deleting its paths": "Veuillez annuler le dessin avant de supprimer tous ses tracés",
+    "About": "À propos",
+    "Terms of Service": "Conditions générales d'utilisation",
+    "Privacy Policy": "Politique de confidentialité",
+    "About Comme Un Dessein": "À propos de Comme Un Dessein"
 }

@@ -9,6 +9,9 @@ urlpatterns = [
     url(r'^draw/templates/index\.html', views.index, name='index'),
     url(r'^draw/index\.html', views.index, name='index'),
     url(r'^index\.html', views.index, name='index'),
+    url(r'^about\.html', views.about),
+    url(r'^privacy-policy\.html', views.privacyPolicy),
+    url(r'^terms-of-service\.html', views.termsOfService),
 
     url(r'^debug\.html', views.index, {'useDebugFiles': True}, name='index'),
 
