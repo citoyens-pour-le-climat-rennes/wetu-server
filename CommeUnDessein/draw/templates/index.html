@@ -434,7 +434,7 @@
           <div class="hidden text-separator"></div>
 
           <!-- <canvas id="background-canvas" resize hidpi="off"></canvas> -->
-          <canvas id="canvas" resize hidpi="off" data-pos-x="{{ x }}" data-pos-y="{{ y }}" data-points="{{ points }}" data-box="{{ box }}" data-site="{{ site }}" data-message="{{ message }}" data-load-entire-area="{{ loadEntireArea }}" data-city="{{ city }}" data-owner="{{ owner }}" data-github-login="{{ githubLogin }}" data-username="{{ request.user.username }}" data-is-authenticated="{{ request.user.is_authenticated }}" data-drawing-mode="{{ drawingMode }}"></canvas>
+          <canvas id="canvas" resize hidpi="off" data-pos-x="{{ x }}" data-pos-y="{{ y }}" data-points="{{ points }}" data-box="{{ box }}" data-site="{{ site }}" data-message="{{ message }}" data-load-entire-area="{{ loadEntireArea }}" data-city="{{ city }}" data-owner="{{ owner }}" data-github-login="{{ githubLogin }}" data-username="{{ request.user.username }}" data-is-authenticated="{{ request.user.is_authenticated }}" data-drawing-mode="{{ drawingMode }}" data-positiveVoteThreshold="{{ positiveVoteThreshold }}" data-negativeVoteThreshold="{{ negativeVoteThreshold }}" data-voteMinDuration="{{ voteMinDuration }}"></canvas>
           <div id="rasters"></div>
 
           <!-- <ul class="hidden commeUnDessein-ui selectable-item-list"></ul> -->
@@ -641,6 +641,27 @@
 
     <div id="templates">
 
+      <div id="welcome-text">
+      
+        <p><strong>« La démocratie participative fait-elle réellement émerger l’intérêt général ? »</strong></p>
+
+        <p>L’installation <strong><em>Comme un dessein</em></strong> fait écho à cette question actuelle en vous invitant à voter et proposer des dessins pour composer une œuvre collective et utopique, à l'aide d'une interface web connectée à un traceur vertical.</p>
+
+        <p>Les règles de vote ( ces règles seront différentes lors de l'évennement ) :
+
+          <ul>
+            <li>pour être accepté (puis dessiné), un dessin doit obtenir {{positiveVoteThreshold}} votes positifs,</li>
+            <li>il sera rejeté à partir de {{negativeVoteThreshold}} votes négatifs.</li>
+          </ul>
+
+        </p>
+
+        <p>Bonne particpation !</p>
+
+        <p><small>Cette proposition du <em>collectif IDLV</em>, est accompagnée par la Ville de Rennes au titre du dispositif <em>« Les rennais prennent l'art »</em> et coproduite par <em>Electroni[k]</em>, en réponse à l’appel à projet international <em>Art et technologie 2016</em>.</small></p>
+
+      </div>
+
       <div class="modals">
 
         <!-- Input div modal -->
@@ -688,13 +709,6 @@
 
                 </div>
 
-<!--                 <div class="checkbox website">
-                  <label>
-                    <input id="divModalCreateWebsite" type="checkbox"> Create website (® x2)
-                  </label>
-                  <p class="help-block">This will give you a specific address: <italic>sitename.romanesc.co</italic>. You will also be able to have your own site name if you have your own domain, just redirecting to the site.</p>
-                </div> -->
-
                 <div class="checkbox restrict-area">
                   <label>
                     <input id="divModalRestrictArea" type="checkbox"> Restrict area
@@ -736,66 +750,6 @@
             </div>
           </div>
         </div> <!-- /Input div modal -->
-
-        <!-- Buy commeUnDesseinCoins modal -->
-        <div class="modal fade" id="commeUnDesseininModal" tabindex="-1" role="dialog" aria-labelledby="commeUnDesseininModalLabel" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="commeUnDesseininModalLabel">Buy commeUnDesseinCoins</h4>
-              </div>
-              <div class="modal-body">
-
-                <div class="form-group name-group">
-
-                  <p>CommeUnDesseinCoins enable you to add links and protect content from others. The money you give helps to pay the server and is distributed among all contributors of Comme un Dessein.</p>
-
-                  <!-- <form id="paypalForm" target="paypal" action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
-                    <input type="hidden" name="cmd" value="_s-xclick">
-                    <input type="hidden" name="hosted_button_id" value="H7F2ZYUEVNW5Y">
-                    <input type="hidden" name="custom" value="">
-                    <input type="hidden" name="amount" value="1">
-                    <input type="hidden" name="return_url" value="https://romanesc.co/paypal/commeUnDesseinin/return/">
-                    <input type="hidden" name="cancel_return" value="https://romanesc.co/paypal/commeUnDesseinin/cancel/">
-                    <input type="image" src="https://www.sandbox.paypal.com/fr_FR/FR/i/btn/btn_cart_LG.gif" border="0" name="submit" alt="PayPal - la solution de paiement en ligne la plus simple et la plus sécurisée !">
-                    <img alt="" border="0" src="https://www.sandbox.paypal.com/fr_FR/i/scr/pixel.gif" width="1" height="1">
-                  </form> -->
-
-<!--
-                  <form id="paypalForm" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-                    <input type="hidden" name="cmd" value="_s-xclick">
-                    <input type="hidden" name="hosted_button_id" value="F9P9CXF5B6JSA">
-                    <table>
-                      <tr><td><input type="hidden" name="on0" value="CommeUnDesseinCoins">CommeUnDesseinCoins</td></tr><tr><td>
-                      <select name="os0">
-                        <option value="1000"  >1000 commeUnDesseinCoins ...... €1,00 EUR</option>
-                        <option value="5000"  >5000 commeUnDesseinCoins ...... €5,00 EUR</option>
-                        <option value="10000" >10000 commeUnDesseinCoins ..... €10,00 EUR</option>
-                        <option value="50000" >50000 commeUnDesseinCoins ..... €50,00 EUR</option>
-                        <option value="100000">100000 commeUnDesseinCoins ... €100,00 EUR</option>
-                      </select> </td></tr>
-                    </table>
-                    <input type="hidden" name="currency_code" value="EUR">
-                    <input type="hidden" name="custom" value="">
-                    <input type="hidden" name="return_url" value="https://romanesc.co/paypal/commeUnDesseinin/return/">
-                    <input type="hidden" name="cancel_return" value="https://romanesc.co/paypal/commeUnDesseinin/cancel/">
-
-                    <input type="image" src="https://www.paypalobjects.com/en_GB/i/btn/btn_paynow_LG.gif" border="0" name="submit" alt="Pay now">
-                    <img alt="" border="0" src="https://www.paypalobjects.com/fr_FR/i/scr/pixel.gif" width="1" height="1">
-
-                  </form>  -->
-
-                </div>
-
-              </div>
-<!--               <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal">Add</button>
-              </div> -->
-            </div>
-          </div>
-        </div> <!-- /Buy commeUnDesseinCoins modal -->
 
         <!-- Screenshot modal -->
         <div class="modal fade" id="screenshotModal" tabindex="-1" role="dialog" aria-labelledby="screenshotModalLabel" aria-hidden="true">
