@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from draw import ajax
-from ajax import positiveVoteThreshold, negativeVoteThreshold, voteMinDuration
+from ajax import getPositiveVoteThreshold, getNegativeVoteThreshold, getVoteMinDuration
 from math import floor
 from django.views.decorators.csrf import csrf_exempt
 from models import *
@@ -44,9 +44,9 @@ def index(request, site=None, owner=None, city=None, x=0, y=0, useDebugFiles=Fal
 	result['drawingMode'] = drawingMode
 	result['useDebugFiles'] = useDebugFiles
 
-	result['positiveVoteThreshold'] = positiveVoteThreshold
-	result['negativeVoteThreshold'] = negativeVoteThreshold
-	result['voteMinDuration'] = voteMinDuration
+	result['positiveVoteThreshold'] = getPositiveVoteThreshold()
+	result['negativeVoteThreshold'] = getNegativeVoteThreshold()
+	result['voteMinDuration'] = getVoteMinDuration()
 
 	response = render_to_response(	"index.html", result, RequestContext(request) )
 	return response

@@ -144,6 +144,15 @@ def setDrawingMode(request, mode):
 	drawingMode = mode
 	return json.dumps({"message": "success"})
 
+def getPositiveVoteThreshold():
+	return positiveVoteThreshold
+
+def getNegativeVoteThreshold():
+	return negativeVoteThreshold
+
+def getVoteMinDuration():
+	return voteMinDuration
+
 def setPositiveVoteThreshold(request, voteThreshold):
 	if not isAdmin(request.user):
 		return json.dumps({"status": "error", "message": "not_admin"})
