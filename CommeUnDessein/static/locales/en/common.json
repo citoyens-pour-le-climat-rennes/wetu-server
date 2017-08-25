@@ -8,5 +8,6 @@
 	"You are logged as username": "You are logged as {{username}}",
 	"You successfully voted, the drawing will be rejected": "You successfully voted, the drawing will be rejected in {{duration}} if nobody cancels its vote!",
 	"You successfully voted, the drawing will be validated": "You successfully voted, the drawing will be validated in {{duration}} if nobody cancels its vote!",
-    "key": "{{what}} is {{how}}"
+    "key": "{{what}} is {{how}}",
+    "You can zoom in to draw more easily": "Tip: you can zoom in to draw more easily"
 }

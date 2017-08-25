@@ -44,7 +44,7 @@
     <link href="{% static 'css/styles.css' %}" rel="stylesheet">
     <!-- Latest compiled and minified CSS -->
 
-    <link href="https://fonts.googleapis.com/css?family=Amatic+SC|Open+Sans" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Amatic+SC|Open+Sans:400,700" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -289,7 +289,7 @@
                 </div>
                 -->
 
-                <div class="panel panel-default">
+                <div class="panel panel-default hidden">
                   <div class="panel-heading">
                     <h4 class="panel-title collapsed file" data-toggle="collapse" data-target="#City">
                       <a>
@@ -319,7 +319,7 @@
                 </div>
                 
                 <div class="panel panel-default">
-                  <div class="panel-heading">
+                  <div class="panel-heading hidden">
                     <h4 class="panel-title" data-toggle="collapse" data-target="#RItems">
                       <a data-i18n='Items'>
                         Items
@@ -348,7 +348,7 @@
                 <div class="dat-gui dg-sidebar"></div>
 
                 <div class="panel panel-default in">
-                  <div class="panel-heading">
+                  <div class="panel-heading hidden">
                     <h4 class="panel-title" data-toggle="collapse" data-target="#Chat">
                       <a>
                         Chat
@@ -642,23 +642,23 @@
     <div id="templates">
 
       <div id="welcome-text">
-      
+
         <p><strong>« La démocratie participative fait-elle réellement émerger l’intérêt général ? »</strong></p>
 
         <p>L’installation <strong><em>Comme un dessein</em></strong> fait écho à cette question actuelle en vous invitant à voter et proposer des dessins pour composer une œuvre collective et utopique, à l'aide d'une interface web connectée à un traceur vertical.</p>
 
-        <p>Les règles de vote ( ces règles seront différentes lors de l'évennement ) :
+        <p>Les règles de vote (ces règles seront différentes lors de l'événement) :
 
           <ul>
-            <li>pour être accepté (puis dessiné), un dessin doit obtenir {{positiveVoteThreshold}} votes positifs,</li>
-            <li>il sera rejeté à partir de {{negativeVoteThreshold}} votes négatifs.</li>
+            <li>pour être <strong>accepté</strong> (puis dessiné), un dessin doit obtenir <strong>{{positiveVoteThreshold}} votes positifs</strong>,</li>
+            <li>il sera <strong>rejeté</strong> à partir de <strong>{{negativeVoteThreshold}} votes négatifs</strong>.</li>
           </ul>
 
         </p>
 
-        <p>Bonne particpation !</p>
+        <p>Bonne participation !</p>
 
-        <p><small>Cette proposition du <em>collectif IDLV</em>, est accompagnée par la Ville de Rennes au titre du dispositif <em>« Les rennais prennent l'art »</em> et coproduite par <em>Electroni[k]</em>, en réponse à l’appel à projet international <em>Art et technologie 2016</em>.</small></p>
+        <p><small>Cette proposition du <em>collectif IDLV</em>, est accompagnée par la <em>Ville de Rennes</em> au titre du dispositif <em>« Les rennais prennent l'art »</em> et coproduite par <em>Electroni[k]</em>, en réponse à l’appel à projet international <em>Art et technologie 2016</em>.</small></p>
 
       </div>
 
