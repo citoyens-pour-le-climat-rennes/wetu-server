@@ -283,7 +283,7 @@ body.line #FavoriteTools ul.tool-list li.tool-btn,
 body.line #FavoriteTools ul.tool-list ul li {
   padding: 4px;
   margin: 1px;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.0625);
 }
 body.line #FavoriteTools ul.tool-list li.tool-btn img,
 body.line #FavoriteTools ul.tool-list ul li img {
