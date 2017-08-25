@@ -1467,9 +1467,11 @@ li.tool-btn.selected .favorite-btn {
           justify-content: center;
   -webkit-box-align: center;
           align-items: center;
+  padding-top: 15px;
 }
 .sidebar .about-panel img {
   margin: 15px;
+  opacity: 0.7;
 }
 .modal-footer {
   padding-top: 15px;
