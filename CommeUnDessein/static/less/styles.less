@@ -296,6 +296,12 @@ body.line {
 				&:hover {
 					background-color: @hover-purple;
 				}
+				&.btn-success {
+					background-color: rgb(76, 174, 76);
+				}
+				&.btn-info {
+					background-color: #5bc0de;
+				}
 			}
 		}
 	}
@@ -361,6 +367,12 @@ body.hand {
 			&:hover, &:visited, &:active {
 				color: white;
 				text-decoration: none;
+			}
+		}
+
+		button {
+    		.glyphicon-facetime-video {
+				margin-right: 5px;
 			}
 		}
 	}
@@ -447,6 +459,19 @@ body.hand {
 			}
 			.favorite-btn {
 				display: none;
+			}
+			&.displayName {
+				span.tool-name {
+					display: inline-block;
+					color: white;
+					margin-right: 10px;
+				}
+			}
+			&.btn-success {
+				background-color: rgb(76, 174, 76);
+			}
+			&.btn-info {
+				background-color: #5bc0de;
 			}
 		}
 

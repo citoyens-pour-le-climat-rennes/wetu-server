@@ -294,6 +294,14 @@ body.line #FavoriteTools ul.tool-list li.tool-btn:hover,
 body.line #FavoriteTools ul.tool-list ul li:hover {
   background-color: #5cb85c;
 }
+body.line #FavoriteTools ul.tool-list li.tool-btn.btn-success,
+body.line #FavoriteTools ul.tool-list ul li.btn-success {
+  background-color: #4cae4c;
+}
+body.line #FavoriteTools ul.tool-list li.tool-btn.btn-info,
+body.line #FavoriteTools ul.tool-list ul li.btn-info {
+  background-color: #5bc0de;
+}
 body.line #drawingPanel .container .content .votes button span.glyphicon {
   display: none;
 }
@@ -339,6 +347,9 @@ body.hand #drawingPanel .container .content .votes button img.hand {
 #FavoriteTools h3.title a:active {
   color: white;
   text-decoration: none;
+}
+#FavoriteTools h3.title button .glyphicon-facetime-video {
+  margin-right: 5px;
 }
 @media (max-width: 850px) {
   #FavoriteTools h3.title {
@@ -409,6 +420,20 @@ body.hand #drawingPanel .container .content .votes button img.hand {
 #FavoriteTools ul.tool-list li.tool-btn .favorite-btn,
 #FavoriteTools ul.tool-list ul li .favorite-btn {
   display: none;
+}
+#FavoriteTools ul.tool-list li.tool-btn.displayName span.tool-name,
+#FavoriteTools ul.tool-list ul li.displayName span.tool-name {
+  display: inline-block;
+  color: white;
+  margin-right: 10px;
+}
+#FavoriteTools ul.tool-list li.tool-btn.btn-success,
+#FavoriteTools ul.tool-list ul li.btn-success {
+  background-color: #4cae4c;
+}
+#FavoriteTools ul.tool-list li.tool-btn.btn-info,
+#FavoriteTools ul.tool-list ul li.btn-info {
+  background-color: #5bc0de;
 }
 #FavoriteTools ul.tool-list .glyphicon {
   color: white;

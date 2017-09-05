@@ -38,12 +38,17 @@
     "Delete": "Supprimer",
     "Do you really want to delete the selected paths?": "Voulez-vous vraiment supprimer tous les tracés sélectionnés ?",
     "Delete all paths": "Supprimer tous les tracés",
+    "Erase all": "Tout effacer",
+    "Erase": "Effacer",
     "Loading": "Chargement",
     "Log in before drawing": "Veuillez vous connecter avant de dessiner",
     "You are logged as": "Vous êtes connecté en tant que",
     "Draft": "Brouillon",
     "Pending": "En cours",
     "Drawn": "Dessiné",
+    "Draw": "Dessiner",
+    "Vote": "Voter",
+    "Precise path": "Dessiner",
     "Rejected": "Rejeté",
     "Background": "Fond",
     "by": "par",
@@ -149,5 +154,7 @@
     "Terms of Service": "Conditions générales d'utilisation",
     "Privacy Policy": "Politique de confidentialité",
     "About Comme Un Dessein": "À propos de Comme Un Dessein",
-    "You can zoom in to draw more easily": "Conseil : vous pouvez zoomer pour dessiner plus facilement"
+    "You can zoom in to draw more easily": "Conseil : vous pouvez zoomer pour dessiner plus facilement",
+    "Live": "Live",
+    "Click on a drawing to vote for it": "Cliquez sur un dessin pour voter"
 }

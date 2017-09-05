@@ -555,6 +555,26 @@ def getItems(models, areasToLoad, qZoom, city, checkAddItemFunction, itemDates=N
 
 	return items
 
+def getAllItems(models, city, checkAddItemFunction, itemDates=None, owner=None, loadDrafts=True):
+	items = {}
+
+	for model in models:
+
+		itemsQuerySet = globals()[model].objects(city=city)
+
+		for item in itemsQuerySet:
+			checkAddItemFunction(item, items, itemDates, loadDrafts)
+
+	if loadDrafts:
+		# add drafts
+		if owner is not None:
+			drafts = Path.objects(city=city, drawing=None, owner=owner)
+			for draft in drafts:
+				if not draft.pk in items:
+					items[draft.pk] = draft.to_json()
+
+	return items
+
 # @dajaxice_register
 @checkDebug
 def load(request, rectangle, areasToLoad, qZoom, city=None):
@@ -615,6 +635,26 @@ def load(request, rectangle, areasToLoad, qZoom, city=None):
 
 	# return json.dumps( { 'paths': paths, 'boxes': boxes, 'divs': divs, 'user': user, 'rasters': rasters, 'areasToUpdate': areas, 'zoom': zoom } )
 	return json.dumps( { 'items': items.values(), 'user': user, 'rasters': rasters, 'qZoom': qZoom } )
+
+@checkDebug
+def loadAll(request, city=None):
+
+	cityPk = getCity(request, city)
+	if not cityPk:
+		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
+
+	models = ['Path', 'AreaToUpdate', 'Drawing']
+	items = getAllItems(models, cityPk, checkAddItem, None, request.user.username)
+
+	global userID
+	user = request.user.username
+	if not user:
+		user = userID
+	userID += 1
+
+	# return json.dumps( { 'paths': paths, 'boxes': boxes, 'divs': divs, 'user': user, 'rasters': rasters, 'areasToUpdate': areas, 'zoom': zoom } )
+	return json.dumps( { 'items': items.values(), 'user': user } )
+
 
 # @dajaxice_register
 @checkDebug
@@ -2426,6 +2466,23 @@ def ceilToMultiple(x, m):
 def getAreasToUpdate(request):
 	areas = AreaToUpdate.objects()
 	return areas.to_json()
+
+@checkDebug
+def getPathsToUpdate(request, city):
+
+	cityPk = getCity(request, city)
+	if not cityPk:
+		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
+
+
+	paths = Paths.objects(city=city, needUpdate=True)
+
+	items = []
+	for path in paths:
+		if path.drawing is not None:
+			items.append( { 'path': path.to_json(), 'status': path.drawing.status })
+
+	return json.dumps( { 'paths': items } )
 
 # @dajaxice_register
 @checkDebug

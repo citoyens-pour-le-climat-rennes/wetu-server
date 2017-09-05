@@ -95,6 +95,7 @@ class Path(Document):
     lastUpdate = DateTimeField(default=datetime.datetime.now)
     object_type = StringField(default='brush')
     lock = StringField(default=None)
+    needUpdate = BooleanField(default=False)
 
     drawing = ReferenceField('Drawing', reverse_delete_rule=NULLIFY)
 
@@ -103,7 +104,7 @@ class Path(Document):
     data = StringField(default='')
 
     meta = {
-        'indexes': [[ ("city", 1), ("planetX", 1), ("planetY", 1), ("points", "2dsphere"), ('owner', 1), ('drawing', 1) ]]
+        'indexes': [[ ("city", 1), ("planetX", 1), ("planetY", 1), ("points", "2dsphere"), ('owner', 1), ('drawing', 1), ('needUpdate', 1) ]]
     }
 
 Path.register_delete_rule(Drawing, 'paths', PULL)
