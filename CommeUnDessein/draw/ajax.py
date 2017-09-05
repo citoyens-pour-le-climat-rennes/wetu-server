@@ -1690,6 +1690,31 @@ def setDrawingStatusDrawn(request, pk, secret):
 
 	return json.dumps( {'state': 'success', 'message': 'Drawing status successfully updated.', 'pk': pk } )
 
+@checkDebug
+def setDrawingToCity(request, pk, city):
+	
+	if not isAdmin(request.user):
+		return json.dumps( { 'state': 'error', 'message': 'You must be administrator to move a drawing.' } )
+	
+	cityPk = getCity(request, city)
+	if not cityPk:
+		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
+
+	try:
+		d = Drawing.objects.get(pk=pk)
+	except Drawing.DoesNotExist:
+		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
+	
+	d.city = cityPk
+	d.save()
+
+	for path in d.paths:
+		if isinstance(path, Path):
+			path.city = cityPk
+			path.save()
+
+	return json.dumps( {'state': 'success' } )
+
 # --- rasters --- #
 
 def addAreaToUpdate(points, planetX, planetY, city):
