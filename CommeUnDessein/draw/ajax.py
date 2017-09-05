@@ -643,7 +643,7 @@ def loadAll(request, city=None):
 	if not cityPk:
 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
 
-	models = ['Path', 'AreaToUpdate', 'Drawing']
+	models = ['Path', 'Drawing']
 	items = getAllItems(models, cityPk, checkAddItem, None, request.user.username)
 
 	global userID
