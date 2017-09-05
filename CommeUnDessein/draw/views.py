@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, get_list_or_404, render_to_respo
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
+from django.shortcuts import redirect
 from draw import ajax
 from ajax import getPositiveVoteThreshold, getNegativeVoteThreshold, getVoteMinDuration
 from math import floor
@@ -50,6 +51,9 @@ def index(request, site=None, owner=None, city=None, x=0, y=0, useDebugFiles=Fal
 
 	response = render_to_response(	"index.html", result, RequestContext(request) )
 	return response
+
+def live(request):
+    return redirect('https://www.youtube.com/user/smarthurt/live')
 
 def about(request):
 	return render_to_response(	"about.html", {}, RequestContext(request) )

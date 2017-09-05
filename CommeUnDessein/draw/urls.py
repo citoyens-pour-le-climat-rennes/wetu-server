@@ -31,6 +31,7 @@ urlpatterns = [
 
     url(r'^$', views.index, name='index'),
     url(r'^ajaxCall/$', views.ajaxCall),
+    url(r'^live/$', views.live),
     url(r'^ajaxCallNoCSRF/$', views.ajaxCallNoCSRF),
 
     # url(r'^#(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)$', views.index, name='index'),

@@ -5,6 +5,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as django_contrib_auth_views
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.views.generic import RedirectView
+from django.http import HttpResponsePermanentRedirect
 from CommeUnDessein import settings
 # from dajaxice.core import dajaxice_autodiscover, dajaxice_config
 
@@ -18,6 +20,8 @@ urlpatterns = [
     # url(r'^$', 'draw.views.index'),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^admin/', include(admin.site.urls)),
+    # (r'^live/$', RedirectView.as_view(url='https://www.youtube.com/user/smarthurt/live')),
+    # (r'^live/', lambda request: HttpResponsePermanentRedirect('https://www.youtube.com/user/smarthurt/live')),
     # url(dajaxice_config.dajaxice_url, include('dajaxice.urls')),
 
 ] # + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
