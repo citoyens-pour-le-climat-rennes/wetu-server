@@ -559,40 +559,16 @@ def getAllItems(models, city, checkAddItemFunction, itemDates=None, owner=None, 
 	items = {}
 
 	for model in models:
-
-		start = time.time()
 		
-		itemsQuerySet = globals()[model].objects(city=city)
-
-		lastClientId = None
-		for item in itemsQuerySet:
-			lastClientId = item.clientId
-
-		end = time.time()
-		print "Time elapsed to get " + model + ": " + str(end - start)
-
-		start = time.time()
-		
-		jsons = {}
-		if model == "Path":
-			for item in itemsQuerySet:
-				if not item.pk in jsons:
-					itemIsDraft = type(item) is Path and item.isDraft
-					if not itemIsDraft:
-						jsons[item.pk] = item.to_json()
-
-		end = time.time()
-		print "Time elapsed to get jsons for " + model + ": " + str(end - start)
-
-		start = time.time()
+		if model == Path and loadDrafts:
+			itemsQuerySet = globals()[model].objects(city=city, isDraft=False)
+		else:
+			itemsQuerySet = globals()[model].objects(city=city)
 
 		for item in itemsQuerySet:
-			checkAddItemFunction(item, items, itemDates, loadDrafts)
-
-		end = time.time()
-		print "Time elapsed to checkAddItemFunction " + model + ": " + str(end - start)
-
-	start = time.time()
+			if item.pk not in items:
+				items[item.pk] = item.to_json()
+		# checkAddItemFunction(item, items, itemDates, loadDrafts)
 
 	if loadDrafts:
 		# add drafts
@@ -601,9 +577,6 @@ def getAllItems(models, city, checkAddItemFunction, itemDates=None, owner=None, 
 			for draft in drafts:
 				if not draft.pk in items:
 					items[draft.pk] = draft.to_json()
-
-	end = time.time()
-	print "Time elapsed to loadDrafts: " + str(end - start)
 
 	return items
 
