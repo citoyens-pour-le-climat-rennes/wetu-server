@@ -560,10 +560,22 @@ def getAllItems(models, city, checkAddItemFunction, itemDates=None, owner=None, 
 
 	for model in models:
 
+		start = time.time()
+		
 		itemsQuerySet = globals()[model].objects(city=city)
+
+		end = time.time()
+		print "Time elapsed to get " + model + ": " + str(end - start)
+
+		start = time.time()
 
 		for item in itemsQuerySet:
 			checkAddItemFunction(item, items, itemDates, loadDrafts)
+
+		end = time.time()
+		print "Time elapsed to checkAddItemFunction " + model + ": " + str(end - start)
+
+	start = time.time()
 
 	if loadDrafts:
 		# add drafts
@@ -572,6 +584,9 @@ def getAllItems(models, city, checkAddItemFunction, itemDates=None, owner=None, 
 			for draft in drafts:
 				if not draft.pk in items:
 					items[draft.pk] = draft.to_json()
+
+	end = time.time()
+	print "Time elapsed to loadDrafts: " + str(end - start)
 
 	return items
 
@@ -639,12 +654,22 @@ def load(request, rectangle, areasToLoad, qZoom, city=None):
 @checkDebug
 def loadAll(request, city=None):
 
+	start = time.time()
+
 	cityPk = getCity(request, city)
 	if not cityPk:
 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
 
+	end = time.time()
+	print "Time elapsed to get city: " + str(end - start)
+
+	start = time.time()
+
 	models = ['Path', 'Drawing']
 	items = getAllItems(models, cityPk, checkAddItem, None, request.user.username)
+
+	end = time.time()
+	print "Time elapsed to get drawings and paths: " + str(end - start)
 
 	global userID
 	user = request.user.username
