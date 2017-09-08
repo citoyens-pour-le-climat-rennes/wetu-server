@@ -19,7 +19,7 @@ class Vote(Document):
     date = DateTimeField(default=datetime.datetime.now, required=True)
 
     meta = {
-        'indexes': [[ ("author", 1) ]]
+        'indexes': [ "#author" ]
     }
 
 @receiver(user_signed_up, dispatch_uid="_allauth.user_signed_up")
@@ -50,7 +50,7 @@ class UserProfile(Document):
                 return "http://www.gravatar.com/avatar/{}?s=64&d={}".format(hashlib.md5(user.email).hexdigest(), defaultUrl)
 
     meta = {
-        'indexes': [[ ("username", 1)]]
+        'indexes': [ "#username" ]
     }
 
 UserProfile.register_delete_rule(Vote, 'author', CASCADE)
@@ -75,7 +75,11 @@ class Drawing(Document):
     # lastUpdate = DateTimeField(default=datetime.datetime.now)
     
     meta = {
-        'indexes': [ [ ("city", 1), ("planetX", 1), ("planetY", 1), ("box", "2dsphere") ] , [ ("owner", 1) ] ]
+        'indexes': [
+            "city",
+            "owner",
+            [ ("planetX", 1), ("planetY", 1), ("box", "2dsphere") ]
+        ]
     }
 
 Drawing.register_delete_rule(Vote, 'drawing', CASCADE)
@@ -104,7 +108,12 @@ class Path(Document):
     data = StringField(default='')
 
     meta = {
-        'indexes': [[ ("city", 1), ("planetX", 1), ("planetY", 1), ("points", "2dsphere"), ('owner', 1), ('drawing', 1), ('needUpdate', 1) ]]
+        'indexes': [
+            "city",
+            "drawing",
+            "owner",
+            [ ("planetX", 1), ("planetY", 1), ("points", "2dsphere") ]
+        ]
     }
 
 Path.register_delete_rule(Drawing, 'paths', PULL)
@@ -138,7 +147,11 @@ class Box(Document):
     data = StringField(default='')
 
     meta = {
-        'indexes': [ [ ("city", 1), ("planetX", 1), ("planetY", 1), ("box", "2dsphere") ] , [ ("siteName", 1) ] ]
+        'indexes': [
+            "city",
+            "owner",
+            [ ("planetX", 1), ("planetY", 1), ("box", "2dsphere") ]
+        ]
     }
 
 class AreaToUpdate(Document):
@@ -151,7 +164,10 @@ class AreaToUpdate(Document):
     # areas = ListField(ReferenceField('Area'))
 
     meta = {
-        'indexes': [[ ("city", 1), ("planetX", 1), ("planetY", 1), ("box", "2dsphere") ]]
+        'indexes': [
+            "city",
+            [ ("planetX", 1), ("planetY", 1), ("box", "2dsphere") ]
+        ]
     }
 
 class Div(Document):
@@ -177,7 +193,11 @@ class Div(Document):
     data = StringField(default='')
 
     meta = {
-        'indexes': [[ ("city", 1), ("planetX", 1), ("planetY", 1), ("box", "2dsphere") ]]
+        'indexes': [
+            "city",
+            "owner",
+            [ ("planetX", 1), ("planetY", 1), ("box", "2dsphere") ]
+        ]
     }
 
 class Tool(Document):
@@ -194,7 +214,7 @@ class Tool(Document):
     accepted = BooleanField(default=False)
 
     meta = {
-        'indexes': [[ ("accepted", 1), ("name", 1) ]]
+        'indexes': [ "accepted", "name" ]
     }
 
 class Module(Document):
@@ -217,7 +237,7 @@ class Module(Document):
     accepted = BooleanField(default=False)
 
     meta = {
-        'indexes': [[ ("accepted", 1), ("moduleType", 1), ("name", 1) ]]
+        'indexes': [ "accepted", "moduleType", "name" ]
     }
 
 class Site(Document):
@@ -232,7 +252,7 @@ class Site(Document):
     data = StringField(default='')
 
     meta = {
-        'indexes': [[ ("name", 1) ]]
+        'indexes': [ "name" ]
     }
 
 class City(Document):
@@ -241,7 +261,7 @@ class City(Document):
     public = BooleanField(default=False)
 
     meta = {
-        'indexes': [[ ("owner", 1), ("public", 1), ("name", 1) ]]
+        'indexes': [ "owner", "public", "name" ]
     }
 
 # class Area(Document):
