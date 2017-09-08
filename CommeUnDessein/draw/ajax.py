@@ -577,7 +577,7 @@ def getAllItems(models, city, checkAddItemFunction, itemDates=None, owner=None, 
 		if model == "Path":
 			for item in itemsQuerySet:
 				if not item.pk in jsons:
-					itemIsDraft = type(item) is Path and item.drawing is None
+					itemIsDraft = type(item) is Path
 					if not itemIsDraft:
 						jsons[item.pk] = item.to_json()
 
