@@ -564,8 +564,21 @@ def getAllItems(models, city, checkAddItemFunction, itemDates=None, owner=None, 
 		
 		itemsQuerySet = globals()[model].objects(city=city)
 
+		lastClientId = None
+		for item in itemsQuerySet:
+			lastClientId = item.clientId
+
 		end = time.time()
 		print "Time elapsed to get " + model + ": " + str(end - start)
+
+		start = time.time()
+		
+		jsons = []
+		for item in itemsQuerySet:
+			jsons.append(item.to_json())
+
+		end = time.time()
+		print "Time elapsed to get jsons for " + model + ": " + str(end - start)
 
 		start = time.time()
 
