@@ -101,6 +101,7 @@ class Path(Document):
     lock = StringField(default=None)
     needUpdate = BooleanField(default=False)
 
+    isDraft = BooleanField(default=True)
     drawing = ReferenceField('Drawing', reverse_delete_rule=NULLIFY)
 
     # areas = ListField(ReferenceField('Area'))

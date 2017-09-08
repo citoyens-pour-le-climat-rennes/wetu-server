@@ -510,7 +510,7 @@ def getCity(request, cityObject=None):
 def checkAddItem(item, items, itemsDates=None, ignoreDrafts=False):
 	if not item.pk in items:
 		if ignoreDrafts:
-			itemIsDraft = type(item) is Path and item.drawing is None
+			itemIsDraft = type(item) is Path and item.isDraft
 			if not itemIsDraft:
 				items[item.pk] = item.to_json()
 		else:
@@ -548,7 +548,7 @@ def getItems(models, areasToLoad, qZoom, city, checkAddItemFunction, itemDates=N
 	if loadDrafts:
 		# add drafts
 		if owner is not None:
-			drafts = Path.objects(city=city, drawing=None, owner=owner)
+			drafts = Path.objects(city=city, isDraft=True, owner=owner)
 			for draft in drafts:
 				if not draft.pk in items:
 					items[draft.pk] = draft.to_json()
@@ -577,7 +577,7 @@ def getAllItems(models, city, checkAddItemFunction, itemDates=None, owner=None, 
 		if model == "Path":
 			for item in itemsQuerySet:
 				if not item.pk in jsons:
-					itemIsDraft = type(item) is Path
+					itemIsDraft = type(item) is Path and item.isDraft
 					if not itemIsDraft:
 						jsons[item.pk] = item.to_json()
 
@@ -597,7 +597,7 @@ def getAllItems(models, city, checkAddItemFunction, itemDates=None, owner=None, 
 	if loadDrafts:
 		# add drafts
 		if owner is not None:
-			drafts = Path.objects(city=city, drawing=None, owner=owner)
+			drafts = Path.objects(city=city, isDraft=True, owner=owner)
 			for draft in drafts:
 				if not draft.pk in items:
 					items[draft.pk] = draft.to_json()
@@ -1460,6 +1460,7 @@ def saveDrawing(request, clientId, date, pathPks, title, description):
 	pathPks = []
 	for path in paths:
 		path.drawing = d
+		path.isDraft = False
 		path.save()
 		pathPks.append(str(path.pk))
 
@@ -1527,6 +1528,11 @@ def deleteDrawing(request, pk):
 	if d.status != 'pending':
 		return json.dumps({'state': 'error', 'message': 'The drawing is already validated, it cannot be cancelled anymore.'})
 
+	for path in paths:
+		path.drawing = None
+		path.isDraft = True
+		path.save()
+
 	d.delete()
 
 	return json.dumps( { 'state': 'success', 'pk': pk } )
@@ -1542,7 +1548,7 @@ def getDrafts(request, city=None):
 	if not cityPk:
 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
 
-	paths = Path.objects(owner=request.user.username, drawing=None, city=cityPk)
+	paths = Path.objects(owner=request.user.username, isDraft=True, city=cityPk)
 	items = []
 
 	for path in paths:
