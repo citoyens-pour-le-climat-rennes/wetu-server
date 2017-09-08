@@ -574,9 +574,12 @@ def getAllItems(models, city, checkAddItemFunction, itemDates=None, owner=None, 
 		start = time.time()
 		
 		jsons = {}
-		for item in itemsQuerySet:
-			if not item.pk in jsons:
-				jsons[item.pk] = item.to_json()
+		if model == "Path":
+			for item in itemsQuerySet:
+				if not item.pk in jsons:
+					itemIsDraft = type(item) is Path and item.drawing is None
+					if not itemIsDraft:
+						jsons[item.pk] = item.to_json()
 
 		end = time.time()
 		print "Time elapsed to get jsons for " + model + ": " + str(end - start)
