@@ -573,9 +573,10 @@ def getAllItems(models, city, checkAddItemFunction, itemDates=None, owner=None, 
 
 		start = time.time()
 		
-		jsons = []
+		jsons = {}
 		for item in itemsQuerySet:
-			jsons.append(item.to_json())
+			if not item.pk in jsons:
+				jsons[item.pk] = item.to_json()
 
 		end = time.time()
 		print "Time elapsed to get jsons for " + model + ": " + str(end - start)
