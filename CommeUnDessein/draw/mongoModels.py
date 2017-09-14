@@ -61,15 +61,18 @@ class Drawing(Document):
     city = StringField(required=True)
     planetX = DecimalField(required=True)
     planetY = DecimalField(required=True)
-    box = PolygonField(required=True)
+    box = PolygonField()
     rType = StringField(default='Drawing')
     owner = StringField(required=True)
-    status = StringField(default='pending', required=True)
-    paths = ListField(ReferenceField('Path'), required=True)
+    status = StringField(default='draft', required=True)
+    paths = ListField(ReferenceField('Path'))
+    svg = StringField()
+    pathList = ListField(StringField())
+
     date = DateTimeField(default=datetime.datetime.now, required=True)
     votes = ListField(ReferenceField('Vote', reverse_delete_rule=PULL))
     
-    title = StringField(unique=True)
+    title = StringField()
     description = StringField()
 
     # lastUpdate = DateTimeField(default=datetime.datetime.now)

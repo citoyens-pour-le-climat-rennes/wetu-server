@@ -52,6 +52,7 @@ positiveVoteThreshold = 50
 negativeVoteThreshold = 5
 voteValidationDelay = datetime.timedelta(minutes=1) 		# once the drawing gets positiveVoteThreshold votes, the duration before the drawing gets validated (the drawing is not immediately validated in case the user wants to cancel its vote)
 voteMinDuration = datetime.timedelta(hours=6)				# the minimum duration the vote will last (to make sure a good moderation happens)
+drawingMaxSize = 1000
 
 drawingModes = ['free', 'ortho', 'orthoDiag', 'pixel', 'image']
 
@@ -650,25 +651,40 @@ def loadAll(request, city=None):
 	if not cityPk:
 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
 
-	end = time.time()
-	print "Time elapsed to get city: " + str(end - start)
+	drawings = Drawing.objects(city=cityPk, status__in=['pending', 'drawing', 'drawn', 'rejected'] )
+
+	items = []
+	for drawing in drawings:
+		items.append(drawing.to_json())
+
+	drafts = Drawing.objects(city=cityPk, status='draft', owner=request.user.username)
+	if len(drafts) > 0:
+		items.append(drafts.first().to_json())
+
+	# return json.dumps( { 'paths': paths, 'boxes': boxes, 'divs': divs, 'user': user, 'rasters': rasters, 'areasToUpdate': areas, 'zoom': zoom } )
+	return json.dumps( { 'items': items, 'user': request.user.username } )
+
+@checkDebug
+def loadSVG(request, city=None):
 
 	start = time.time()
 
-	models = ['Path', 'Drawing']
-	items = getAllItems(models, cityPk, checkAddItem, None, request.user.username)
+	cityPk = getCity(request, city)
+	if not cityPk:
+		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
 
-	end = time.time()
-	print "Time elapsed to get drawings and paths: " + str(end - start)
+	drawings = Drawing.objects(city=cityPk, status__in=['pending', 'drawing', 'drawn', 'rejected'] )
+	
+	items = []
+	for drawing in drawings:
+		items.append(drawing.svg)
 
-	global userID
-	user = request.user.username
-	if not user:
-		user = userID
-	userID += 1
+	drafts = Drawing.objects(city=cityPk, status='draft', owner=request.user.username)
+	if len(drafts) > 0:
+		items.append(drafts.first().svg)
 
 	# return json.dumps( { 'paths': paths, 'boxes': boxes, 'divs': divs, 'user': user, 'rasters': rasters, 'areasToUpdate': areas, 'zoom': zoom } )
-	return json.dumps( { 'items': items.values(), 'user': user } )
+	return json.dumps( { 'items': items, 'user': request.user.username } )
 
 
 # @dajaxice_register
@@ -1003,6 +1019,10 @@ def savePath(request, clientId, points, object_type, box, date, data=None, city=
 
 	# return json.dumps( {'state': rasterResult['state'], 'pID': pID, 'pk': str(p.pk), 'message': rasterResult['message'] if 'message' in rasterResult else '' } )
 	return json.dumps( {'state': 'success', 'pk': str(p.pk), 'owner': request.user.username } )
+
+
+# Create or  update drawing :
+# drawing = Drawing.objects(owner=request.user.username, status='draft').modify(upsert=True, new=True, set__owner=request.user.username)
 
 # @dajaxice_register
 @checkDebug
@@ -1371,7 +1391,33 @@ def deleteDiv(request, pk):
 
 # @dajaxice_register
 @checkDebug
-def saveDrawing(request, clientId, date, pathPks, title, description):
+def saveDrawing(request, clientId, city, date, title, description=None, points=None):
+	if not request.user.is_authenticated():
+		return json.dumps({'state': 'not_logged_in'})
+
+	city = getCity(request, city)
+	if not city:
+		return json.dumps( { 'status': 'error', 'message': 'The city does not exist.' } )
+
+	paths = [json.dumps(points)]
+
+	drafts = Drawing.objects(city=city, owner=request.user.username, status='draft')
+	
+	if drafts is not None and len(drafts) > 0:
+		for draft in drafts:
+			paths += draft.pathList
+			draft.delete()
+
+	try:
+		d = Drawing(clientId=clientId, city=city, planetX=0, planetY=0, owner=request.user.username, pathList=paths, date=datetime.datetime.fromtimestamp(date/1000.0), title=title, description=description)
+		d.save()
+	except NotUniqueError:
+		return json.dumps({'state': 'error', 'message': 'A drawing with this id already exists.'})
+
+	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk), 'negativeVoteThreshold': negativeVoteThreshold, 'positiveVoteThreshold': positiveVoteThreshold, 'voteMinDuration': voteMinDuration.total_seconds() } )
+
+@checkDebug
+def saveDrawing2(request, clientId, date, pathPks, title, description):
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
 
@@ -1439,6 +1485,22 @@ def saveDrawing(request, clientId, date, pathPks, title, description):
 
 	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk), 'pathPks': pathPks, 'negativeVoteThreshold': negativeVoteThreshold, 'positiveVoteThreshold': positiveVoteThreshold, 'voteMinDuration': voteMinDuration.total_seconds() } )
 
+@checkDebug
+def submitDrawing(request, pk, svg):
+	if not request.user.is_authenticated():
+		return json.dumps({'state': 'not_logged_in'})
+
+	try:
+		d = Drawing.objects.get(pk=pk)
+	except Drawing.DoesNotExist:
+		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
+
+	d.svg = svg
+	d.status = 'pending'
+	d.save()
+
+	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk), 'negativeVoteThreshold': negativeVoteThreshold, 'positiveVoteThreshold': positiveVoteThreshold, 'voteMinDuration': voteMinDuration.total_seconds() } )
+
 # @dajaxice_register
 @checkDebug
 def loadDrawing(request, pk):
@@ -1480,6 +1542,108 @@ def updateDrawing(request, pk, title, description):
 	d.title = title
 	d.description = description
 
+	d.save()
+
+	return json.dumps( {'state': 'success' } )
+
+def getDrawing(pk=None, clientId=None):
+
+	if pk is None and clientId is None:
+		return None
+
+	d = None
+
+	if pk:
+		try:
+			d = Drawing.objects.get(pk=pk)
+		except Drawing.DoesNotExist:
+			if not clientId:
+				return None
+	
+	if d is None and clientId:
+		try:
+			d = Drawing.objects.get(clientId=clientId)
+		except Drawing.DoesNotExist:
+			return None
+
+	return d
+
+# @dajaxice_register
+@checkDebug
+def addPathToDrawing(request, points, pk=None, clientId=None):
+	
+	if not request.user.is_authenticated():
+		return json.dumps({'state': 'not_logged_in'})
+
+	d = getDrawing(pk, clientId)
+
+	if d is None:
+		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
+
+	if not userAllowed(request, d.owner):
+		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
+
+	if d.status != 'draft':
+		return json.dumps({'state': 'error', 'message': 'The drawing is not a draft, it cannot be modified anymore.'})
+
+	d.pathList.append(json.dumps(points))
+
+	d.save()
+
+	return json.dumps( {'state': 'success' } )
+
+@checkDebug
+def addPathsToDrawing(request, pointLists, pk=None, clientId=None):
+	
+	if not request.user.is_authenticated():
+		return json.dumps({'state': 'not_logged_in'})
+
+	if pk is None and clientId is None:
+		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
+
+	d = getDrawing(pk, clientId)
+
+	if d is None:
+		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
+
+	if not userAllowed(request, d.owner):
+		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
+
+	if d.status != 'draft':
+		return json.dumps({'state': 'error', 'message': 'The drawing is not a draft, it cannot be modified anymore.'})
+
+	for points in pointLists:
+		d.pathList.append(json.dumps(points))
+
+	d.save()
+
+	return json.dumps( {'state': 'success' } )
+
+@checkDebug
+def updateDrawings(request):
+	if not isAdmin(request.user):
+		return json.dumps( { 'state': 'error', 'message': 'You must be administrator to update drawings.' } )
+
+	drawings = Drawing.objects()
+	for drawing in drawings:
+		drawing.pathList = []
+		for path in drawing.paths:
+			data = json.loads(path.data)
+			points = json.dumps(data['points'])
+			drawing.pathList.append(points)
+		drawing.save()
+	return json.dumps( {'state': 'success' } )
+
+@checkDebug
+def updateDrawingSVG(request, pk, svg):
+	if not isAdmin(request.user):
+		return json.dumps( { 'state': 'error', 'message': 'You must be administrator to update drawings.' } )
+	try:
+		d = Drawing.objects.get(pk=pk)
+	except Drawing.DoesNotExist:
+		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
+
+	d.svg = svg
 	d.save()
 
 	return json.dumps( {'state': 'success' } )
