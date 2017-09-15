@@ -286,9 +286,9 @@ body.line {
 	#FavoriteTools {
 		ul.tool-list {
 			li.tool-btn, ul li {
-				padding: 4px;
-				margin: 1px;
-				background-color: rgba(255,255,255,0.0625);
+				// padding: 4px;
+				// margin: 1px;
+				// background-color: rgba(255,255,255,0.0625);
 				img {
 					width: 42px;
 					height: 42px;
@@ -329,7 +329,7 @@ body.hand {
 }
 
 #FavoriteTools {
-
+	.vendor(user-select, none);
 	// font-family: 'Lucida Grande', sans-serif;
 	z-index: 1001;
 	position: fixed;
@@ -2093,6 +2093,10 @@ li.tool-btn {
 
 
 			.drawing-thumbnail {
+				
+			    display: flex;
+			    justify-content: center;
+			    align-items: center;
 				img {
 					max-height: 250px;
 				}

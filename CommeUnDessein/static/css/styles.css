@@ -279,12 +279,6 @@ h4 {
 .btn-transparent:focus {
   color: #efefef;
 }
-body.line #FavoriteTools ul.tool-list li.tool-btn,
-body.line #FavoriteTools ul.tool-list ul li {
-  padding: 4px;
-  margin: 1px;
-  background-color: rgba(255, 255, 255, 0.0625);
-}
 body.line #FavoriteTools ul.tool-list li.tool-btn img,
 body.line #FavoriteTools ul.tool-list ul li img {
   width: 42px;
@@ -315,6 +309,10 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   display: inline-block;
 }
 #FavoriteTools {
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -o-user-select: none;
+  user-select: none;
   z-index: 1001;
   position: fixed;
   top: 0;
@@ -1851,6 +1849,14 @@ li.tool-btn.selected .favorite-btn {
           flex-grow: 1;
   display: -webkit-box;
   display: flex;
+}
+#drawingPanel .container .content .drawing-thumbnail {
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+          align-items: center;
 }
 #drawingPanel .container .content .drawing-thumbnail img {
   max-height: 250px;

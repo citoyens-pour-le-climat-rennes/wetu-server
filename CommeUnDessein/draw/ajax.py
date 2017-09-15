@@ -673,15 +673,15 @@ def loadSVG(request, city=None):
 	if not cityPk:
 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
 
-	drawings = Drawing.objects(city=cityPk, status__in=['pending', 'drawing', 'drawn', 'rejected'] )
+	drawings = Drawing.objects(city=cityPk, status__in=['pending', 'drawing', 'drawn', 'rejected'] ).only('svg', 'status', 'pk', 'clientId', 'title', 'owner')
 	
 	items = []
 	for drawing in drawings:
-		items.append(drawing.svg)
+		items.append(drawing.to_json())
 
-	drafts = Drawing.objects(city=cityPk, status='draft', owner=request.user.username)
+	drafts = Drawing.objects(city=cityPk, status='draft', owner=request.user.username).only('svg', 'status', 'pk', 'clientId', 'owner', 'pathList')
 	if len(drafts) > 0:
-		items.append(drafts.first().svg)
+		items.append(drafts.first().to_json())
 
 	# return json.dumps( { 'paths': paths, 'boxes': boxes, 'divs': divs, 'user': user, 'rasters': rasters, 'areasToUpdate': areas, 'zoom': zoom } )
 	return json.dumps( { 'items': items, 'user': request.user.username } )
@@ -1486,17 +1486,20 @@ def saveDrawing2(request, clientId, date, pathPks, title, description):
 	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk), 'pathPks': pathPks, 'negativeVoteThreshold': negativeVoteThreshold, 'positiveVoteThreshold': positiveVoteThreshold, 'voteMinDuration': voteMinDuration.total_seconds() } )
 
 @checkDebug
-def submitDrawing(request, pk, svg):
+def submitDrawing(request, pk, clientId, svg, date, title=None, description=None):
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
 
-	try:
-		d = Drawing.objects.get(pk=pk)
-	except Drawing.DoesNotExist:
-		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
+	d = getDrawing(pk, clientId)
 
+	if d is None:
+		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
+	
 	d.svg = svg
+	d.date = datetime.datetime.fromtimestamp(date/1000.0)
 	d.status = 'pending'
+	d.title = title
+	d.description = description
 	d.save()
 
 	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk), 'negativeVoteThreshold': negativeVoteThreshold, 'positiveVoteThreshold': positiveVoteThreshold, 'voteMinDuration': voteMinDuration.total_seconds() } )
@@ -1611,6 +1614,35 @@ def addPathsToDrawing(request, pointLists, pk=None, clientId=None):
 
 	if d.status != 'draft':
 		return json.dumps({'state': 'error', 'message': 'The drawing is not a draft, it cannot be modified anymore.'})
+
+	for points in pointLists:
+		d.pathList.append(json.dumps(points))
+
+	d.save()
+
+	return json.dumps( {'state': 'success' } )
+
+@checkDebug
+def setPathsToDrawing(request, pointLists, pk=None, clientId=None):
+	
+	if not request.user.is_authenticated():
+		return json.dumps({'state': 'not_logged_in'})
+
+	if pk is None and clientId is None:
+		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
+
+	d = getDrawing(pk, clientId)
+
+	if d is None:
+		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
+
+	if not userAllowed(request, d.owner):
+		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
+
+	if d.status != 'draft':
+		return json.dumps({'state': 'error', 'message': 'The drawing is not a draft, it cannot be modified anymore.'})
+
+	d.pathList = []
 
 	for points in pointLists:
 		d.pathList.append(json.dumps(points))
