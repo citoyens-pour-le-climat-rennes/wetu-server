@@ -251,20 +251,6 @@ button:active:hover,
 .btn:active:hover {
   outline: none;
 }
-.mode-button {
-  border-radius: 0;
-  height: 100%;
-  margin-right: -4px;
-}
-.mode-button .glyphicon {
-  margin-right: 5px;
-}
-.mode-button.icon-only .glyphicon {
-  margin-right: 2px;
-}
-.mode-button:focus {
-  outline: none;
-}
 h4 {
   font-size: 14px;
 }
@@ -284,9 +270,13 @@ body.line #FavoriteTools ul.tool-list ul li img {
   width: 42px;
   height: 42px;
 }
+body.line #FavoriteTools ul.tool-list li.tool-btn span.glyphicon,
+body.line #FavoriteTools ul.tool-list ul li span.glyphicon {
+  line-height: 42px;
+}
 body.line #FavoriteTools ul.tool-list li.tool-btn:hover,
 body.line #FavoriteTools ul.tool-list ul li:hover {
-  background-color: #5cb85c;
+  background-color: #0089d9;
 }
 body.line #FavoriteTools ul.tool-list li.tool-btn.btn-success,
 body.line #FavoriteTools ul.tool-list ul li.btn-success {
@@ -294,7 +284,7 @@ body.line #FavoriteTools ul.tool-list ul li.btn-success {
 }
 body.line #FavoriteTools ul.tool-list li.tool-btn.btn-info,
 body.line #FavoriteTools ul.tool-list ul li.btn-info {
-  background-color: #5bc0de;
+  background-color: #0079bf;
 }
 body.line #drawingPanel .container .content .votes button span.glyphicon {
   display: none;
@@ -324,11 +314,10 @@ body.hand #drawingPanel .container .content .votes button img.hand {
           flex: auto;
 }
 #FavoriteTools h3.title {
-  width: 265px;
   text-align: center;
-  padding-top: 4px;
-  margin-top: 0;
-  margin-bottom: 0;
+  padding-top: 2px;
+  margin: 10px;
+  line-height: 1;
   color: white;
   font-family: 'Amatic SC', cursive;
   font-size: 36px;
@@ -356,6 +345,7 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   }
 }
 #FavoriteTools ul.tool-list {
+  width: 100%;
   float: left;
   list-style-type: none;
   display: -webkit-box;
@@ -395,9 +385,17 @@ body.hand #drawingPanel .container .content .votes button img.hand {
           justify-content: center;
   line-height: 25px;
 }
+#FavoriteTools ul.tool-list li.tool-btn.align-end,
+#FavoriteTools ul.tool-list ul li.align-end {
+  margin-left: auto;
+}
+#FavoriteTools ul.tool-list li.tool-btn.btn-info,
+#FavoriteTools ul.tool-list ul li.btn-info {
+  background-color: #0079bf;
+}
 #FavoriteTools ul.tool-list li.tool-btn:hover,
 #FavoriteTools ul.tool-list ul li:hover {
-  background-color: #5cb85c;
+  background-color: #5bc0de;
 }
 #FavoriteTools ul.tool-list li.tool-btn.text-btn,
 #FavoriteTools ul.tool-list ul li.text-btn {
@@ -436,6 +434,23 @@ body.hand #drawingPanel .container .content .votes button img.hand {
 #FavoriteTools ul.tool-list .glyphicon {
   color: white;
 }
+#CommeUnDessein_alerts.top {
+  bottom: auto;
+  top: 0;
+  z-index: 100;
+}
+#CommeUnDessein_alerts.top .btn.show {
+  margin: auto;
+  position: absolute;
+  top: 62px;
+  left: 50%;
+  -webkit-transform: translateX(-50%) scaleY(-1);
+          transform: translateX(-50%) scaleY(-1);
+}
+#CommeUnDessein_alerts.top.activated.show {
+  bottom: auto;
+  top: 63px;
+}
 #CommeUnDessein_alerts {
   position: absolute;
   bottom: -50px;
@@ -446,8 +461,8 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   color: white;
   text-align: left;
   z-index: 2000;
-  -khtml-transition: left 0.5s ease-out, bottom 0.25s linear;
-  transition: left 0.5s ease-out, bottom 0.25s linear;
+  -khtml-transition: left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear;
+  transition: left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear;
 }
 #CommeUnDessein_alerts .alert-controls {
   position: absolute;
@@ -545,7 +560,7 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   opacity: 1;
   z-index: 10;
   position: absolute;
-  top: 50px;
+  top: 62px;
   left: 0;
   bottom: 0;
   right: 0;
@@ -564,6 +579,9 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   right: 0;
   bottom: 0;
   z-index: 0;
+}
+#stage.main #canvas.select {
+  pointer-events: none;
 }
 #stage.main #canvas .pointer {
   cursor: pointer;
@@ -783,6 +801,12 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   height: 100%;
   padding-right: 10px;
   padding-left: 10px;
+  border-radius: 0;
+  border: none;
+}
+#user-profile .user-profile button.dropdown-toggle:hover,
+#user-profile #user-login-group button.dropdown-toggle:hover {
+  background-color: #0089d9;
 }
 #user-profile .user-profile .dropdown-menu,
 #user-profile #user-login-group .dropdown-menu {
@@ -791,6 +815,15 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   right: 2px;
   left: auto;
   margin: none;
+}
+#user-profile .user-profile .username,
+#user-profile #user-login-group .username {
+  font-size: 14px;
+}
+#user-profile .user-profile .caret,
+#user-profile #user-login-group .caret {
+  margin: 10px;
+  margin-top: 8px;
 }
 #user-profile .dropdown-menu {
   position: relative;
@@ -936,9 +969,6 @@ li.tool-btn {
   cursor: pointer;
   padding: 6px;
 }
-li.tool-btn:hover {
-  background-color: #5cb85c;
-}
 li.tool-btn img {
   width: 25px;
   height: 25px;
@@ -1020,7 +1050,7 @@ li.tool-btn.selected .favorite-btn {
 .sidebar {
   width: 265px;
   position: fixed;
-  top: 50px;
+  top: 62px;
   left: 0;
   bottom: 0px;
   z-index: 1000;
@@ -1033,8 +1063,8 @@ li.tool-btn.selected .favorite-btn {
   -khtml-user-select: none;
   -o-user-select: none;
   user-select: none;
-  -khtml-transition: left 0.5s ease-out, bottom 0.25s linear;
-  transition: left 0.5s ease-out, bottom 0.25s linear;
+  -khtml-transition: left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear;
+  transition: left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear;
   /*
 	.option-list {
 		clear: both;
@@ -1126,6 +1156,9 @@ li.tool-btn.selected .favorite-btn {
 .sidebar.r-alert {
   bottom: 50px;
 }
+.sidebar.r-alert-top {
+  top: 113px;
+}
 .sidebar.r-hidden {
   left: -265px;
 }
@@ -1176,7 +1209,7 @@ li.tool-btn.selected .favorite-btn {
   padding: 3px;
 }
 .sidebar #City .mCustomScrollbar h6 {
-  background-color: #24282d;
+  background-color: #4cae4c;
   padding: 6px;
 }
 .sidebar #City .mCustomScrollbar .city-list {
@@ -1754,16 +1787,34 @@ li.tool-btn.selected .favorite-btn {
   border-radius: 10px;
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.95);
 }
+#submit-drawing-button {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+          flex-direction: row;
+  list-style: none;
+  -khtml-transition: bottom 0.25s linear;
+  transition: bottom 0.25s linear;
+}
+#submit-drawing-button.r-alert {
+  bottom: 50px;
+}
+#submit-drawing-button .tool-btn {
+  padding: 15px;
+}
 #drawingPanel {
   position: absolute;
-  top: 50px;
+  top: 62px;
   bottom: 0px;
   right: 0px;
   background-color: #33383e;
   color: white;
   display: none;
   padding: 5px;
-  padding-right: 0;
   z-index: 999;
   min-width: 200px;
   width: 350px;
@@ -1777,6 +1828,9 @@ li.tool-btn.selected .favorite-btn {
 }
 #drawingPanel.r-alert {
   bottom: 50px;
+}
+#drawingPanel.r-alert-top {
+  top: 113px;
 }
 #drawingPanel .panel-handle {
   float: left;
@@ -1857,12 +1911,28 @@ li.tool-btn.selected .favorite-btn {
           justify-content: center;
   -webkit-box-align: center;
           align-items: center;
+  margin-bottom: 10px;
 }
 #drawingPanel .container .content .drawing-thumbnail img {
   max-height: 250px;
 }
-#drawingPanel .container .content .btn {
-  margin-left: 5px;
+#drawingPanel .container .content .thumbnail-footer {
+  margin-bottom: 10px;
+}
+#drawingPanel .container .content .thumbnail-footer span {
+  padding-right: 5px;
+}
+#drawingPanel .container .content .thumbnail-footer .title {
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 14px;
+}
+#drawingPanel .container .content .thumbnail-footer .author {
+  font-style: italic;
+  font-weight: bold;
+}
+#drawingPanel .container .content .action-buttons button {
+  margin-bottom: 10px;
 }
 #drawingPanel .container .content button {
   min-height: 50px;
@@ -1876,6 +1946,41 @@ li.tool-btn.selected .favorite-btn {
 #drawingPanel .container .content .votes {
   margin-bottom: 20px;
 }
+#drawingPanel .container .content .votes .vote-buttons span.n-votes {
+  font-size: 20px;
+  line-height: 50px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+#drawingPanel .container .content .votes .vote-buttons .cd-row {
+  margin-bottom: 10px;
+  background-color: #464c53;
+  position: relative;
+}
+#drawingPanel .container .content .votes .vote-buttons .cd-row .vote-list {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 100%;
+  padding: 4px;
+  background-color: #464c53;
+  z-index: 1;
+  border: 1px solid #33383e;
+}
+#drawingPanel .container .content .votes .vote-buttons .cd-row .vote-list li {
+  background-color: #33383e;
+  margin-bottom: 5px;
+  padding: 8px;
+}
+#drawingPanel .container .content .votes .vote-buttons .cd-row .vote-list li:last-child {
+  margin-bottom: 0px;
+}
+#drawingPanel .container .content .votes .vote-buttons .cd-row:hover .vote-list {
+  display: block;
+}
+#drawingPanel .container .content .votes .vote-buttons .cd-row:last-child {
+  margin-bottom: 0px;
+}
 #drawingPanel .container .content .votes .vote-button {
   position: relative;
   display: -webkit-box;
@@ -1883,8 +1988,6 @@ li.tool-btn.selected .favorite-btn {
   -webkit-box-orient: horizontal;
   -webkit-box-direction: normal;
           flex-direction: row;
-  margin: 3px;
-  margin-top: 6px;
 }
 #drawingPanel .container .content .votes .vote-button .vote-list {
   display: none;
@@ -1915,8 +2018,6 @@ li.tool-btn.selected .favorite-btn {
           flex-grow: 1;
   -webkit-box-align: center;
           align-items: center;
-  margin-top: 4px;
-  margin-bottom: 4px;
   margin-left: 0px;
 }
 #drawingPanel .container .content .votes button img {
@@ -1929,8 +2030,10 @@ li.tool-btn.selected .favorite-btn {
   border-color: #eea236;
 }
 #drawingPanel .container .content .votes .vote-stats {
-  margin-left: 5px;
-  margin-right: 10px;
+  margin-left: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  background-color: #464c53;
 }
 #drawingPanel .container .content .votes .vote-stats .vote-stat {
   line-height: 2em;
@@ -1952,13 +2055,19 @@ li.tool-btn.selected .favorite-btn {
 }
 #drawingPanel .container .selected-drawings .drawing-list-container {
   min-height: 400px;
+  background-color: #464c53;
 }
 #drawingPanel .container .selected-drawings .drawing-list-container ul {
+  background-color: #464c53;
   padding-left: 0px;
   padding-right: 0px;
+  padding-bottom: 0px;
 }
 #drawingPanel .container .selected-drawings .drawing-list-container ul li {
   margin-bottom: 10px;
+  padding: 10px;
+  position: relative;
+  border-bottom: 1px solid #757f8a;
 }
 #drawingPanel .container .selected-drawings .drawing-list-container ul li .thumbnail {
   margin-bottom: 0px;
@@ -1971,11 +2080,18 @@ li.tool-btn.selected .favorite-btn {
   padding-right: 10px;
 }
 #drawingPanel .container .selected-drawings .drawing-list-container ul li button {
-  height: 100%;
+  border: none;
+  position: absolute;
+  top: 0;
+  right: 0;
   padding: 5px;
   width: 30px;
+  height: 30px;
   margin-left: 10px;
-  height: inherit;
+}
+#drawingPanel .container .selected-drawings .drawing-list-container ul li:last-child {
+  border-bottom: none;
+  margin-bottom: 0px;
 }
 #drawingPanel .container .footer {
   display: -webkit-box;

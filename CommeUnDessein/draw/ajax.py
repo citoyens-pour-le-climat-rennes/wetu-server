@@ -1500,7 +1500,11 @@ def submitDrawing(request, pk, clientId, svg, date, title=None, description=None
 	d.status = 'pending'
 	d.title = title
 	d.description = description
-	d.save()
+	
+	try:
+		d.save()
+	except NotUniqueError:
+		return json.dumps({'state': 'error', 'message': 'A drawing with this name already exists.'})
 
 	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk), 'negativeVoteThreshold': negativeVoteThreshold, 'positiveVoteThreshold': positiveVoteThreshold, 'voteMinDuration': voteMinDuration.total_seconds() } )
 
@@ -1526,7 +1530,7 @@ def loadDrawing(request, pk):
 
 # @dajaxice_register
 @checkDebug
-def updateDrawing(request, pk, title, description):
+def updateDrawing(request, pk, title, description=None):
 	
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
@@ -1543,9 +1547,14 @@ def updateDrawing(request, pk, title, description):
 		return json.dumps({'state': 'error', 'message': 'The drawing is already validated, it cannot be modified anymore.'})
 
 	d.title = title
-	d.description = description
+	
+	if description:
+		d.description = description
 
-	d.save()
+	try:
+		d.save()
+	except NotUniqueError:
+		return json.dumps({'state': 'error', 'message': 'A drawing with this name already exists.'})
 
 	return json.dumps( {'state': 'success' } )
 

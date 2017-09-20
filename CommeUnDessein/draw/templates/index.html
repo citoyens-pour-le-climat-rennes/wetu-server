@@ -221,7 +221,7 @@
 
         <!-- Sidebar -->
 
-        <div id="sidebar" class="sidebar r-sidebar-hidden">
+        <div id="sidebar" class="sidebar r-sidebar-hidden r-hidden hidden">
 
           <button type="button" class="sidebar-handle btn btn-default">
             <span class="glyphicon glyphicon-chevron-left"></span>
@@ -446,6 +446,11 @@
           <canvas id="canvas" resize hidpi="off" data-pos-x="{{ x }}" data-pos-y="{{ y }}" data-points="{{ points }}" data-box="{{ box }}" data-site="{{ site }}" data-message="{{ message }}" data-load-entire-area="{{ loadEntireArea }}" data-city="{{ city }}" data-owner="{{ owner }}" data-github-login="{{ githubLogin }}" data-username="{{ request.user.username }}" data-is-authenticated="{{ request.user.is_authenticated }}" data-drawing-mode="{{ drawingMode }}" data-positiveVoteThreshold="{{ positiveVoteThreshold }}" data-negativeVoteThreshold="{{ negativeVoteThreshold }}" data-voteMinDuration="{{ voteMinDuration }}"></canvas>
           <div id="rasters"></div>
 
+          <div id="submit-drawing-button">
+            <!-- <button class="btn btn-danger mode-button" type="button"><span class="glyphicon glyphicon-remove"></span><span class="text" data-i18n="Delete drawing">Delete drawing</span></button>
+            <button class="btn btn-success submit mode-button" type="button"><span class="glyphicon glyphicon-ok"></span><span class="text" data-i18n="Submit drawing">Submit drawing</span></button> -->
+          </div>
+
           <!-- <ul class="hidden commeUnDessein-ui selectable-item-list"></ul> -->
 
         </div>
@@ -482,6 +487,12 @@
                     <div class="thumbnail drawing-thumbnail">
                     </div>
 
+                    <div class="thumbnail-footer cd-row cd-grow cd-end">
+                      <span class="title"></span>
+                      <span data-i18n="by">by</span>
+                      <span class="author"></span>
+                    </div>
+
 <!--                     <div class="cd-column read">
                       <h3 class="title"></h3>
                       <h4 class="author"></h4>
@@ -490,31 +501,51 @@
 
                     <form class="create cd-column cd-grow" autocomplete="off">
 
-                      <div class="form-group">
-                        <label for="drawing-author" data-i18n="Author">Author</label>
-                        <input type="text" class="form-control" id="drawing-author" placeholder="" readonly>
+
+                      <div class="form-group title-group">
+                        <label class="hidden" for="drawing-title" data-i18n="Title">Title</label>
+                        <input type="text" class="form-control modify" id="drawing-title" data-i18n="[placeholder]Drawing title" placeholder="Drawing title">
                       </div>
 
-                      <div class="form-group">
-                        <label for="drawing-title" data-i18n="Title">Title</label>
-                        <input type="text" class="form-control modify" id="drawing-title" data-i18n="[placeholder]Mandala" placeholder="Mandala">
-                      </div>
-                      <div class="form-group cd-grow cd-column textarea">
+                      <div class="form-group cd-grow cd-column textarea hidden">
                         <label for="drawing-description"  data-i18n="Description">Description</label>
                         <textarea class="form-control cd-grow modify" id="drawing-description" rows="5"></textarea>
                       </div>
 
 
+                      <div class="cd-column cd-end action-buttons">
+                        
+                        <button class="btn btn-success original-color submit" type="button"><span class="glyphicon glyphicon-ok"></span><span data-i18n='Submit'>Submit</span></button>
+
+                        <button class="btn btn-info original-color modify" type="button"><span class="glyphicon glyphicon-ok"></span><span data-i18n='Modify title'>Modify title</span></button>
+
+                        <button class="btn btn-warning original-color cancel" type="button"><span class="glyphicon glyphicon-remove"></span><span data-i18n='Cancel' class='text'>Cancel</span></button>
+                        <!-- <button class="btn btn-danger original-color delete" type="button"><span class="glyphicon glyphicon-trash"></span><span data-i18n='Delete'>Delete</span></button> -->
+                        
+                        
+                      </div>
+
                       <div class="votes cd-row">
 
                         <div class="cd-row cd-grow">
 
-                          <div class="cd-column cd-grow">
-                            <button class="btn btn-success icon-only btn-lg vote-up" type="button"><img class="line" src="static/images/icons/inverted/icones_icon_thumbsup.png"><img class="hand" src="static/images/icons/inverted/a-thumbup.png"><span class="glyphicon glyphicon-plus"></span><span class="text" data-i18n="Vote up">Vote up</span></button>
-                            <button class="btn btn-danger icon-only btn-lg vote-down" type="button"><img class="line" src="static/images/icons/inverted/icones_icon_thumbsdown.png"><img class="hand" src="static/images/icons/inverted/a-thumbdown.png"><span class="glyphicon glyphicon-minus"></span><span class="text" data-i18n="Vote down">Vote down</span></button>
+                          <div class="cd-column cd-grow vote-buttons">
+                            
+                            <div class="cd-row">
+                              <button class="btn btn-success icon-only btn-lg vote-up" type="button"><img class="line" src="static/images/icons/inverted/icones_icon_thumbsup.png"><img class="hand" src="static/images/icons/inverted/a-thumbup.png"><span class="glyphicon glyphicon-plus"></span><span class="text" data-i18n="Vote up">Vote up</span></button>
+                              <span class="n-votes positive">0</span>
+                              <ul class="vote-list positive list-unstyled"></ul>
+                            </div>
+
+                            <div class="cd-row">
+                              <button class="btn btn-danger icon-only btn-lg vote-down" type="button"><img class="line" src="static/images/icons/inverted/icones_icon_thumbsdown.png"><img class="hand" src="static/images/icons/inverted/a-thumbdown.png"><span class="glyphicon glyphicon-minus"></span><span class="text" data-i18n="Vote down">Vote down</span></button>
+                              <span class="n-votes negative">0</span>
+                              <ul class="vote-list negative list-unstyled"></ul>
+                            </div>
+
                           </div>
 
-                          <div class="cd-column">
+                          <div class="cd-column hidden">
 
                             <span class="vote-button positive">
                               <span class="n-votes positive">0</span>
@@ -531,7 +562,7 @@
                         </div>
 
                         <div class="cd-column cd-justify-content-center vote-stats">
-                          <div class="vote-stat"><span data-i18n='Status'>Status</span>: <span class="status"></span></div>
+                          <div class="vote-stat"><span data-i18n='Status'>Status</span> : <span class="status"></span></div>
                           <div class="vote-stat"><span class="n-votes total">0</span> votes</div>
                           <div class="vote-stat"><span class="percentage-votes">0</span>% <span data-i18n='positive'>positive</span></div>
                         </div>
@@ -544,12 +575,6 @@
 
                 </div>
 
-                <div class="cd-row cd-end action-buttons">
-                  <button class="btn btn-warning original-color cancel" type="button"><span class="glyphicon glyphicon-remove"></span><span data-i18n='Cancel' class='text'>Cancel</span></button>
-                  <!-- <button class="btn btn-danger original-color delete" type="button"><span class="glyphicon glyphicon-trash"></span><span data-i18n='Delete'>Delete</span></button> -->
-                  <button class="btn btn-info original-color modify" type="button"><span class="glyphicon glyphicon-ok"></span><span data-i18n='Modify description'>Modify description</span></button>
-                  <button class="btn btn-success original-color submit" type="button"><span class="glyphicon glyphicon-ok"></span><span data-i18n='Submit'>Submit</span></button>
-                </div>
 
 
               </div>

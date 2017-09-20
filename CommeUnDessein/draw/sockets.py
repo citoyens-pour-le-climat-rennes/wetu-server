@@ -34,6 +34,7 @@ from django.utils.html import escape
 chatNamespace = None
 
 # --- Receive signals from ajax --- #
+
 @receiver(drawingValidated)
 def on_drawing_validated(sender, **kwargs):
     if kwargs is not None and 'drawingId' in kwargs and 'status' in kwargs:

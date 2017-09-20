@@ -3,7 +3,15 @@
 @hover-purple: #5cb85c;
 @hover-blue: rgb(47, 161, 214);
 @sidebar-background-color: #33383E;
+@sidebar-light-background-color: #464c53;
 @sidebar-dark-background-color: #24282D;
+
+@dark-blue: #5489d0;
+@success-color: #4cae4c;
+@info-color: #5bc0de;
+@pending-color: #0079BF;
+@warning-color: #f0ad4e;
+@danger-color: #d9534f;
 
 @down-arrow-img: url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlI+hKgFxoCgAOw==);
 @right-arrow-img: url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlGIWqMCbWAEAOw==);
@@ -247,26 +255,6 @@ button:hover, button:active, button:focus, .btn:hover, .btn:active, .btn:focus, 
 	outline: none;
 }
 
-.mode-buttons {
-}
-.mode-button {
-	border-radius: 0;
-    height: 100%;
-    margin-right: -4px;
-	.glyphicon {
-		margin-right: 5px;
-	}
-	&.icon-only {
-		.glyphicon {
-			margin-right: 2px;
-		}
-	}
-	&:focus {
-		outline: none;
-	}
-
-
-}
 h4 {
 	font-size: 14px;
 }
@@ -293,14 +281,17 @@ body.line {
 					width: 42px;
 					height: 42px;
 				}
+				span.glyphicon {
+    				line-height: 42px;
+				}
 				&:hover {
-					background-color: @hover-purple;
+					background-color: lighten(@pending-color, 5%);
 				}
 				&.btn-success {
 					background-color: rgb(76, 174, 76);
 				}
 				&.btn-info {
-					background-color: #5bc0de;
+					background-color: @pending-color;
 				}
 			}
 		}
@@ -347,11 +338,10 @@ body.hand {
 
 	// --- title -- //
 	h3.title {
-    	width: 265px;
     	text-align: center;
-    	padding-top: 4px;
-		margin-top: 0;
-		margin-bottom: 0;
+    	padding-top: 2px;
+    	margin: 10px;
+    	line-height: 1;
 		color: white;
 		// font-family: 'Lucida Grande', sans-serif;
 		// font-family: 'Pacifico', cursive;
@@ -384,7 +374,7 @@ body.hand {
 	}
 
 	ul.tool-list {
-
+		width: 100%;
 		float: left;
 		list-style-type: none;
 		display: flex;
@@ -425,6 +415,7 @@ body.hand {
 			cursor: pointer;
 			float: left;
 			padding: 10px;
+
 			img {
 				width: 30px;
 				height: 30px;
@@ -439,8 +430,14 @@ body.hand {
 				line-height: 25px;
 			}
 			// background-color: white;
+			&.align-end {
+				margin-left: auto;
+			}
+			&.btn-info {
+				background-color: @pending-color;
+			}
 			&:hover {
-				background-color: @hover-purple;
+				background-color: @info-color;
 			}
 
 			&.text-btn {
@@ -480,6 +477,27 @@ body.hand {
 		}
 	}
 
+}
+
+#CommeUnDessein_alerts.top {
+	bottom: auto;
+    top: 0;
+    z-index: 100;
+
+	.btn.show {
+		margin: auto;
+		position: absolute;
+		top: 62px;
+	    left: 50%;
+	    transform: translateX(-50%)scaleY(-1);
+	}
+
+	&.activated {
+		&.show {
+			bottom: auto;
+			top: 63px;
+		}
+	}
 }
 
 #CommeUnDessein_alerts {
@@ -597,7 +615,7 @@ body.hand {
 		}
 	}
 
-	.vendor(transition, ~"left 0.5s ease-out, bottom 0.25s linear");
+	.vendor(transition, ~"left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear");
 
 	&.r-sidebar-hidden {
 		left: 0px;
@@ -614,7 +632,7 @@ body.hand {
 	opacity: 1;
 	z-index: 10;
 	position: absolute;
-	top: 50px;
+	top: 62px;
 	left: 0;
 	bottom: 0;
 	right: 0;
@@ -641,6 +659,10 @@ body.hand {
 		right: 0;
 		bottom: 0;
 		z-index: 0;
+    	
+    	&.select {
+    		pointer-events: none;
+    	}
 
 		.pointer {
 			cursor: pointer;
@@ -920,6 +942,11 @@ body.hand {
 			height: 100%;
 			padding-right: 10px;
     		padding-left: 10px;
+    		border-radius: 0;
+    		border: none;
+    		&:hover {
+    			background-color: lighten(@pending-color, 5%);
+    		}
 		}
 		.dropdown-menu {
 			min-width: 100%;
@@ -927,6 +954,13 @@ body.hand {
     		right: 2px;
     		left: auto;
 			margin: none;
+		}
+		.username {
+			font-size: 14px;
+		}
+		.caret {
+		    margin: 10px;
+		    margin-top: 8px;
 		}
 	}
 
@@ -1103,7 +1137,7 @@ li.tool-btn {
 	cursor: pointer;
 	padding: 6px;
 	&:hover {
-		background-color: @hover-purple;
+		// background-color: @hover-purple;
 	}
 
 	img {
@@ -1208,7 +1242,7 @@ li.tool-btn {
 
 	width: 265px;
 	position: fixed;
-	top: 50px;
+	top: 62px;
 	left: 0;
 	bottom: 0px;
 	z-index: 1000;
@@ -1225,10 +1259,13 @@ li.tool-btn {
 	// .vendor(transition, left 0.5s ease-out);
 	// .vendor(transition, bottom 0.25s linear);
 
-	.vendor(transition, ~"left 0.5s ease-out, bottom 0.25s linear");
+	.vendor(transition, ~"left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear");
 
 	&.r-alert {
 		bottom: 50px;
+	}
+	&.r-alert-top {
+		top: 113px;
 	}
 
 	&.r-hidden {
@@ -1285,7 +1322,7 @@ li.tool-btn {
 			border: 1px solid rgba(128, 128, 128, 0.61);
 			padding: 3px;
 			h6 {
-				background-color: #24282d;
+				background-color: @success-color;
     			padding: 6px;
 			}
 			.city-list {
@@ -2003,10 +2040,35 @@ li.tool-btn {
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.95); 
 }
 
+#submit-drawing-button {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+
+    display: flex;
+    flex-direction: row;
+    list-style: none;
+
+	.vendor(transition, bottom 0.25s linear);
+
+	&.r-alert {
+		bottom: 50px;
+	}
+
+	.tool-btn {
+    	padding: 15px;
+    	&:hover {
+    		// background-color: inherit;
+    	}
+	}
+
+}
+
+
 #drawingPanel {
 	// left: 70%;
 	position: absolute;
-	top: 50px;
+	top: 62px;
 	bottom: 0px;
 	// .vendor(transition, bottom 0.5s linear);
 	right: 0px;
@@ -2014,7 +2076,7 @@ li.tool-btn {
 	color: white;
 	display: none;
 	padding: 5px;
-	padding-right: 0;
+	// padding-right: 0;
 	z-index: 999;
 	min-width: 200px;
 	width: 350px;
@@ -2022,6 +2084,9 @@ li.tool-btn {
 
 	&.r-alert {
 		bottom: 50px;
+	}
+	&.r-alert-top {
+		top: 113px;
 	}
 	// .vendor(transition, left 0.5s ease-out);
 	.vendor(transition, ~"left 0.5s ease-out, bottom 0.25s linear");
@@ -2097,12 +2162,33 @@ li.tool-btn {
 			    display: flex;
 			    justify-content: center;
 			    align-items: center;
+				margin-bottom: 10px;
 				img {
 					max-height: 250px;
 				}
 			}
+			.thumbnail-footer {
+    			margin-bottom: 10px;
+				span {
+					padding-right: 5px;
+				}
+				.title {
+					font-weight: bold;
+					font-size: 14px;
+					line-height: 14px;
+				}
+				.author {
+					font-style: italic;
+					font-weight: bold;
+				}
+			}
+			.action-buttons {
+				button {
+    				margin-bottom: 10px;
+				}
+			}
 			.btn {
-				margin-left: 5px;
+				// margin-left: 5px;
 			}
 			button {
 				min-height: 50px;
@@ -2118,12 +2204,54 @@ li.tool-btn {
 			.votes {
     			margin-bottom: 20px;
 
+    			.vote-buttons {
+    				span.n-votes {
+						font-size: 20px;
+						line-height: 50px;
+						padding-left: 10px;
+						padding-right: 10px;
+    				}
+    				.cd-row {
+    					margin-bottom: 10px;
+    					// border: 1px solid lighten(black, 50%);
+    					background-color: @sidebar-light-background-color;
+    					position: relative;
+    					.vote-list {
+		    				display: none;
+		    				position: absolute;
+		    				top: 0;
+							left: 100%;
+							padding: 4px;
+		    				background-color: @sidebar-light-background-color;
+		    				z-index: 1;
+		    				border: 1px solid @sidebar-background-color;
+		    				li {
+		    					background-color: @sidebar-background-color;
+								margin-bottom: 5px;
+								padding: 8px;
+		    				}
+		    				li:last-child {
+		    					margin-bottom: 0px;
+		    				}
+		    			}
+		    			&:hover {
+	    					.vote-list {
+			    				display: block;
+			    			}
+		    			}
+    				}
+    				.cd-row:last-child {
+						margin-bottom: 0px;
+					}
+
+    			}
+
     			.vote-button {
     				position: relative;
     				display: flex;
     				flex-direction: row;
-    				margin: 3px;
-    				margin-top: 6px;
+    				// margin: 3px;
+    				// margin-top: 6px;
     				.vote-list {
 	    				display: none;
 	    				position: absolute;
@@ -2157,8 +2285,6 @@ li.tool-btn {
 					font-size: 12px;
 					flex-grow: 1;
 					align-items: center;
-					margin-top: 4px;
-					margin-bottom: 4px;
 					margin-left: 0px;
 
 					img {
@@ -2175,9 +2301,11 @@ li.tool-btn {
 				}
 
     			.vote-stats {
-
-					margin-left: 5px;
-					margin-right: 10px;
+    				margin-left: 10px;
+					padding-left: 20px;
+					padding-right: 20px;
+					// border: 1px solid lighten(black, 50%);
+					background-color: @sidebar-light-background-color;
 
     				.vote-stat {
     					line-height: 2em;
@@ -2201,11 +2329,18 @@ li.tool-btn {
 			width: 100%;
 			.drawing-list-container {
 				min-height: 400px;
+				background-color: @sidebar-light-background-color;
 				ul {
+					background-color: @sidebar-light-background-color;
 					padding-left: 0px;
 					padding-right: 0px;
+					padding-bottom: 0px;
 					li {
     					margin-bottom: 10px;
+    					padding: 10px;
+    					position: relative;
+    					border-bottom: 1px solid lighten(@sidebar-light-background-color, 20%);
+
 						.thumbnail {
 							margin-bottom: 0px;
 							img {
@@ -2217,13 +2352,21 @@ li.tool-btn {
 							padding-right: 10px;
 						}
 						button {
-							height: 100%;
+							border: none;
+    						position: absolute;
+    						top: 0;
+    						right: 0;
 							padding: 5px;
 						    width: 30px;
+						    height: 30px;
 						    margin-left: 10px;
-							height: inherit;
 						}
 					}
+
+					li:last-child {
+						border-bottom: none;
+    					margin-bottom: 0px;
+    				}
 				}
 			}
 		}
