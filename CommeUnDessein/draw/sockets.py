@@ -9,7 +9,7 @@ from django.core import serializers
 from django.contrib.auth.models import User
 from django.db.models import F
 from models import Path, Box, Div, UserProfile, Drawing
-from ajax import TIPIBOT_PASSWORD, drawingValidated
+from ajax import TIPIBOT_PASSWORD, drawingChanged
 from pprint import pprint
 from django.contrib.auth import authenticate, login, logout
 from paypal.standard.ipn.signals import payment_was_successful, payment_was_flagged, payment_was_refunded, payment_was_reversed
@@ -35,12 +35,34 @@ chatNamespace = None
 
 # --- Receive signals from ajax --- #
 
-@receiver(drawingValidated)
-def on_drawing_validated(sender, **kwargs):
-    if kwargs is not None and 'drawingId' in kwargs and 'status' in kwargs:
-        print "drawing change: " + str(kwargs['drawingId']) + ", " + str(kwargs['status'])
+# @receiver(drawingValidated)
+# def on_drawing_validated(sender, **kwargs):
+#     if kwargs is not None and 'drawingId' in kwargs and 'status' in kwargs:
+#         print "drawing change: " + str(kwargs['drawingId']) + ", " + str(kwargs['status'])
+#         # chatNamespace.emit_to_room(chatNamespace.room, 'drawing change', {'type': 'status', 'drawingId': kwargs['drawingId'], 'status': kwargs['status']})
+#         chatNamespace.broadcast_event('drawing change', {'type': 'status', 'drawingId': kwargs['drawingId'], 'status': kwargs['status']})
+
+@receiver(drawingChanged)
+def on_drawing_changed(sender, **kwargs):
+    if kwargs is not None and 'drawingId' in kwargs and 'type' in kwargs:
+        print "drawing change: " + str(kwargs['type']) + ", " + str(kwargs['drawingId'])
         # chatNamespace.emit_to_room(chatNamespace.room, 'drawing change', {'type': 'status', 'drawingId': kwargs['drawingId'], 'status': kwargs['status']})
-        chatNamespace.broadcast_event('drawing change', {'type': 'status', 'drawingId': kwargs['drawingId'], 'status': kwargs['status']})
+        args = { 'type': kwargs['type'], 'drawingId': kwargs['drawingId'] }
+        if 'status' in kwargs:
+            args['status'] = kwargs['status']
+        if 'city' in kwargs:
+            args['city'] = kwargs['city']
+        if 'votes' in kwargs:
+            args['votes'] = kwargs['votes']
+        if 'pk' in kwargs:
+            args['pk'] = kwargs['pk']
+        if 'title' in kwargs:
+            args['title'] = kwargs['title']
+        if 'description' in kwargs:
+            args['description'] = kwargs['description']
+        if 'svg' in kwargs:
+            args['svg'] = kwargs['svg']
+        chatNamespace.broadcast_event('drawing change', args)
 
 @namespace('/chat')
 class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):

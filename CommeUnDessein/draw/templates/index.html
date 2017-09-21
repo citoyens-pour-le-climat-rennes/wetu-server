@@ -80,19 +80,7 @@
           <li data-name="Rectangle" data-cursor="rectangle" class="tool-btn"><img src="{% static 'images/icons/inverted/rectangle.png' %}" alt="rectangle"></li>
           <li data-name="Spiral" data-cursor="spiral" class="tool-btn"><img src="{% static 'images/icons/inverted/spiral.png' %}" alt="spiral"></li> -->
           <!-- <li data-name="Checkpoint"><span class="short-name">Ch.</span><span class="tool-name">Checkpoint</span></li> -->
-        </ul>
-
-        <div class="mode-buttons cd-row cd-grow">
-            
-            <!-- <button class="hidden btn btn-danger submit mode-button icon-only cancel-drawing" type="button">
-              <span class="glyphicon glyphicon-remove"></span>
-            </button> -->
-
-            <button class="hidden btn btn-success submit mode-button submit-drawing" type="button">
-              <span class="glyphicon glyphicon-ok"></span><span class="text" data-i18n="Submit drawing">Submit drawing</span>
-            </button>
-
-           <div id="user-profile" class="cd-row cd-grow cd-end">
+          <li id="user-profile" class="selected align-end cd-row">
 
             {% if request.user.is_authenticated %}
 
@@ -137,7 +125,20 @@
 
             {% endif %}
 
-           </div>
+           </li>
+        </ul>
+
+        <div class="mode-buttons cd-row cd-grow">
+            
+            <!-- <button class="hidden btn btn-danger submit mode-button icon-only cancel-drawing" type="button">
+              <span class="glyphicon glyphicon-remove"></span>
+            </button> -->
+
+            <button class="hidden btn btn-success submit mode-button submit-drawing" type="button">
+              <span class="glyphicon glyphicon-ok"></span><span class="text" data-i18n="Submit drawing">Submit drawing</span>
+            </button>
+
+
 
         </div>
 
@@ -457,6 +458,11 @@
 
         <div id="drawingPanel" class="commeUnDessein-ui">
 
+          <div class='header item'>
+            <h4 class="drawing-panel-title" data-i18n="Drawing">Drawing</h4>
+            <button class="btn btn-default icon-only transparent close-panel" type="button"><span class="glyphicon glyphicon-remove"></span></button>
+          </div>
+
           <!-- 
           <div class="handle panel-handle">
             <button type="button" class="handle-left btn btn-default transparent">
@@ -469,11 +475,6 @@
           -->
 
           <div class="container cd-column cd-grow">
-
-            <div class='header item'>
-              <h4 class="drawing-panel-title" data-i18n="Drawing">Drawing</h4>
-              <button class="btn btn-default icon-only transparent close-panel" type="button"><span class="glyphicon glyphicon-remove"></span></button>
-            </div>
 
             <div class="content-container cd-column cd-grow">
 
@@ -534,13 +535,20 @@
                             <div class="cd-row">
                               <button class="btn btn-success icon-only btn-lg vote-up" type="button"><img class="line" src="static/images/icons/inverted/icones_icon_thumbsup.png"><img class="hand" src="static/images/icons/inverted/a-thumbup.png"><span class="glyphicon glyphicon-plus"></span><span class="text" data-i18n="Vote up">Vote up</span></button>
                               <span class="n-votes positive">0</span>
-                              <ul class="vote-list positive list-unstyled"></ul>
+                              <div class="vote-list positive">
+                                <div class="arrow-down"></div>
+                                <span>Votes:</span>
+                                <ul class="positive list-unstyled"></ul>
+                              </div>
                             </div>
 
                             <div class="cd-row">
                               <button class="btn btn-danger icon-only btn-lg vote-down" type="button"><img class="line" src="static/images/icons/inverted/icones_icon_thumbsdown.png"><img class="hand" src="static/images/icons/inverted/a-thumbdown.png"><span class="glyphicon glyphicon-minus"></span><span class="text" data-i18n="Vote down">Vote down</span></button>
                               <span class="n-votes negative">0</span>
-                              <ul class="vote-list negative list-unstyled"></ul>
+                              <div class="vote-list negative">
+                                <div class="arrow-down"></div>
+                                <ul class="negative list-unstyled"></ul>
+                              </div>
                             </div>
 
                           </div>

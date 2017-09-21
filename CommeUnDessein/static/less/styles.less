@@ -273,7 +273,7 @@ h4 {
 body.line {
 	#FavoriteTools {
 		ul.tool-list {
-			li.tool-btn, ul li {
+			.tool-btn {
 				// padding: 4px;
 				// margin: 1px;
 				// background-color: rgba(255,255,255,0.0625);
@@ -410,8 +410,10 @@ body.hand {
 
 			// }
 		}
-
-		li.tool-btn, ul li {
+		.align-end {
+			margin-left: auto;
+		}
+		.tool-btn {
 			cursor: pointer;
 			float: left;
 			padding: 10px;
@@ -430,9 +432,7 @@ body.hand {
 				line-height: 25px;
 			}
 			// background-color: white;
-			&.align-end {
-				margin-left: auto;
-			}
+			
 			&.btn-info {
 				background-color: @pending-color;
 			}
@@ -929,7 +929,7 @@ body.hand {
 }
 
 #user-profile {
-
+    order: 1001;
 	.user-profile, #user-login-group {
 		padding: 0;
 		margin: 0;
@@ -951,9 +951,15 @@ body.hand {
 		.dropdown-menu {
 			min-width: 100%;
 			position: absolute;
-    		right: 2px;
+    		right: 0;
     		left: auto;
+    		top: 100%;
 			margin: none;
+			margin-top: 0;
+			border-radius: 0;
+			border: none;
+			padding-top: 10px;
+			padding-bottom: 10px;
 		}
 		.username {
 			font-size: 14px;
@@ -2075,7 +2081,7 @@ li.tool-btn {
 	background-color: @sidebar-background-color;
 	color: white;
 	display: none;
-	padding: 5px;
+	// padding: 5px;
 	// padding-right: 0;
 	z-index: 999;
 	min-width: 200px;
@@ -2117,6 +2123,29 @@ li.tool-btn {
 			background-color: transparent;
 		}
 	}
+	.header {
+		min-height: 42px;
+		display: flex;
+		flex-direction: row;
+		background-color: @sidebar-light-background-color;
+		button {
+			width: 30px;
+			height: 30px;
+			margin: 2px;
+		}
+		h4 {
+			padding: 10px;
+			margin: 0;
+			line-height: 1.5em;
+		}
+		.close-panel {
+			position: absolute;
+			top: 4px;
+			right: 5px;
+			border: none;
+			background-color: @sidebar-light-background-color;
+		}
+	}
 
 	.container {
     	height: 100%;
@@ -2126,30 +2155,9 @@ li.tool-btn {
 		min-height: 100%;
 		width: auto;
 		margin-right: 0;
-		padding-right: 7px;
-		padding-left: 7px;
-		padding-bottom: 7px;
+		padding: 10px;
 
-		.header {
-    		min-height: 40px;
-			display: flex;
-			flex-direction: row;
-			margin-left: 10px;
-  			margin-right: -5px;
-			button {
-				width: 30px;
-				height: 30px;
-				margin: 2px;
-				background-color: @sidebar-background-color;
-			}
-			h4 {
-			}
-			.close-panel {
-				position: absolute;
-				top: 5px;
-				right: 5px;
-			}
-		}
+		
 		.content {
 			height: 100%;
 			max-height: 100%;
@@ -2217,18 +2225,39 @@ li.tool-btn {
     					background-color: @sidebar-light-background-color;
     					position: relative;
     					.vote-list {
+
 		    				display: none;
 		    				position: absolute;
 		    				top: 0;
 							left: 100%;
 							padding: 4px;
+							min-width: 100px;
+							// padding-left: 14px;
 		    				background-color: @sidebar-light-background-color;
 		    				z-index: 1;
 		    				border: 1px solid @sidebar-background-color;
+							margin-left: 10px;
+		    				.arrow-down {
+								width: 0;
+								height: 0;
+								display: inline-block;
+								position: absolute;
+								left: -7px;
+								border-top: 10px solid transparent;
+								border-bottom: 10px solid transparent;
+								border-right: 10px solid #464c53;
+								top: 14px;
+								z-index: -1;
+							}
+
+							ul {
+								margin-bottom: 0;
+							}
+
 		    				li {
 		    					background-color: @sidebar-background-color;
 								margin-bottom: 5px;
-								padding: 8px;
+								padding: 5px;
 		    				}
 		    				li:last-child {
 		    					margin-bottom: 0px;
@@ -2328,18 +2357,19 @@ li.tool-btn {
 
 			width: 100%;
 			.drawing-list-container {
-				min-height: 400px;
+				// min-height: 400px;
 				background-color: @sidebar-light-background-color;
 				ul {
 					background-color: @sidebar-light-background-color;
 					padding-left: 0px;
 					padding-right: 0px;
 					padding-bottom: 0px;
+					margin-bottom: 0px;
 					li {
-    					margin-bottom: 10px;
+    					// margin-bottom: 10px;
     					padding: 10px;
     					position: relative;
-    					border-bottom: 1px solid lighten(@sidebar-light-background-color, 20%);
+    					border-bottom: 2px solid @sidebar-background-color;
 
 						.thumbnail {
 							margin-bottom: 0px;
@@ -2350,12 +2380,14 @@ li.tool-btn {
 						h4 {
 							padding-left: 10px;
 							padding-right: 10px;
+							margin-bottom: 15px;
+							margin-top: 5px;
 						}
 						button {
 							border: none;
     						position: absolute;
-    						top: 0;
-    						right: 0;
+							top: 6px;
+							right: 11px;
 							padding: 5px;
 						    width: 30px;
 						    height: 30px;
@@ -2963,7 +2995,7 @@ body.allauth {
 
 	#FavoriteTools {
 		ul.tool-list {
-    		width: 300px;
+    		// width: 300px;
 		}
 	}
 	.sidebar {
@@ -2983,7 +3015,7 @@ body.allauth {
 			display: none;
 		}
 		ul.tool-list {
-    		width: 200px;
+    		// width: 200px;
     		li.tool-btn {
 				padding: 6px;
 			}

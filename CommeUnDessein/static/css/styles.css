@@ -265,25 +265,20 @@ h4 {
 .btn-transparent:focus {
   color: #efefef;
 }
-body.line #FavoriteTools ul.tool-list li.tool-btn img,
-body.line #FavoriteTools ul.tool-list ul li img {
+body.line #FavoriteTools ul.tool-list .tool-btn img {
   width: 42px;
   height: 42px;
 }
-body.line #FavoriteTools ul.tool-list li.tool-btn span.glyphicon,
-body.line #FavoriteTools ul.tool-list ul li span.glyphicon {
+body.line #FavoriteTools ul.tool-list .tool-btn span.glyphicon {
   line-height: 42px;
 }
-body.line #FavoriteTools ul.tool-list li.tool-btn:hover,
-body.line #FavoriteTools ul.tool-list ul li:hover {
+body.line #FavoriteTools ul.tool-list .tool-btn:hover {
   background-color: #0089d9;
 }
-body.line #FavoriteTools ul.tool-list li.tool-btn.btn-success,
-body.line #FavoriteTools ul.tool-list ul li.btn-success {
+body.line #FavoriteTools ul.tool-list .tool-btn.btn-success {
   background-color: #4cae4c;
 }
-body.line #FavoriteTools ul.tool-list li.tool-btn.btn-info,
-body.line #FavoriteTools ul.tool-list ul li.btn-info {
+body.line #FavoriteTools ul.tool-list .tool-btn.btn-info {
   background-color: #0079bf;
 }
 body.line #drawingPanel .container .content .votes button span.glyphicon {
@@ -363,20 +358,20 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   clear: both;
   padding: 0;
 }
-#FavoriteTools ul.tool-list li.tool-btn,
-#FavoriteTools ul.tool-list ul li {
+#FavoriteTools ul.tool-list .align-end {
+  margin-left: auto;
+}
+#FavoriteTools ul.tool-list .tool-btn {
   cursor: pointer;
   float: left;
   padding: 10px;
 }
-#FavoriteTools ul.tool-list li.tool-btn img,
-#FavoriteTools ul.tool-list ul li img {
+#FavoriteTools ul.tool-list .tool-btn img {
   width: 30px;
   height: 30px;
   margin-right: 0px;
 }
-#FavoriteTools ul.tool-list li.tool-btn span.glyphicon,
-#FavoriteTools ul.tool-list ul li span.glyphicon {
+#FavoriteTools ul.tool-list .tool-btn span.glyphicon {
   width: 30px;
   height: 30px;
   font-size: 25px;
@@ -385,20 +380,13 @@ body.hand #drawingPanel .container .content .votes button img.hand {
           justify-content: center;
   line-height: 25px;
 }
-#FavoriteTools ul.tool-list li.tool-btn.align-end,
-#FavoriteTools ul.tool-list ul li.align-end {
-  margin-left: auto;
-}
-#FavoriteTools ul.tool-list li.tool-btn.btn-info,
-#FavoriteTools ul.tool-list ul li.btn-info {
+#FavoriteTools ul.tool-list .tool-btn.btn-info {
   background-color: #0079bf;
 }
-#FavoriteTools ul.tool-list li.tool-btn:hover,
-#FavoriteTools ul.tool-list ul li:hover {
+#FavoriteTools ul.tool-list .tool-btn:hover {
   background-color: #5bc0de;
 }
-#FavoriteTools ul.tool-list li.tool-btn.text-btn,
-#FavoriteTools ul.tool-list ul li.text-btn {
+#FavoriteTools ul.tool-list .tool-btn.text-btn {
   width: 50px;
   height: 50px;
   text-align: center;
@@ -409,26 +397,21 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   padding-bottom: 0px;
   padding-right: 0px;
 }
-#FavoriteTools ul.tool-list li.tool-btn span.tool-name,
-#FavoriteTools ul.tool-list ul li span.tool-name {
+#FavoriteTools ul.tool-list .tool-btn span.tool-name {
   display: none;
 }
-#FavoriteTools ul.tool-list li.tool-btn .favorite-btn,
-#FavoriteTools ul.tool-list ul li .favorite-btn {
+#FavoriteTools ul.tool-list .tool-btn .favorite-btn {
   display: none;
 }
-#FavoriteTools ul.tool-list li.tool-btn.displayName span.tool-name,
-#FavoriteTools ul.tool-list ul li.displayName span.tool-name {
+#FavoriteTools ul.tool-list .tool-btn.displayName span.tool-name {
   display: inline-block;
   color: white;
   margin-right: 10px;
 }
-#FavoriteTools ul.tool-list li.tool-btn.btn-success,
-#FavoriteTools ul.tool-list ul li.btn-success {
+#FavoriteTools ul.tool-list .tool-btn.btn-success {
   background-color: #4cae4c;
 }
-#FavoriteTools ul.tool-list li.tool-btn.btn-info,
-#FavoriteTools ul.tool-list ul li.btn-info {
+#FavoriteTools ul.tool-list .tool-btn.btn-info {
   background-color: #5bc0de;
 }
 #FavoriteTools ul.tool-list .glyphicon {
@@ -785,6 +768,10 @@ body.hand #drawingPanel .container .content .votes button img.hand {
 #stage.main .custom-div.website {
   cursor: url(../images/cursors/hand.png) 32 32, move;
 }
+#user-profile {
+  -webkit-box-ordinal-group: 1002;
+          order: 1001;
+}
 #user-profile .user-profile,
 #user-profile #user-login-group {
   padding: 0;
@@ -812,9 +799,15 @@ body.hand #drawingPanel .container .content .votes button img.hand {
 #user-profile #user-login-group .dropdown-menu {
   min-width: 100%;
   position: absolute;
-  right: 2px;
+  right: 0;
   left: auto;
+  top: 100%;
   margin: none;
+  margin-top: 0;
+  border-radius: 0;
+  border: none;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 #user-profile .user-profile .username,
 #user-profile #user-login-group .username {
@@ -1814,7 +1807,6 @@ li.tool-btn.selected .favorite-btn {
   background-color: #33383e;
   color: white;
   display: none;
-  padding: 5px;
   z-index: 999;
   min-width: 200px;
   width: 350px;
@@ -1861,6 +1853,32 @@ li.tool-btn.selected .favorite-btn {
 #drawingPanel button.disabled:visited {
   background-color: transparent;
 }
+#drawingPanel .header {
+  min-height: 42px;
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+          flex-direction: row;
+  background-color: #464c53;
+}
+#drawingPanel .header button {
+  width: 30px;
+  height: 30px;
+  margin: 2px;
+}
+#drawingPanel .header h4 {
+  padding: 10px;
+  margin: 0;
+  line-height: 1.5em;
+}
+#drawingPanel .header .close-panel {
+  position: absolute;
+  top: 4px;
+  right: 5px;
+  border: none;
+  background-color: #464c53;
+}
 #drawingPanel .container {
   height: 100%;
   display: -webkit-box;
@@ -1871,30 +1889,7 @@ li.tool-btn.selected .favorite-btn {
   min-height: 100%;
   width: auto;
   margin-right: 0;
-  padding-right: 7px;
-  padding-left: 7px;
-  padding-bottom: 7px;
-}
-#drawingPanel .container .header {
-  min-height: 40px;
-  display: -webkit-box;
-  display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-          flex-direction: row;
-  margin-left: 10px;
-  margin-right: -5px;
-}
-#drawingPanel .container .header button {
-  width: 30px;
-  height: 30px;
-  margin: 2px;
-  background-color: #33383e;
-}
-#drawingPanel .container .header .close-panel {
-  position: absolute;
-  top: 5px;
-  right: 5px;
+  padding: 10px;
 }
 #drawingPanel .container .content {
   height: 100%;
@@ -1963,14 +1958,31 @@ li.tool-btn.selected .favorite-btn {
   top: 0;
   left: 100%;
   padding: 4px;
+  min-width: 100px;
   background-color: #464c53;
   z-index: 1;
   border: 1px solid #33383e;
+  margin-left: 10px;
+}
+#drawingPanel .container .content .votes .vote-buttons .cd-row .vote-list .arrow-down {
+  width: 0;
+  height: 0;
+  display: inline-block;
+  position: absolute;
+  left: -7px;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-right: 10px solid #464c53;
+  top: 14px;
+  z-index: -1;
+}
+#drawingPanel .container .content .votes .vote-buttons .cd-row .vote-list ul {
+  margin-bottom: 0;
 }
 #drawingPanel .container .content .votes .vote-buttons .cd-row .vote-list li {
   background-color: #33383e;
   margin-bottom: 5px;
-  padding: 8px;
+  padding: 5px;
 }
 #drawingPanel .container .content .votes .vote-buttons .cd-row .vote-list li:last-child {
   margin-bottom: 0px;
@@ -2054,7 +2066,6 @@ li.tool-btn.selected .favorite-btn {
   width: 100%;
 }
 #drawingPanel .container .selected-drawings .drawing-list-container {
-  min-height: 400px;
   background-color: #464c53;
 }
 #drawingPanel .container .selected-drawings .drawing-list-container ul {
@@ -2062,12 +2073,12 @@ li.tool-btn.selected .favorite-btn {
   padding-left: 0px;
   padding-right: 0px;
   padding-bottom: 0px;
+  margin-bottom: 0px;
 }
 #drawingPanel .container .selected-drawings .drawing-list-container ul li {
-  margin-bottom: 10px;
   padding: 10px;
   position: relative;
-  border-bottom: 1px solid #757f8a;
+  border-bottom: 2px solid #33383e;
 }
 #drawingPanel .container .selected-drawings .drawing-list-container ul li .thumbnail {
   margin-bottom: 0px;
@@ -2078,12 +2089,14 @@ li.tool-btn.selected .favorite-btn {
 #drawingPanel .container .selected-drawings .drawing-list-container ul li h4 {
   padding-left: 10px;
   padding-right: 10px;
+  margin-bottom: 15px;
+  margin-top: 5px;
 }
 #drawingPanel .container .selected-drawings .drawing-list-container ul li button {
   border: none;
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 6px;
+  right: 11px;
   padding: 5px;
   width: 30px;
   height: 30px;
@@ -2534,9 +2547,6 @@ body.allauth p input[type="email"] {
   }
 }
 @media (max-width: 480px) {
-  #FavoriteTools ul.tool-list {
-    width: 300px;
-  }
   .sidebar {
     top: 100px;
   }
@@ -2547,9 +2557,6 @@ body.allauth p input[type="email"] {
 @media (max-width: 370px) {
   #FavoriteTools h3.title {
     display: none;
-  }
-  #FavoriteTools ul.tool-list {
-    width: 200px;
   }
   #FavoriteTools ul.tool-list li.tool-btn {
     padding: 6px;

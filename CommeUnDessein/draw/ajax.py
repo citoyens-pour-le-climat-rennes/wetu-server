@@ -56,6 +56,9 @@ drawingMaxSize = 1000
 
 drawingModes = ['free', 'ortho', 'orthoDiag', 'pixel', 'image']
 
+# drawingValidated = django.dispatch.Signal(providing_args=["drawingId", "status"])
+drawingChanged = django.dispatch.Signal(providing_args=["drawingId", "status", "type", "city", "votes", "pk", "title", "description", "svg"])
+
 def userAllowed(request, owner):
 	return request.user.username == owner or isAdmin(request.user)
 
@@ -1506,13 +1509,25 @@ def submitDrawing(request, pk, clientId, svg, date, title=None, description=None
 	except NotUniqueError:
 		return json.dumps({'state': 'error', 'message': 'A drawing with this name already exists.'})
 
+	cityName = None
+	try:
+		city = City.objects.get(pk=d.city)
+		cityName = city.name
+	except City.DoesNotExist:
+		cityName = 'CommeUnDessein'
+
+	drawingChanged.send(sender=None, type='new', drawingId=d.clientId, pk=str(d.pk), svg=svg, city=cityName)
+
 	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk), 'negativeVoteThreshold': negativeVoteThreshold, 'positiveVoteThreshold': positiveVoteThreshold, 'voteMinDuration': voteMinDuration.total_seconds() } )
 
 # @dajaxice_register
 @checkDebug
-def loadDrawing(request, pk):
+def loadDrawing(request, pk, loadSVG=False):
 	try:
-		d = Drawing.objects.get(pk=pk)
+		drawingSet = Drawing.objects.only('status', 'pk', 'clientId', 'title', 'owner', 'votes')
+		if loadSVG:
+			drawingSet = drawingSet.only('svg')
+		d = drawingSet.get(pk=pk)
 	except Drawing.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
 	
@@ -1521,12 +1536,22 @@ def loadDrawing(request, pk):
 		if isinstance(vote, Vote):
 			votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk) } )
 
-	paths = []
-	for path in d.paths:
-		if isinstance(path, Path):
-			paths.append(path.to_json())
+	return json.dumps( {'state': 'success', 'votes': votes, 'drawing': d.to_json() } )
 
-	return json.dumps( {'state': 'success', 'votes': votes, 'paths': paths, 'drawing': d.to_json() } )
+@checkDebug
+def loadDrawings(request, pks, loadSVG=False):
+	try:
+		drawings = Drawing.objects(pk__in=pks).only('status', 'pk', 'clientId', 'title', 'owner', 'votes')
+		if loadSVG:
+			d = d.only('svg')
+	except Drawing.DoesNotExist:
+		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
+
+	items = []
+	for drawing in drawings:
+		items.append(drawing.to_json())
+	
+	return json.dumps( { 'items': items } )
 
 # @dajaxice_register
 @checkDebug
@@ -1555,6 +1580,8 @@ def updateDrawing(request, pk, title, description=None):
 		d.save()
 	except NotUniqueError:
 		return json.dumps({'state': 'error', 'message': 'A drawing with this name already exists.'})
+
+	drawingChanged.send(sender=None, type='title', drawingId=d.clientId, title=title, description=description)
 
 	return json.dumps( {'state': 'success' } )
 
@@ -1713,6 +1740,8 @@ def deleteDrawing(request, pk):
 
 	d.delete()
 
+	drawingChanged.send(sender=None, type='delete', drawingId=d.clientId, pk=d.pk)
+
 	return json.dumps( { 'state': 'success', 'pk': pk } )
 
 # --- get drafts --- #
@@ -1751,8 +1780,6 @@ def isDrawingValidated(nPositiveVotes, nNegativeVotes):
 
 def isDrawingRejected(nNegativeVotes):
 	return nNegativeVotes >= negativeVoteThreshold
-
-drawingValidated = django.dispatch.Signal(providing_args=["drawingId", "status"])
 
 @checkDebug
 def vote(request, pk, date, positive):
@@ -1811,6 +1838,13 @@ def vote(request, pk, date, positive):
 
 	delay = voteValidationDelay.total_seconds()
 
+	votes = []
+	for vote in drawing.votes:
+		if isinstance(vote, Vote):
+			votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk) } )
+
+	drawingChanged.send(sender=None, type='votes', drawingId=drawing.clientId, status=drawing.status, votes=votes)
+
 	if validates or rejects:
 
 		def timeout(drawingPk):
@@ -1828,7 +1862,8 @@ def vote(request, pk, date, positive):
 				drawing.status = 'rejected'
 				drawing.save()
 
-			drawingValidated.send(sender=None, drawingId=drawing.clientId, status=drawing.status)
+			# drawingValidated.send(sender=None, drawingId=drawing.clientId, status=drawing.status)
+			drawingChanged.send(sender=None, type='status', drawingId=drawing.clientId, status=drawing.status)
 
 			return
 
@@ -1838,10 +1873,6 @@ def vote(request, pk, date, positive):
 		t = Timer(delay, timeout, args=[pk])
 		t.start()
 	
-	votes = []
-	for vote in drawing.votes:
-		if isinstance(vote, Vote):
-			votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk) } )
 
 	return json.dumps( {'state': 'success', 'owner': request.user.username, 'drawingPk':str(drawing.pk), 'votePk':str(vote.pk), 'validates': validates, 'rejects': rejects, 'votes': votes, 'delay': delay } )
 
@@ -1878,6 +1909,7 @@ def loadItems(request, itemsToLoad):
 			items.append(item.to_json())
 
 	return json.dumps( {'state': 'success', 'items': items } )
+
 
 @checkDebug
 def getNextValidatedDrawing(request, city=None):
