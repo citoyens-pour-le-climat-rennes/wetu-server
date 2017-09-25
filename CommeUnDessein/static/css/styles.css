@@ -304,6 +304,46 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   width: 100%;
   background-color: #33383e;
 }
+#FavoriteTools button.arrow {
+  width: 20px;
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  min-height: 62px;
+  background-color: #33383e;
+  border: none;
+  opacity: 0.8;
+  z-index: 2000;
+}
+#FavoriteTools button.arrow.left {
+  left: 0;
+}
+#FavoriteTools button.arrow.right {
+  right: 0;
+}
+#FavoriteTools button.arrow div {
+  position: absolute;
+  width: 0px;
+  height: 0;
+}
+#FavoriteTools button.arrow .arrow-left {
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-right: 10px solid white;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translateY(-50%) translateX(-50%);
+          transform: translateY(-50%) translateX(-50%);
+}
+#FavoriteTools button.arrow .arrow-right {
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 10px solid white;
+  top: 50%;
+  right: 50%;
+  -webkit-transform: translateY(-50%) translateX(50%);
+          transform: translateY(-50%) translateX(50%);
+}
 #FavoriteTools .tool-container {
   -webkit-box-flex: 1;
           flex: auto;
@@ -332,12 +372,6 @@ body.hand #drawingPanel .container .content .votes button img.hand {
 }
 #FavoriteTools h3.title button .glyphicon-facetime-video {
   margin-right: 5px;
-}
-@media (max-width: 850px) {
-  #FavoriteTools h3.title {
-    width: 68px;
-    font-size: 16px;
-  }
 }
 #FavoriteTools ul.tool-list {
   width: 100%;
@@ -487,6 +521,7 @@ body.hand #drawingPanel .container .content .votes button img.hand {
 }
 #CommeUnDessein_alerts .alert {
   position: absolute;
+  font-size: 15px;
   top: 50%;
   -webkit-transform: translateY(-50%);
   -khtml-transform: translateY(-50%);
@@ -498,8 +533,9 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   margin-right: 7px;
   padding: 9px;
   text-align: center;
-  max-height: 60px;
+  max-height: 50px;
   overflow-y: overlay;
+  border-radius: 0;
 }
 #CommeUnDessein_alerts .show-btn-container {
   position: absolute;
@@ -815,7 +851,7 @@ body.hand #drawingPanel .container .content .votes button img.hand {
 }
 #user-profile .user-profile .caret,
 #user-profile #user-login-group .caret {
-  margin: 10px;
+  margin-bottom: 10px;
   margin-top: 8px;
 }
 #user-profile .dropdown-menu {
@@ -1818,6 +1854,16 @@ li.tool-btn.selected .favorite-btn {
   -o-user-select: none;
   user-select: none;
 }
+#drawingPanel .container .content .cd-column-row.cd-row .drawing-thumbnail {
+  margin-right: 10px;
+}
+#drawingPanel .container .content .cd-column-row.cd-row .thumbnail-footer {
+  height: 30px;
+  margin-top: -40px;
+  padding-top: 10px;
+  padding-right: 10px;
+  background-color: #33383e;
+}
 #drawingPanel.r-alert {
   bottom: 50px;
 }
@@ -1940,6 +1986,7 @@ li.tool-btn.selected .favorite-btn {
 }
 #drawingPanel .container .content .votes {
   margin-bottom: 20px;
+  padding-bottom: 20px;
 }
 #drawingPanel .container .content .votes .vote-buttons span.n-votes {
   font-size: 20px;
@@ -1964,7 +2011,10 @@ li.tool-btn.selected .favorite-btn {
   border: 1px solid #33383e;
   margin-left: 10px;
 }
-#drawingPanel .container .content .votes .vote-buttons .cd-row .vote-list .arrow-down {
+#drawingPanel .container .content .votes .vote-buttons .cd-row .vote-list .vote-list-label {
+  line-height: 20px;
+}
+#drawingPanel .container .content .votes .vote-buttons .cd-row .vote-list .arrow-left {
   width: 0;
   height: 0;
   display: inline-block;
@@ -2043,8 +2093,8 @@ li.tool-btn.selected .favorite-btn {
 }
 #drawingPanel .container .content .votes .vote-stats {
   margin-left: 10px;
-  padding-left: 20px;
-  padding-right: 20px;
+  padding-left: 10px;
+  padding-right: 10px;
   background-color: #464c53;
 }
 #drawingPanel .container .content .votes .vote-stats .vote-stat {
@@ -2065,17 +2115,14 @@ li.tool-btn.selected .favorite-btn {
 #drawingPanel .container .selected-drawings {
   width: 100%;
 }
-#drawingPanel .container .selected-drawings .drawing-list-container {
-  background-color: #464c53;
-}
 #drawingPanel .container .selected-drawings .drawing-list-container ul {
-  background-color: #464c53;
   padding-left: 0px;
   padding-right: 0px;
   padding-bottom: 0px;
   margin-bottom: 0px;
 }
 #drawingPanel .container .selected-drawings .drawing-list-container ul li {
+  background-color: #464c53;
   padding: 10px;
   position: relative;
   border-bottom: 2px solid #33383e;
@@ -2102,9 +2149,12 @@ li.tool-btn.selected .favorite-btn {
   height: 30px;
   margin-left: 10px;
 }
+#drawingPanel .container .selected-drawings .drawing-list-container ul li:hover {
+  background-color: #0089d9;
+}
 #drawingPanel .container .selected-drawings .drawing-list-container ul li:last-child {
   border-bottom: none;
-  margin-bottom: 0px;
+  margin-bottom: 45px;
 }
 #drawingPanel .container .footer {
   display: -webkit-box;
@@ -2523,12 +2573,27 @@ body.allauth p input[type="email"] {
 .acediff-copy-left div:hover {
   color: #c98100;
 }
-@media (max-width: 650px) {
+.cd-column-row {
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+          flex-direction: column;
+  display: -webkit-box;
+  display: flex;
+}
+.cd-column-row.cd-row {
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+          flex-direction: row;
+}
+.cd-column-row.cd-column {
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+          flex-direction: column;
+}
+@media (max-width: 1024px) {
   #FavoriteTools h3.title {
-    display: none;
-  }
-  #FavoriteTools #user-profile .user-profile {
-    margin-right: 10px;
+    width: 68px;
+    font-size: 16px;
   }
   #FavoriteTools #user-profile .username {
     display: none;
@@ -2539,27 +2604,114 @@ body.allauth p input[type="email"] {
   #FavoriteTools .mode-button .text {
     display: none;
   }
+}
+@media (max-width: 870px) {
+  #FavoriteTools ul.tool-list .tool-btn.displayName span.tool-name {
+    display: none;
+  }
+  #drawingPanel {
+    top: 0;
+    z-index: 2000;
+    width: 100%;
+  }
+}
+@media (max-width: 750px) {
+  #FavoriteTools h3.title {
+    display: none;
+  }
   .modal .modal-content .modal-footer .dropdown-menu {
     top: auto;
     left: auto;
     bottom: 50px;
     right: 50px;
   }
+  #submit-drawing-button .tool-btn {
+    font-size: 12px;
+    padding: 8px;
+  }
+  #submit-drawing-button .tool-btn img {
+    width: 15px;
+    height: 15px;
+  }
+  body.alert-activated #submit-drawing-button {
+    bottom: 15px;
+  }
+  body.alert-activated #submit-drawing-button.r-alert {
+    bottom: 50px;
+  }
+  #CommeUnDessein_alerts .show-btn-container .btn {
+    width: 100%;
+  }
+}
+@media (max-width: 630px) {
+  body.line #FavoriteTools {
+    height: 62px;
+  }
+  body.line #FavoriteTools ul.tool-list {
+    width: auto;
+    flex-wrap: nowrap;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #33383e;
+  }
+  #drawingPanel .container .content .votes button img {
+    margin-right: 2px;
+  }
 }
 @media (max-width: 480px) {
-  .sidebar {
-    top: 100px;
-  }
   #drawingPanel {
+    width: 100%;
+  }
+  .sidebar {
     top: 100px;
   }
 }
 @media (max-width: 370px) {
-  #FavoriteTools h3.title {
+  body.line #FavoriteTools {
+    height: 54px;
+  }
+  body.line #FavoriteTools button.arrow {
+    min-height: 54px;
+    height: 54px;
+  }
+  body.line #FavoriteTools h3.title {
     display: none;
   }
-  #FavoriteTools ul.tool-list li.tool-btn {
+  body.line #FavoriteTools ul.tool-list {
+    width: auto;
+    flex-wrap: nowrap;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 54px;
+    background-color: #33383e;
+  }
+  body.line #FavoriteTools ul.tool-list .tool-btn {
     padding: 6px;
+    min-height: 54px;
+  }
+  body.line #FavoriteTools.small ul.tool-list {
+    width: 100%;
+    min-height: 36px;
+    height: 36px;
+  }
+  body.line #FavoriteTools.small ul.tool-list .tool-btn {
+    padding: 2px;
+    min-height: 0px;
+  }
+  body.line #FavoriteTools.small ul.tool-list .tool-btn span.glyphicon {
+    width: 15px;
+    height: 15px;
+    font-size: 18px;
+    line-height: 30px;
+  }
+  body.line #FavoriteTools.small ul.tool-list .tool-btn img {
+    width: 30px;
+    height: 30px;
+  }
+  body.line #FavoriteTools.small #user-profile .user-img {
+    display: none;
   }
   .sidebar {
     top: 84px;
@@ -2572,8 +2724,15 @@ body.allauth p input[type="email"] {
     width: 100%;
   }
   #drawingPanel {
-    top: 84px;
-    z-index: 2000;
     width: 100%;
+  }
+  #stage.main {
+    top: 50px;
+  }
+  #submit-drawing-button {
+    width: 100%;
+  }
+  #submit-drawing-button .tool-btn {
+    width: 50%;
   }
 }

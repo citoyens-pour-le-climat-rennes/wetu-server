@@ -74,7 +74,16 @@
       </h3>
 
       <div class="tool-container cd-row cd-grow">
+        
+        <button class="arrow left">
+          <div class="arrow-left"></div>
+        </button>
 
+        <button class="arrow right">
+          <div class="arrow-right"></div>
+        </button>
+        
+        
         <ul id="sortable2" class="favorite-tool-list tool-list connectedSortable module-list">
           <!-- <li data-name="Precise path" class="tool-btn"><img src="{% static 'images/icons/inverted/editCurve.png' %}" alt="editCurve"></li>
           <li data-name="Rectangle" data-cursor="rectangle" class="tool-btn"><img src="{% static 'images/icons/inverted/rectangle.png' %}" alt="rectangle"></li>
@@ -483,15 +492,17 @@
                 <div class="main-content cd-column cd-grow mCustomScrollbar">
 
 
-                  <div class="cd-column cd-grow">
+                  <div class="cd-column-row cd-grow">
 
-                    <div class="thumbnail drawing-thumbnail">
-                    </div>
+                    <div class="cd-column">
+                      <div class="thumbnail drawing-thumbnail">
+                      </div>
 
-                    <div class="thumbnail-footer cd-row cd-grow cd-end">
-                      <span class="title"></span>
-                      <span data-i18n="by">by</span>
-                      <span class="author"></span>
+                      <div class="thumbnail-footer cd-row cd-grow cd-end">
+                        <span class="title"></span>
+                        <span data-i18n="by">by</span>
+                        <span class="author"></span>
+                      </div>
                     </div>
 
 <!--                     <div class="cd-column read">
@@ -536,8 +547,8 @@
                               <button class="btn btn-success icon-only btn-lg vote-up" type="button"><img class="line" src="static/images/icons/inverted/icones_icon_thumbsup.png"><img class="hand" src="static/images/icons/inverted/a-thumbup.png"><span class="glyphicon glyphicon-plus"></span><span class="text" data-i18n="Vote up">Vote up</span></button>
                               <span class="n-votes positive">0</span>
                               <div class="vote-list positive">
-                                <div class="arrow-down"></div>
-                                <span>Votes:</span>
+                                <div class="arrow-left"></div>
+                                <span class="vote-list-label">Votes:</span>
                                 <ul class="positive list-unstyled"></ul>
                               </div>
                             </div>
@@ -546,7 +557,8 @@
                               <button class="btn btn-danger icon-only btn-lg vote-down" type="button"><img class="line" src="static/images/icons/inverted/icones_icon_thumbsdown.png"><img class="hand" src="static/images/icons/inverted/a-thumbdown.png"><span class="glyphicon glyphicon-minus"></span><span class="text" data-i18n="Vote down">Vote down</span></button>
                               <span class="n-votes negative">0</span>
                               <div class="vote-list negative">
-                                <div class="arrow-down"></div>
+                                <div class="arrow-left"></div>
+                                <span class="vote-list-label">Votes:</span>
                                 <ul class="negative list-unstyled"></ul>
                               </div>
                             </div>
