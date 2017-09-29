@@ -17,9 +17,10 @@ class Vote(Document):
     drawing = ReferenceField('Drawing')                     #, reverse_delete_rule=CASCADE) # see register_delete_rule after Drawing
     positive = BooleanField(default=True)
     date = DateTimeField(default=datetime.datetime.now, required=True)
+    emailConfirmed = BooleanField(default=False)
 
     meta = {
-        'indexes': [ "#author" ]
+        'indexes': [ "#author", "emailConfirmed" ]
     }
 
 @receiver(user_signed_up, dispatch_uid="_allauth.user_signed_up")
@@ -32,6 +33,7 @@ class UserProfile(Document):
     username = StringField(required=True, unique=True)
     admin = BooleanField(default=False)
     commeUnDesseinCoins = IntField(default=0)
+    emailConfirmed = BooleanField(default=False)
     votes = ListField(ReferenceField('Vote', reverse_delete_rule=PULL))
 
     def profile_image_url(self):
@@ -81,6 +83,7 @@ class Drawing(Document):
         'indexes': [
             "city",
             "owner",
+            "status",
             [ ("planetX", 1), ("planetY", 1), ("box", "2dsphere") ]
         ]
     }

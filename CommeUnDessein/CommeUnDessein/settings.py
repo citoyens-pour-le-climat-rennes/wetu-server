@@ -117,20 +117,21 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
 
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
+AUTH_PASSWORD_VALIDATORS = []
+# [
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+#     },
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+#     },
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+#     },
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+#     },
+# ]
 
 
 # Internationalization
@@ -237,7 +238,11 @@ ACCOUNT_EMAIL_SUBJECT_PREFIX = '[Comme un dessein] '
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
 SOCIALACCOUNT_QUERY_EMAIL = True
 ACCOUNT_EMAIL_REQUIRED = localSettings['ACCOUNT_EMAIL_REQUIRED']
-ACCOUNT_EMAIL_VERIFICATION = localSettings['ACCOUNT_EMAIL_VERIFICATION'] # "mandatory"
+ACCOUNT_EMAIL_VERIFICATION = localSettings['ACCOUNT_EMAIL_VERIFICATION'] # "mandatory", "optional"
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
+
+ACCOUNT_ADAPTER = 'CommeUnDessein.adapter.AccountAdapterCD'
 
 # ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 

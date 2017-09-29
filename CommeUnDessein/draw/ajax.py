@@ -38,6 +38,8 @@ from CommeUnDessein import settings
 from allauth.socialaccount.models import SocialToken
 # import collaboration
 
+from allauth.account.signals import email_confirmed
+
 import base64
 
 
@@ -184,6 +186,64 @@ def setVoteMinDuration(request, hours, minutes, seconds):
 	global voteMinDuration
 	voteMinDuration = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds)
 	return json.dumps({"message": "success"})
+
+# allauth.account.signals.email_confirmed(request, email_address)
+@receiver(email_confirmed)
+def on_email_confirmed(sender, **kwargs):
+	if kwargs is None or 'email_address' not in kwargs:
+		print("Error: no email_address in on_email_confirmed")
+		return
+
+	request = kwargs['request']
+	email_address = kwargs['email_address']
+	
+	print("on_email_confirmed")
+
+	user = request.user
+	
+	try:
+		userProfile = UserProfile.objects.get(username=user.username)
+	except UserProfile.DoesNotExist:
+		print("Error: the user profile who confirmed his email is not found")
+		return
+	
+	userProfile.emailConfirmed = True
+	userProfile.save()
+	Drawing.objects(owner=user.username, status='emailNotConfirmed').update(status='pending')
+	Vote.objects(author=userProfile).update(emailConfirmed=True)
+
+	return
+
+@checkDebug
+def isEmailKnown(request, email):
+	if len(email) <= 0:
+		return json.dumps({ 'error': 'The email address is empty.' })
+
+	emailIsKnown = True
+	emailShortNameIsKnown = True
+	usernameIsKnown = True
+	try:
+		user = User.objects.get(email=email)
+	except User.DoesNotExist:
+		emailIsKnown = False
+		emailShortName = email[:email.find('@')]
+		try:
+			user = User.objects.get(username=emailShortName)
+		except User.DoesNotExist:
+			emailShortNameIsKnown = False
+	try:
+		user = User.objects.get(username=email)
+	except User.DoesNotExist:
+		usernameIsKnown = False
+	return json.dumps({ 'emailIsKnown': emailIsKnown, 'usernameIsKnown': usernameIsKnown, 'emailShortNameIsKnown': emailShortNameIsKnown })
+
+@checkDebug
+def isUsernameKnown(request, username):
+	try:
+		user = User.objects.get(username=username)
+	except User.DoesNotExist:
+		return json.dumps({'usernameIsKnown': False})
+	return json.dumps({'usernameIsKnown': True})
 
 # @dajaxice_register
 @checkDebug
@@ -676,15 +736,16 @@ def loadSVG(request, city=None):
 	if not cityPk:
 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
 
-	drawings = Drawing.objects(city=cityPk, status__in=['pending', 'drawing', 'drawn', 'rejected'] ).only('svg', 'status', 'pk', 'clientId', 'title', 'owner')
+	drawings = Drawing.objects(city=cityPk, status__in=['pending', 'drawing', 'drawn', 'rejected']).only('svg', 'status', 'pk', 'clientId', 'title', 'owner')
 	
 	items = []
 	for drawing in drawings:
 		items.append(drawing.to_json())
 
-	drafts = Drawing.objects(city=cityPk, status='draft', owner=request.user.username).only('svg', 'status', 'pk', 'clientId', 'owner', 'pathList')
-	if len(drafts) > 0:
-		items.append(drafts.first().to_json())
+	draftsAndNotConfirmed = Drawing.objects(city=cityPk, status__in=['draft', 'emailNotConfirmed'], owner=request.user.username).only('svg', 'status', 'pk', 'clientId', 'owner', 'pathList', 'title')
+
+	for draft in draftsAndNotConfirmed:
+		items.append(draft.to_json())
 
 	# return json.dumps( { 'paths': paths, 'boxes': boxes, 'divs': divs, 'user': user, 'rasters': rasters, 'areasToUpdate': areas, 'zoom': zoom } )
 	return json.dumps( { 'items': items, 'user': request.user.username } )
@@ -1412,7 +1473,7 @@ def saveDrawing(request, clientId, city, date, title, description=None, points=N
 			draft.delete()
 
 	try:
-		d = Drawing(clientId=clientId, city=city, planetX=0, planetY=0, owner=request.user.username, pathList=paths, date=datetime.datetime.fromtimestamp(date/1000.0), title=title, description=description)
+		d = Drawing(clientId=clientId, city=city, planetX=0, planetY=0, owner=request.user.username, pathList=paths, date=datetime.datetime.fromtimestamp(date/1000.0), title=title, description=description, status='draft')
 		d.save()
 	except NotUniqueError:
 		return json.dumps({'state': 'error', 'message': 'A drawing with this id already exists.'})
@@ -1492,6 +1553,11 @@ def saveDrawing2(request, clientId, date, pathPks, title, description):
 def submitDrawing(request, pk, clientId, svg, date, title=None, description=None):
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
+	
+	try:
+		userProfile = UserProfile.objects.get(username=request.user.username)
+	except userProfile.DoesNotExist:
+		return json.dumps( { 'status': 'error', 'message': 'The user profile does not exist.' } )
 
 	d = getDrawing(pk, clientId)
 
@@ -1500,7 +1566,10 @@ def submitDrawing(request, pk, clientId, svg, date, title=None, description=None
 	
 	d.svg = svg
 	d.date = datetime.datetime.fromtimestamp(date/1000.0)
-	d.status = 'pending'
+	if userProfile.emailConfirmed:
+		d.status = 'pending'
+	else:
+		d.status = 'emailNotConfirmed'
 	d.title = title
 	d.description = description
 	
@@ -1518,7 +1587,7 @@ def submitDrawing(request, pk, clientId, svg, date, title=None, description=None
 
 	drawingChanged.send(sender=None, type='new', drawingId=d.clientId, pk=str(d.pk), svg=svg, city=cityName)
 
-	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk), 'negativeVoteThreshold': negativeVoteThreshold, 'positiveVoteThreshold': positiveVoteThreshold, 'voteMinDuration': voteMinDuration.total_seconds() } )
+	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk), 'status': d.status, 'negativeVoteThreshold': negativeVoteThreshold, 'positiveVoteThreshold': positiveVoteThreshold, 'voteMinDuration': voteMinDuration.total_seconds() } )
 
 # @dajaxice_register
 @checkDebug
@@ -1534,7 +1603,8 @@ def loadDrawing(request, pk, loadSVG=False):
 	votes = []
 	for vote in d.votes:
 		if isinstance(vote, Vote):
-			votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk) } )
+			if vote.emailConfirmed or request.user.username == vote.author.username:
+				votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk) } )
 
 	return json.dumps( {'state': 'success', 'votes': votes, 'drawing': d.to_json() } )
 
@@ -1733,14 +1803,25 @@ def deleteDrawing(request, pk):
 	if d.status != 'pending':
 		return json.dumps({'state': 'error', 'message': 'The drawing is already validated, it cannot be cancelled anymore.'})
 
-	for path in paths:
-		path.drawing = None
-		path.isDraft = True
-		path.save()
-
 	d.delete()
 
 	drawingChanged.send(sender=None, type='delete', drawingId=d.clientId, pk=d.pk)
+
+	return json.dumps( { 'state': 'success', 'pk': pk } )
+
+@checkDebug
+def deleteDrawings(request, drawingsToDelete, confirm):
+	if not isAdmin(request.user):
+		return json.dumps( {'state': 'error', 'message': 'not admin' } )
+
+	if confirm != 'confirm':
+		return json.dumps( {'state': 'error', 'message': 'please confirm' } )
+	
+	drawings = Drawing.objects.get(pk__in=drawingsToDelete)
+	for drawing in drawings:
+		drawing.delete()
+
+		drawingChanged.send(sender=None, type='delete', drawingId=drawing.clientId, pk=drawing.pk)
 
 	return json.dumps( { 'state': 'success', 'pk': pk } )
 
@@ -1820,9 +1901,9 @@ def vote(request, pk, date, positive):
 	try:
 		user = UserProfile.objects.get(username=request.user.username)
 	except UserProfile.DoesNotExist:
-		return json.dumps({'state': 'error', 'message': 'Username does not exist.'})
+		return json.dumps({'state': 'error', 'message': 'The user profile does not exist.'})
 
-	vote = Vote(author=user, drawing=drawing, positive=positive, date=datetime.datetime.fromtimestamp(date/1000.0))
+	vote = Vote(author=user, drawing=drawing, positive=positive, date=datetime.datetime.fromtimestamp(date/1000.0), emailConfirmed=user.emailConfirmed)
 	vote.save()
 
 	drawing.votes.append(vote)
@@ -3194,54 +3275,3 @@ def loadSite(request, siteName):
 	except:
 		return { 'state': 'error', 'message': 'Site ' + siteName + ' does not exist.' }
 	return { 'state': 'success', 'box': site.box.to_json(), 'site': site.to_json() }
-
-# --- payment signal --- #
-
-def updateUserCommeUnDesseinCoins(sender, **kwargs):
-	ipn_obj = sender
-
-	print "updateUserCommeUnDesseinCoins"
-
-	if ipn_obj.payment_status == "Completed":
-
-		data = json.loads(ipn_obj.custom)
-
-		import pdb; pdb.set_trace()
-
-		# profile = User.objects.get(username=data['user']).profile
-		# profile.commeUnDesseinCoins += ipn_obj.num_cart_items
-
-		# Fails with: OperationalError: no such column: user_profile.commeUnDesseinCoins:
-		# UserProfile.objects.filter(user__username=data['user']).update(commeUnDesseinCoins=F('commeUnDesseinCoins')+1000*ipn_obj.num_cart_items)
-		# so instead:
-
-		try:
-			userProfile = User.objects.get(username=data['user']).profile
-			userProfile.commeUnDesseinCoins += 1000*ipn_obj.num_cart_items
-			userProfile.save()
-		except UserProfile.DoesNotExist:
-			pass
-
-	else:
-		print "payment was not successful: "
-		print ipn_obj.payment_status
-
-payment_was_successful.connect(updateUserCommeUnDesseinCoins)
-
-def paymentWasFlagged(sender, **kwargs):
-	ipn_obj = sender
-	print "paymentWasFlagged"
-
-payment_was_flagged.connect(paymentWasFlagged)
-
-def paymentWasRefunded(sender, **kwargs):
-	ipn_obj = sender
-	print "paymentWasRefunded"
-
-payment_was_refunded.connect(paymentWasRefunded)
-
-def paymentWasReversed(sender, **kwargs):
-	ipn_obj = sender
-	print "paymentWasReversed"
-
-payment_was_reversed.connect(paymentWasReversed)

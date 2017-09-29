@@ -9,6 +9,9 @@ urlpatterns = [
     url(r'^draw/templates/index\.html', views.index, name='index'),
     url(r'^draw/index\.html', views.index, name='index'),
     url(r'^index\.html', views.index, name='index'),
+    url(r'^connexion/$', views.connection, name='connection'),
+    url(r'^visite\.html', views.index, {'visit': True}, name='index'),
+    url(r'^visite-debug\.html', views.index, {'visit': True, 'useDebugFiles': True}, name='index'),
     url(r'^about\.html', views.about),
     url(r'^privacy-policy\.html', views.privacyPolicy),
     url(r'^terms-of-service\.html', views.termsOfService),
@@ -31,6 +34,7 @@ urlpatterns = [
 
     url(r'^$', views.index, name='index'),
     url(r'^ajaxCall/$', views.ajaxCall),
+    url(r'^connexion/ajaxCall/$', views.ajaxCall),
     url(r'^live/$', views.live),
     url(r'^ajaxCallNoCSRF/$', views.ajaxCallNoCSRF),
 
@@ -50,7 +54,4 @@ urlpatterns = [
     # url(r'^([\w,.,-]+)$', views.index, name='index'),
         # url(r'^(?P<sitename>([\w,.,-]+)).romanesc.co/', views.index, name='index'),
     url("^socket\.io", include(socketio.sdjango.urls)),
-    url(r'^commeUnDesseinin/paypal/', include('paypal.standard.ipn.urls')),
-    url(r'^paypal/commeUnDesseinin/return/$', views.commeUnDesseinCoinsReturn),
-    url(r'^paypal/commeUnDesseinin/cancel/$', views.commeUnDesseinCoinsCancel),
 ]

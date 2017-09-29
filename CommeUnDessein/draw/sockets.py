@@ -42,6 +42,7 @@ chatNamespace = None
 #         # chatNamespace.emit_to_room(chatNamespace.room, 'drawing change', {'type': 'status', 'drawingId': kwargs['drawingId'], 'status': kwargs['status']})
 #         chatNamespace.broadcast_event('drawing change', {'type': 'status', 'drawingId': kwargs['drawingId'], 'status': kwargs['status']})
 
+
 @receiver(drawingChanged)
 def on_drawing_changed(sender, **kwargs):
     if kwargs is not None and 'drawingId' in kwargs and 'type' in kwargs:
