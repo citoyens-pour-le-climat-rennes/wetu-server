@@ -159,7 +159,7 @@
           } else {
             titleJ.text('Se connecter');
             if (result.emailIsKnown) {
-              $('#id_email').val(email);
+              $('#id_email, #id_login').val(email);
             } else if (result.usernameIsKnown) {
               $('#id_login').val(email);
             }
