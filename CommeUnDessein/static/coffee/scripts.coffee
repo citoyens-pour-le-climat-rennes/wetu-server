@@ -29,8 +29,8 @@ $(document).ready () ->
 	errors = $('.errorlist').text()
 	console.log(errors)
 
-	if window.location.pathname == "/accounts/login/" and errors == "L’adresse e-mail ou le mot de passe sont incorrects."
-		window.location = "/connexion/#wrongPassword"
+	# if window.location.pathname == "/accounts/login/" and errors == "L’adresse e-mail ou le mot de passe sont incorrects."
+		# window.location = "/connexion/#wrongPassword"
 	if window.location.pathname == "/accounts/signup/"
 		window.location = "/connexion/"
 
@@ -105,6 +105,7 @@ $(document).ready () ->
 
 	if window.location.hash == '#wrongPassword'
 		setState('Password')
+		userIsKnown = true
 		emailJ.hide()
 		# orJ.hide()
 		backJ.show()

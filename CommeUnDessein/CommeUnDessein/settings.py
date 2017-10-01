@@ -260,13 +260,3 @@ SOCIALACCOUNT_PROVIDERS = {
         'SCOPE': ['public_repo']
     }
 }
-
-# ---- PAYPAL ---- #
-
-
-PAYPAL_RECEIVER_EMAIL = "arthurpub.sw-facilitator@gmail.com"
-
-# For installations on which you want to use the sandbox,
-# set PAYPAL_TEST to True.  Ensure PAYPAL_RECEIVER_EMAIL is set to
-# your sandbox account email too.
-PAYPAL_TEST = True

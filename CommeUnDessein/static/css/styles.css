@@ -1376,6 +1376,9 @@ li.tool-btn.selected .favorite-btn {
   -o-user-select: none;
   user-select: none;
 }
+#drawingPanel .container .content .cd-column-row {
+  padding-bottom: 30px;
+}
 #drawingPanel .container .content .cd-column-row.cd-row .drawing-thumbnail {
   margin-right: 10px;
 }
@@ -1494,7 +1497,8 @@ li.tool-btn.selected .favorite-btn {
   font-style: italic;
   font-weight: bold;
 }
-#drawingPanel .container .content .action-buttons button {
+#drawingPanel .container .content .action-buttons button,
+#drawingPanel .container .content .share-buttons button {
   margin-bottom: 10px;
 }
 #drawingPanel .container .content button {
@@ -1507,8 +1511,7 @@ li.tool-btn.selected .favorite-btn {
   min-height: 100px;
 }
 #drawingPanel .container .content .votes {
-  margin-bottom: 20px;
-  padding-bottom: 20px;
+  margin-bottom: 10px;
 }
 #drawingPanel .container .content .votes .vote-buttons span.n-votes {
   font-size: 20px;

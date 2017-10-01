@@ -38,9 +38,6 @@
     var backJ, deferredFocus, emailJ, errorJ, errors, labelJ, maskJ, passwordGroupJ, passwordJ, primaryButtonJ, setState, signinButtonJ, signinLabelJ, signupButtonJ, signupLabelJ, submitEnter, titleJ, usernameJ, validateEmail;
     errors = $('.errorlist').text();
     console.log(errors);
-    if (window.location.pathname === "/accounts/login/" && errors === "L’adresse e-mail ou le mot de passe sont incorrects.") {
-      window.location = "/connexion/#wrongPassword";
-    }
     if (window.location.pathname === "/accounts/signup/") {
       window.location = "/connexion/";
     }
@@ -95,6 +92,7 @@
     });
     if (window.location.hash === '#wrongPassword') {
       setState('Password');
+      userIsKnown = true;
       emailJ.hide();
       backJ.show();
       labelJ.text("Mot de passe :");

@@ -13,6 +13,7 @@ from django.core import serializers
 # from dajaxice.core import dajaxice_functions
 from django.contrib.auth.models import User
 from django.db.models import F
+from django.core.mail import send_mail
 from models import *
 import ast
 from pprint import pprint
@@ -1637,8 +1638,9 @@ def updateDrawing(request, pk, title, description=None):
 
 	if not userAllowed(request, d.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
-
-	if d.status != 'pending':
+	
+	drawingCanBeModified = d.status == 'pending' or d.status == 'emailNotConfirmed'
+	if not drawingCanBeModified:
 		return json.dumps({'state': 'error', 'message': 'The drawing is already validated, it cannot be modified anymore.'})
 
 	d.title = title
@@ -1800,7 +1802,8 @@ def deleteDrawing(request, pk):
 	if not userAllowed(request, d.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
 
-	if d.status != 'pending':
+	drawingCanBeModified = d.status == 'pending' or d.status == 'emailNotConfirmed'
+	if not drawingCanBeModified:
 		return json.dumps({'state': 'error', 'message': 'The drawing is already validated, it cannot be cancelled anymore.'})
 
 	d.delete()
@@ -1810,6 +1813,40 @@ def deleteDrawing(request, pk):
 	return json.dumps( { 'state': 'success', 'pk': pk } )
 
 @checkDebug
+def cancelDrawing(request, pk):
+	if not request.user.is_authenticated():
+		return json.dumps({'state': 'not_logged_in'})
+
+	try:
+		d = Drawing.objects.get(pk=pk)
+	except Drawing.DoesNotExist:
+		return json.dumps({'state': 'error', 'message': 'Element does not exist for this user.'})
+
+	if not userAllowed(request, d.owner):
+		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
+	
+	drawingCanBeModified = d.status == 'pending' or d.status == 'emailNotConfirmed'
+	if not drawingCanBeModified:
+		return json.dumps({'state': 'error', 'message': 'The drawing is already validated, it cannot be cancelled anymore.'})
+
+	d.status = 'draft'
+	d.svg = None
+	
+	try:
+		drafts = Drawing.objects(city=d.city, status=['draft'], owner=request.user.username)
+	except Drawing.DoesNotExist:
+		print("No drafts")
+
+	for draft in drafts:
+		d.pathList += draft.pathList
+
+	d.save()
+
+	drawingChanged.send(sender=None, type='cancel', drawingId=d.clientId, pk=str(d.pk))
+
+	return json.dumps( { 'state': 'success', 'pk': pk, 'status': d.status, 'pathList': d.pathList } )
+
+@checkDebug
 def deleteDrawings(request, drawingsToDelete, confirm):
 	if not isAdmin(request.user):
 		return json.dumps( {'state': 'error', 'message': 'not admin' } )
@@ -1817,13 +1854,14 @@ def deleteDrawings(request, drawingsToDelete, confirm):
 	if confirm != 'confirm':
 		return json.dumps( {'state': 'error', 'message': 'please confirm' } )
 	
-	drawings = Drawing.objects.get(pk__in=drawingsToDelete)
+	drawings = Drawing.objects(pk__in=drawingsToDelete)
+	
 	for drawing in drawings:
 		drawing.delete()
 
-		drawingChanged.send(sender=None, type='delete', drawingId=drawing.clientId, pk=drawing.pk)
+		drawingChanged.send(sender=None, type='delete', drawingId=drawing.clientId, pk=str(drawing.pk))
 
-	return json.dumps( { 'state': 'success', 'pk': pk } )
+	return json.dumps( { 'state': 'success', 'pks': drawingsToDelete } )
 
 # --- get drafts --- #
 @checkDebug
@@ -1951,6 +1989,8 @@ def vote(request, pk, date, positive):
 		if datetime.datetime.now() - drawing.date < voteMinDuration:
 			delay = (drawing.date + voteMinDuration - datetime.datetime.now()).total_seconds()
 		
+		send_mail('New drawing', 'A new drawing has been submitted.', 'contact@commeundessein.co', ['arthur.sw@gmail.com'], fail_silently=True)
+
 		t = Timer(delay, timeout, args=[pk])
 		t.start()
 	

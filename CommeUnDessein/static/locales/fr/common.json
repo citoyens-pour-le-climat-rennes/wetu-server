@@ -167,5 +167,8 @@
     "About Comme Un Dessein": "À propos de Comme Un Dessein",
     "You can zoom in to draw more easily": "Conseil : vous pouvez zoomer pour dessiner plus facilement",
     "Live": "Live",
-    "Click on a drawing to vote for it": "Cliquez sur un dessin pour voter"
+    "Click on a drawing to vote for it": "Cliquez sur un dessin pour voter",
+    "Share on Facebook": "Partager sur Facebook",
+    "Share on Twitter": "Partager sur Twitter",
+    "Vote for this drawing on Comme un Dessein": "Votez pour \"{{drawing}}\" de {{author}} sur Comme un Dessein !"
 }
