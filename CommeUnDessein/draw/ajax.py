@@ -1,3 +1,4 @@
+from binascii import a2b_base64
 from threading import Timer
 import datetime
 import logging
@@ -1551,7 +1552,7 @@ def saveDrawing2(request, clientId, date, pathPks, title, description):
 	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk), 'pathPks': pathPks, 'negativeVoteThreshold': negativeVoteThreshold, 'positiveVoteThreshold': positiveVoteThreshold, 'voteMinDuration': voteMinDuration.total_seconds() } )
 
 @checkDebug
-def submitDrawing(request, pk, clientId, svg, date, title=None, description=None):
+def submitDrawing(request, pk, clientId, svg, date, title=None, description=None, png=None, encodedTitle=None):
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
 	
@@ -1585,6 +1586,17 @@ def submitDrawing(request, pk, clientId, svg, date, title=None, description=None
 		cityName = city.name
 	except City.DoesNotExist:
 		cityName = 'CommeUnDessein'
+
+	# Save image
+	imgstr = re.search(r'base64,(.*)', png).group(1)
+	output = open('draw/static/drawings/'+encodedTitle+'.png', 'wb')
+	output.write(imgstr.decode('base64'))
+	output.close()
+
+	# binary_data = a2b_base64(png)
+	# fd = open('draw/static/drawings/'+title+'.png', 'wb')
+	# fd.write(binary_data)
+	# fd.close()
 
 	drawingChanged.send(sender=None, type='new', drawingId=d.clientId, pk=str(d.pk), svg=svg, city=cityName)
 
