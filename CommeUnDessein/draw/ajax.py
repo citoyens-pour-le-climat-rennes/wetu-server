@@ -1589,7 +1589,7 @@ def submitDrawing(request, pk, clientId, svg, date, title=None, description=None
 
 	# Save image
 	imgstr = re.search(r'base64,(.*)', png).group(1)
-	output = open('draw/static/drawings/'+encodedTitle+'.png', 'wb')
+	output = open('CommeUnDessein/static/drawings/'+encodedTitle+'.png', 'wb')
 	output.write(imgstr.decode('base64'))
 	output.close()
 
