@@ -19,7 +19,7 @@ import json
 # from sockets import ChatNamespace, DrawNamespace
 # from socketio import socketio_manage
 
-def index(request, site=None, owner=None, city=None, x=0, y=0, useDebugFiles=False, drawingMode=None, visit=False):
+def index(request, site=None, owner=None, city=None, x=0, y=0, useDebugFiles=False, drawingMode=None, visit=False, pk=None):
 	
 	if not visit and not request.user.is_authenticated():
 		return render_to_response(	"welcome.html", {}, RequestContext(request) )
@@ -51,6 +51,15 @@ def index(request, site=None, owner=None, city=None, x=0, y=0, useDebugFiles=Fal
 	result['githubLogin'] = githubLogin
 	result['drawingMode'] = drawingMode
 	result['useDebugFiles'] = useDebugFiles
+	if pk:
+		result['drawingImageURL'] = 'https://commeundessein.co/static/drawings/' + pk + '.png'
+		result['drawingPk'] = pk
+		try:
+			drawing = Drawing.objects.get(pk=pk)
+			result['drawingTitle'] = drawing.title
+			result['drawingAuthor'] = drawing.owner
+		except Drawing.DoesNotExist:
+			print('Drawing not found')
 
 	result['positiveVoteThreshold'] = getPositiveVoteThreshold()
 	result['negativeVoteThreshold'] = getNegativeVoteThreshold()

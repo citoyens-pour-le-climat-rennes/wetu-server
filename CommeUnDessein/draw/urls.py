@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'^draw/templates/index\.html', views.index, name='index'),
     url(r'^draw/index\.html', views.index, name='index'),
     url(r'^index\.html', views.index, name='index'),
+    url(r'^drawing-(?P<pk>[\w]+)$', views.index, {'visit': True}, name='index'),
     url(r'^connexion/$', views.connection, name='connection'),
     url(r'^visite\.html', views.index, {'visit': True}, name='index'),
     url(r'^visite-debug\.html', views.index, {'visit': True, 'useDebugFiles': True}, name='index'),

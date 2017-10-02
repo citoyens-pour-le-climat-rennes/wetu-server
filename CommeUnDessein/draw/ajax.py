@@ -1552,7 +1552,7 @@ def saveDrawing2(request, clientId, date, pathPks, title, description):
 	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk), 'pathPks': pathPks, 'negativeVoteThreshold': negativeVoteThreshold, 'positiveVoteThreshold': positiveVoteThreshold, 'voteMinDuration': voteMinDuration.total_seconds() } )
 
 @checkDebug
-def submitDrawing(request, pk, clientId, svg, date, title=None, description=None, png=None, encodedTitle=None):
+def submitDrawing(request, pk, clientId, svg, date, title=None, description=None, png=None):
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
 	
@@ -1589,7 +1589,7 @@ def submitDrawing(request, pk, clientId, svg, date, title=None, description=None
 
 	# Save image
 	imgstr = re.search(r'base64,(.*)', png).group(1)
-	output = open('CommeUnDessein/static/drawings/'+encodedTitle+'.png', 'wb')
+	output = open('CommeUnDessein/static/drawings/'+pk+'.png', 'wb')
 	output.write(imgstr.decode('base64'))
 	output.close()
 
