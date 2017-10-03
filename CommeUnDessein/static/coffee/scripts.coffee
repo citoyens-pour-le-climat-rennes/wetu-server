@@ -39,6 +39,9 @@ $(document).ready () ->
 	signupButtonJ = $('#cd-signup')
 	signinButtonJ = $('#cd-signin')
 	primaryButtonJ = $('#cd-submit')
+	loadIconJ = primaryButtonJ.find('.glyphicon')
+	loadIconJ.hide()
+	loadIconJ.removeClass('cd-hidden')
 	emailJ = $('#cd-email')
 	usernameJ = $('#cd-username')
 	passwordJ = $('#cd-password')
@@ -88,6 +91,8 @@ $(document).ready () ->
 		state = newState
 		return
 
+
+
 	emailJ.focus()
 	emailJ.keyup(submitEnter)
 	passwordJ.keyup(submitEnter)
@@ -132,7 +137,9 @@ $(document).ready () ->
 
 			errorJ.hide()
 
+			loadIconJ.show()
 			$.ajax( method: "POST", url: "ajaxCall/", data: data: JSON.stringify { function: 'isEmailKnown', args: { email: email } } ).done (result)->
+				loadIconJ.hide()
 				if result.message?
 					console.log(result.message)
 				
@@ -181,7 +188,9 @@ $(document).ready () ->
 			
 			username = usernameJ.val()
 			errorJ.hide()
+			loadIconJ.show()
 			$.ajax( method: "POST", url: "ajaxCall/", data: data: JSON.stringify { function: 'isUsernameKnown', args: { username: username } } ).done (result)->
+				loadIconJ.hide()
 				if result.message?
 					console.log(result.message)
 
@@ -247,8 +256,9 @@ $(document).ready () ->
 			window.location = '/'
 		else if state == 'Username'
 			setState('Email')
-
-			labelJ.text("Email :")
+			
+			titleJ.text('Créer un compte ou se connecter')
+			labelJ.text("Email ou nom d'utilisateur :")
 
 			usernameJ.hide()
 			passwordGroupJ.hide()

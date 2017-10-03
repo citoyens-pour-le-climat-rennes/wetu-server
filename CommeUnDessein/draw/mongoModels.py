@@ -23,6 +23,17 @@ class Vote(Document):
         'indexes': [ "#author", "emailConfirmed" ]
     }
 
+class Comment(Document):
+    author = ReferenceField('UserProfile', required=True)   #, reverse_delete_rule=CASCADE) # see register_delete_rule after UserProfile
+    drawing = ReferenceField('Drawing')                     #, reverse_delete_rule=CASCADE) # see register_delete_rule after Drawing
+    date = DateTimeField(default=datetime.datetime.now, required=True)
+    emailConfirmed = BooleanField(default=False)
+    text = StringField(required=True)
+
+    meta = {
+        'indexes': [ "#author", "emailConfirmed" ]
+    }
+
 @receiver(user_signed_up, dispatch_uid="_allauth.user_signed_up")
 def createUserProfile(sender, user, **kwargs):
     profile = UserProfile(username=user.username)
@@ -35,6 +46,7 @@ class UserProfile(Document):
     commeUnDesseinCoins = IntField(default=0)
     emailConfirmed = BooleanField(default=False)
     votes = ListField(ReferenceField('Vote', reverse_delete_rule=PULL))
+    comments = ListField(ReferenceField('Comment', reverse_delete_rule=PULL))
 
     def profile_image_url(self):
 
@@ -56,6 +68,7 @@ class UserProfile(Document):
     }
 
 UserProfile.register_delete_rule(Vote, 'author', CASCADE)
+UserProfile.register_delete_rule(Comment, 'author', CASCADE)
 
 class Drawing(Document):
     clientId = StringField(required=True, unique=True)
@@ -73,6 +86,7 @@ class Drawing(Document):
 
     date = DateTimeField(default=datetime.datetime.now, required=True)
     votes = ListField(ReferenceField('Vote', reverse_delete_rule=PULL))
+    comments = ListField(ReferenceField('Comment', reverse_delete_rule=PULL))
     
     title = StringField()
     description = StringField()
@@ -89,6 +103,7 @@ class Drawing(Document):
     }
 
 Drawing.register_delete_rule(Vote, 'drawing', CASCADE)
+Drawing.register_delete_rule(Comment, 'drawing', CASCADE)
 
 class Path(Document):
     clientId = StringField(required=True, unique=True)

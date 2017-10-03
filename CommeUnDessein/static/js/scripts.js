@@ -35,7 +35,7 @@
   });
 
   $(document).ready(function() {
-    var backJ, deferredFocus, emailJ, errorJ, errors, labelJ, maskJ, passwordGroupJ, passwordJ, primaryButtonJ, setState, signinButtonJ, signinLabelJ, signupButtonJ, signupLabelJ, submitEnter, titleJ, usernameJ, validateEmail;
+    var backJ, deferredFocus, emailJ, errorJ, errors, labelJ, loadIconJ, maskJ, passwordGroupJ, passwordJ, primaryButtonJ, setState, signinButtonJ, signinLabelJ, signupButtonJ, signupLabelJ, submitEnter, titleJ, usernameJ, validateEmail;
     errors = $('.errorlist').text();
     console.log(errors);
     if (window.location.pathname === "/accounts/signup/") {
@@ -46,6 +46,9 @@
     signupButtonJ = $('#cd-signup');
     signinButtonJ = $('#cd-signin');
     primaryButtonJ = $('#cd-submit');
+    loadIconJ = primaryButtonJ.find('.glyphicon');
+    loadIconJ.hide();
+    loadIconJ.removeClass('cd-hidden');
     emailJ = $('#cd-email');
     usernameJ = $('#cd-username');
     passwordJ = $('#cd-password');
@@ -114,6 +117,7 @@
           return;
         }
         errorJ.hide();
+        loadIconJ.show();
         $.ajax({
           method: "POST",
           url: "ajaxCall/",
@@ -127,6 +131,7 @@
           }
         }).done(function(result) {
           var username;
+          loadIconJ.hide();
           if (result.message != null) {
             console.log(result.message);
           }
@@ -172,6 +177,7 @@
       } else if (state === 'Username') {
         username = usernameJ.val();
         errorJ.hide();
+        loadIconJ.show();
         $.ajax({
           method: "POST",
           url: "ajaxCall/",
@@ -184,6 +190,7 @@
             })
           }
         }).done(function(result) {
+          loadIconJ.hide();
           if (result.message != null) {
             console.log(result.message);
           }
@@ -230,7 +237,8 @@
         window.location = '/';
       } else if (state === 'Username') {
         setState('Email');
-        labelJ.text("Email :");
+        titleJ.text('Créer un compte ou se connecter');
+        labelJ.text("Email ou nom d'utilisateur :");
         usernameJ.hide();
         passwordGroupJ.hide();
         emailJ.show();

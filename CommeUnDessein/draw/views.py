@@ -20,7 +20,7 @@ import json
 # from socketio import socketio_manage
 
 def index(request, site=None, owner=None, city=None, x=0, y=0, useDebugFiles=False, drawingMode=None, visit=False, pk=None):
-	
+
 	if not visit and not request.user.is_authenticated():
 		return render_to_response(	"welcome.html", {}, RequestContext(request) )
 

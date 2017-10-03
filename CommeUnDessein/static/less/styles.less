@@ -1615,7 +1615,7 @@ li.tool-btn {
 	.container {
 		.content {
 			.cd-column-row {
-				padding-bottom: 30px;
+				padding-bottom: 40px;
 			}
 			.cd-column-row.cd-row {
 				
@@ -1738,6 +1738,79 @@ li.tool-btn {
 			.action-buttons, .share-buttons {
 				button {
     				margin-bottom: 10px;
+					padding: 10px;
+				}
+				.share-twitter {
+					margin-left: 10px;
+				}
+			}
+			.comments-container {
+				& > .comment-header {
+					padding: 10px;
+				}
+				background-color: @sidebar-light-background-color;
+
+				.comments {
+					.comment {
+						background-color: @sidebar-background-color;
+						margin: 5px;
+						padding: 5px;
+						margin-bottom: 0;
+						padding-bottom: 0;
+						.comment-header {
+							padding-left: 5px;
+							.author {
+								font-weight: bold;
+							}
+							.date {
+								font-style: italic;
+								margin-left: 2px;
+								display: none;
+							}
+							&:hover {
+								.date {
+									display: flex;
+								}
+							}
+						}
+					}
+					.comment-buttons {
+						margin-top: 5px;
+						margin-bottom: 5px;
+						button.comment-button {
+							border: none;
+							min-height: inherit;
+							height: inherit;
+							margin-left: 5px;
+						}
+					}
+				}
+				.comment-text {
+					margin: 5px;
+				}
+				.comment-area {
+					margin: 5px;
+					padding: 5px;
+					min-height: 100px;
+					background-color: @sidebar-background-color;
+				}
+				
+				
+				.edit-buttons {
+					button {
+						border: none;
+						min-height: 15px;
+						min-width: 15px;
+						width: 15px;
+						height: 15px;
+						&:hover {
+							background-color: @sidebar-light-background-color;
+						}
+					}
+				}
+				.submit-comment {
+					margin: 5px;
+					margin-top: 0;
 				}
 			}
 			// .share-buttons {
@@ -2524,11 +2597,12 @@ body.allauth {
 // 		flex-direction: column;
 // 	}
 // }
-// @media (orientation : landscape) {
-// 	.cd-column-row {
-// 		flex-direction: row;
-// 	}
-// }
+
+@media (orientation : landscape) {
+	.commeUnDessein-ui.open button.share-facebook .glyphicon {
+		margin-right: 0;
+	}
+}
 
 @media (max-width: 1024px) {
 	#FavoriteTools {

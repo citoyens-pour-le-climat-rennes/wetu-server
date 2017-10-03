@@ -1377,7 +1377,7 @@ li.tool-btn.selected .favorite-btn {
   user-select: none;
 }
 #drawingPanel .container .content .cd-column-row {
-  padding-bottom: 30px;
+  padding-bottom: 40px;
 }
 #drawingPanel .container .content .cd-column-row.cd-row .drawing-thumbnail {
   margin-right: 10px;
@@ -1500,6 +1500,72 @@ li.tool-btn.selected .favorite-btn {
 #drawingPanel .container .content .action-buttons button,
 #drawingPanel .container .content .share-buttons button {
   margin-bottom: 10px;
+  padding: 10px;
+}
+#drawingPanel .container .content .action-buttons .share-twitter,
+#drawingPanel .container .content .share-buttons .share-twitter {
+  margin-left: 10px;
+}
+#drawingPanel .container .content .comments-container {
+  background-color: #464c53;
+}
+#drawingPanel .container .content .comments-container > .comment-header {
+  padding: 10px;
+}
+#drawingPanel .container .content .comments-container .comments .comment {
+  background-color: #33383e;
+  margin: 5px;
+  padding: 5px;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+#drawingPanel .container .content .comments-container .comments .comment .comment-header {
+  padding-left: 5px;
+}
+#drawingPanel .container .content .comments-container .comments .comment .comment-header .author {
+  font-weight: bold;
+}
+#drawingPanel .container .content .comments-container .comments .comment .comment-header .date {
+  font-style: italic;
+  margin-left: 2px;
+  display: none;
+}
+#drawingPanel .container .content .comments-container .comments .comment .comment-header:hover .date {
+  display: -webkit-box;
+  display: flex;
+}
+#drawingPanel .container .content .comments-container .comments .comment-buttons {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+#drawingPanel .container .content .comments-container .comments .comment-buttons button.comment-button {
+  border: none;
+  min-height: inherit;
+  height: inherit;
+  margin-left: 5px;
+}
+#drawingPanel .container .content .comments-container .comment-text {
+  margin: 5px;
+}
+#drawingPanel .container .content .comments-container .comment-area {
+  margin: 5px;
+  padding: 5px;
+  min-height: 100px;
+  background-color: #33383e;
+}
+#drawingPanel .container .content .comments-container .edit-buttons button {
+  border: none;
+  min-height: 15px;
+  min-width: 15px;
+  width: 15px;
+  height: 15px;
+}
+#drawingPanel .container .content .comments-container .edit-buttons button:hover {
+  background-color: #464c53;
+}
+#drawingPanel .container .content .comments-container .submit-comment {
+  margin: 5px;
+  margin-top: 0;
 }
 #drawingPanel .container .content button {
   min-height: 50px;
@@ -2114,6 +2180,11 @@ body.allauth p input[type="email"] {
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
           flex-direction: column;
+}
+@media (orientation: landscape) {
+  .commeUnDessein-ui.open button.share-facebook .glyphicon {
+    margin-right: 0;
+  }
 }
 @media (max-width: 1024px) {
   #FavoriteTools h3.title {

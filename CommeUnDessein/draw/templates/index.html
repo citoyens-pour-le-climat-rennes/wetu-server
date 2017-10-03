@@ -55,7 +55,7 @@
     <meta property="og:url"             content="https://commeundessein.co/drawings.html#{{drawingPk}}" /> 
     <meta property="og:title"           content="{{drawingTitle}}" /> 
     <meta property="og:image"           content="{{drawingImageURL}}" />
-    <meta property="og:description"    content="{{drawingTitle}} par {{drawingOwner}} sur Comme un Dessein" />
+    <meta property="og:description"    content="{{drawingTitle}} par {{drawingAuthor}} sur Comme un Dessein" />
 
   </head>
 
@@ -593,12 +593,24 @@
 
                       </div>
 
-                      <div class="cd-column cd-end share-buttons">
+                      <div class="cd-row cd-end share-buttons">
 
-                        <button class="btn btn-primary original-color share-facebook" type="button"><span class="glyphicon glyphicon-facebook"><img src="static/images/icons/inverted/facebook.png"></span><span data-i18n='Share on Facebook' class='text'>Share on Facebook</span></button>
+                        <button class="cd-grow btn btn-primary original-color share-facebook" type="button"><span class="glyphicon glyphicon-facebook"><img src="static/images/icons/inverted/facebook.png"></span><span data-i18n='Share on Facebook' class='text'>Share on Facebook</span></button>
 
-                        <button class="btn btn-info original-color share-twitter" type="button"><span class="glyphicon glyphicon-tiwtter"><img src="static/images/icons/inverted/twitter.png"></span><span data-i18n='Share on Twitter' class='text'>Share on Twitter</span></button>
+                        <button class="cd-grow btn btn-info original-color share-twitter" type="button"><span class="glyphicon glyphicon-tiwtter"><img src="static/images/icons/inverted/twitter.png"></span><span data-i18n='Tweet' class='text'>Tweet</span></button>
 
+                      </div>
+
+                      <div class="cd-column cd-end comments-container">
+                        <div class="cd-row comment-header">
+                          <h4>Commentaires</h4>
+                        </div>
+
+                        <div class="cd-column comments">
+                          
+                        </div>
+                        <div class="comment-area" contenteditable="true"></div>
+                        <button class="btn btn-primary original-color submit-comment" type="button"><span class="glyphicon glyphicon-ok"></span><span data-i18n='Add comment' class='text'>Add comment</span></button>
                       </div>
 
                     </form>
@@ -707,7 +719,7 @@
 
     <div id="templates">
 
-      <div id="welcome-text-long">
+      <div id="welcome-text">
 
         <p><strong>« La démocratie participative fait-elle réellement émerger l’intérêt général ? »</strong></p>
 
@@ -726,14 +738,6 @@
 
         <p><small>Cette proposition du <em>collectif IDLV</em>, est accompagnée par la <em>Ville de Rennes</em> au titre du dispositif <em>« Les rennais prennent l'art »</em> et coproduite par <em>Electroni[k]</em>, en réponse à l’appel à projet international <em>Art et technologie 2016</em>.</small></p>
 
-      </div>
-
-      <div id="welcome-text">
-
-        <p><strong>« La démocratie participative fait-elle réellement émerger l’intérêt général ? »</strong></p>
-
-        <p>L’installation <strong><em>Comme un dessein</em></strong> fait écho à cette question actuelle en vous invitant à voter et proposer des dessins pour composer une œuvre collective et utopique, à l'aide d'une interface web connectée à un traceur vertical.</p>
-        
       </div>
 
       <div class="modals">

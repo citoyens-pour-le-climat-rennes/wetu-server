@@ -213,6 +213,7 @@ def on_email_confirmed(sender, **kwargs):
 	userProfile.save()
 	Drawing.objects(owner=user.username, status='emailNotConfirmed').update(status='pending')
 	Vote.objects(author=userProfile).update(emailConfirmed=True)
+	Comment.objects(author=userProfile).update(emailConfirmed=True)
 
 	return
 
@@ -1622,6 +1623,22 @@ def loadDrawing(request, pk, loadSVG=False):
 	return json.dumps( {'state': 'success', 'votes': votes, 'drawing': d.to_json() } )
 
 @checkDebug
+def loadComments(request, drawingPk):
+	try:
+		drawing = Drawing.objects.only('comments').get(pk=drawingPk)
+	except Drawing.DoesNotExist:
+		return json.dumps({'state': 'error', 'message': 'Drawing does not exist'})
+	
+	comments = []
+	if drawing.comments:
+		for comment in drawing.comments:
+			if isinstance(comment, Comment):
+				if comment.emailConfirmed or request.user.username == comment.author.username:
+					comments.append( { 'comment': comment.to_json(), 'author': comment.author.username, 'authorPk': str(comment.author.pk) } )
+
+	return json.dumps( {'state': 'success', 'comments': comments } )
+
+@checkDebug
 def loadDrawings(request, pks, loadSVG=False):
 	try:
 		drawings = Drawing.objects(pk__in=pks).only('status', 'pk', 'clientId', 'title', 'owner', 'votes')
@@ -2024,6 +2041,80 @@ def vote(request, pk, date, positive):
 # 		items.append(item.to_json())
 
 # 	return json.dumps( {'state': 'success', 'items': items } )
+
+@checkDebug
+def addComment(request, drawingPk, comment, date):
+	if not request.user.is_authenticated():
+		return json.dumps({'state': 'not_logged_in'})
+
+	drawing = None
+	try:
+		drawing = Drawing.objects.get(pk=drawingPk)
+	except Drawing.DoesNotExist:
+		return json.dumps({'state': 'error', 'message': 'Drawing does not exist.', 'pk': drawingPk})
+
+	if drawing.status == 'draft' or drawing.status == 'emailNotConfirmed':
+		return json.dumps({'state': 'error', 'message': 'Cannot comment on this drawing.'})
+
+	user = None
+
+	try:
+		user = UserProfile.objects.get(username=request.user.username)
+	except UserProfile.DoesNotExist:
+		return json.dumps({'state': 'error', 'message': 'The user profile does not exist.'})
+
+	c = Comment(author=user, drawing=drawing, text=comment, date=datetime.datetime.fromtimestamp(date/1000.0), emailConfirmed=user.emailConfirmed)
+	c.save()
+
+	drawing.comments.append(c)
+	drawing.save()
+
+	user.comments.append(c)
+	user.save()
+
+	return json.dumps( {'state': 'success', 'author': request.user.username, 'drawingPk':str(drawing.pk), 'commentPk': str(c.pk), 'comment': c.to_json() } )
+
+@checkDebug
+def modifyComment(request, commentPk, comment):
+	if not request.user.is_authenticated():
+		return json.dumps({'state': 'not_logged_in'})
+
+	c = None
+	try:
+		c = Comment.objects.get(pk=commentPk)
+	except Comment.DoesNotExist:
+		return json.dumps({'state': 'error', 'message': 'Comment does not exist.', 'pk': commentPk})
+
+	if request.user.username != c.author.username:
+		return json.dumps({'state': 'error', 'message': 'User is not the author of the comment.'})
+
+	c.text = comment
+	c.save()
+
+	return json.dumps( {'state': 'success' } )
+
+@checkDebug
+def deleteComment(request, commentPk):
+	if not request.user.is_authenticated():
+		return json.dumps({'state': 'not_logged_in'})
+
+	comment = None
+	try:
+		comment = Comment.objects.get(pk=commentPk)
+	except Comment.DoesNotExist:
+		return json.dumps({'state': 'error', 'message': 'Comment does not exist.', 'pk': commentPk})
+
+	if request.user.username != comment.author.username:
+		return json.dumps({'state': 'error', 'message': 'User is not the author of the comment.'})
+
+	comment.drawing.comments.remove(comment)
+	comment.drawing.save()
+	comment.author.comments.remove(comment)
+	comment.author.save()
+	comment.delete()
+
+	return json.dumps( {'state': 'success' } )
+
 
 @checkDebug
 def loadItems(request, itemsToLoad):

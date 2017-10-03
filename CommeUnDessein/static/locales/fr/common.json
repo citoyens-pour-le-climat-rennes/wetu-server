@@ -170,5 +170,10 @@
     "Click on a drawing to vote for it": "Cliquez sur un dessin pour voter",
     "Share on Facebook": "Partager sur Facebook",
     "Share on Twitter": "Partager sur Twitter",
-    "Vote for this drawing on Comme un Dessein": "Votez pour \"{{drawing}}\" de {{author}} sur Comme un Dessein !"
+    "Tweet": "Tweeter",
+    "Vote for this drawing on Comme un Dessein": "Votez pour \"{{drawing}}\" de {{author}} sur Comme un Dessein !",
+    "on": "sur",
+    "Comment": "Commenter",
+    "Add comment": "Ajouter un commentaire",
+    "Modify comment": "Modifier le commentaire"
 }

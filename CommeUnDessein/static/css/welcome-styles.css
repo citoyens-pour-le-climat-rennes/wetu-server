@@ -1,3 +1,27 @@
+.glyphicon-refresh-animate {
+  -animation: spin 1.25s infinite linear;
+  -webkit-animation: spin 1.25s infinite linear;
+}
+@-webkit-keyframes spin {
+  from {
+    -webkit-transform: scale(1) rotate(0deg);
+            transform: scale(1) rotate(0deg);
+  }
+  to {
+    -webkit-transform: scale(1) rotate(360deg);
+            transform: scale(1) rotate(360deg);
+  }
+}
+@keyframes spin {
+  from {
+    -webkit-transform: scale(1) rotate(0deg);
+            transform: scale(1) rotate(0deg);
+  }
+  to {
+    -webkit-transform: scale(1) rotate(360deg);
+            transform: scale(1) rotate(360deg);
+  }
+}
 body {
   font-family: "Amatic SC";
   font-size: 30px;
@@ -130,6 +154,24 @@ ul.button-list li:hover a:visited {
   background-color: black;
   padding: 10px;
   width: 100%;
+}
+.cd-form #cd-submit {
+  margin-left: 10px;
+}
+.cd-form #cd-submit .glyphicon-refresh {
+  width: auto;
+  margin: 10px;
+  font-size: 20px;
+  color: white;
+}
+.cd-form #cd-submit:hover,
+.cd-form #cd-submit:active {
+  background-color: white;
+  color: black;
+}
+.cd-form #cd-submit:hover .glyphicon-refresh,
+.cd-form #cd-submit:active .glyphicon-refresh {
+  color: black;
 }
 .cd-form #cd-error {
   margin-top: -10px;

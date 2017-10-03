@@ -1,6 +1,16 @@
 @form-color: black;
 @button-color: #222222;
 
+.glyphicon-refresh-animate {
+    -animation: spin 1.25s infinite linear;
+    -webkit-animation: spin 1.25s infinite linear;
+}
+
+@keyframes spin {
+    from { transform: scale(1) rotate(0deg);}
+    to { transform: scale(1) rotate(360deg);}
+}
+
 body {
 	font-family: "Amatic SC";
 	font-size: 30px;
@@ -117,6 +127,23 @@ ul.button-list {
 		}
 	}
 	
+	#cd-submit {
+		margin-left: 10px;
+		.glyphicon-refresh {
+			width: auto;
+			margin: 10px;
+			font-size: 20px;
+			color: white;
+		}
+		&:hover, &:active {
+			background-color: white;
+			color: black;
+			.glyphicon-refresh {
+				color: black;
+			}
+		}
+	}
+
 	#cd-error {
 		margin-top: -10px;
 		margin-bottom: 10px;
