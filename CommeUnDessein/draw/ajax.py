@@ -752,7 +752,6 @@ def loadSVG(request, city=None):
 
 	if isAdmin(request.user):
 		statusToLoad.append('emailNotConfirmed')
-		statusToLoad.append('draft')
 
 	drawings = Drawing.objects(city=cityPk, status__in=statusToLoad).only('svg', 'status', 'pk', 'clientId', 'title', 'owner')
 	
