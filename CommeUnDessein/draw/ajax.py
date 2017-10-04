@@ -1621,6 +1621,18 @@ def submitDrawing(request, pk, clientId, svg, date, title=None, description=None
 
 	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk), 'status': d.status, 'negativeVoteThreshold': negativeVoteThreshold, 'positiveVoteThreshold': positiveVoteThreshold, 'voteMinDuration': voteMinDuration.total_seconds() } )
 
+@checkDebug
+def createDrawingThumbnail(request, pk, png=None):
+	
+	if not isAdmin(request.user):
+		return json.dumps({"status": "error", "message": "not_admin"})
+
+	imgstr = re.search(r'base64,(.*)', png).group(1)
+	output = open('CommeUnDessein/static/drawings/'+pk+'.png', 'wb')
+	output.write(imgstr.decode('base64'))
+	output.close()
+	return
+
 # @dajaxice_register
 @checkDebug
 def loadDrawing(request, pk, loadSVG=False):
