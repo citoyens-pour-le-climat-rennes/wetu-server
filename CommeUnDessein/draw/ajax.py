@@ -3452,6 +3452,18 @@ def getEmail(request, username):
 
 	return json.dumps( { 'state': 'success', 'email': user.email } )
 
+@checkDebug
+def confirmEmail(request, username):
+	if not isAdmin(request.user):
+		return json.dumps( { 'state': 'error', 'message': 'You must be administrator to get a user email.' } )
+
+	try:
+		on_email_confirmed(sender=None, request=request, email_address=username)
+	except e:
+		return json.dumps( { 'state': 'error', 'message': e } )
+
+	return json.dumps( { 'state': 'success' } )
+
 # @dajaxice_register
 @checkDebug
 def getWaitingTools(request):
