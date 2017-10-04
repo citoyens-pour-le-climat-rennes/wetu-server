@@ -69,6 +69,7 @@ ul.button-list {
 ul.button-list li {
   width: 100%;
   background-color: black;
+  border: 1px rgba(255, 255, 255, 0.5) solid;
   display: -webkit-box;
   display: flex;
   padding: 0;
@@ -89,7 +90,8 @@ ul.button-list li:hover {
   background-color: white;
 }
 ul.button-list li:hover a,
-ul.button-list li:hover a:visited {
+ul.button-list li:hover a:visited,
+ul.button-list li:hover a:hover {
   color: black;
   background-color: white;
 }
@@ -156,6 +158,8 @@ ul.button-list li:hover a:visited {
   width: 100%;
 }
 .cd-form #cd-submit {
+  border: 1px rgba(255, 255, 255, 0.5) solid;
+  background-color: #000000;
   margin-left: 10px;
 }
 .cd-form #cd-submit .glyphicon-refresh {
@@ -209,7 +213,8 @@ ul.button-list li:hover a:visited {
 .cd-form button,
 .cd-form ul > li,
 .cd-form input {
-  background-color: #222222;
+  background-color: #000000;
+  border: 1px rgba(255, 255, 255, 0.5) solid;
   color: white;
 }
 .cd-form button a,
@@ -234,9 +239,6 @@ ul.button-list li:hover a:visited {
   background-color: white;
   color: black;
 }
-.cd-form button.cd-button {
-  border: 0;
-}
 .cd-hidden,
 .cd-row.cd-hidden,
 .cd-column.cd-hidden {
@@ -253,17 +255,18 @@ ul.button-list li:hover a:visited {
           flex-direction: column;
 }
 .form-signin input {
-  background-color: #222222;
+  background-color: #000000;
+  border: 1px rgba(255, 255, 255, 0.5) solid;
 }
 .form-signin input[type=submit] {
-  background-color: #222222;
+  background-color: #000000;
   border: none;
 }
 form input {
   background-color: black;
 }
 form input[type=submit] {
-  background-color: #222222;
+  background-color: #000000;
   border: none;
 }
 .allauth {
@@ -273,14 +276,26 @@ form input[type=submit] {
   background-color: black;
 }
 .allauth button {
-  background-color: #222222;
-  border: none;
+  border: 1px rgba(255, 255, 255, 0.5) solid;
+  background-color: #000000;
   border-radius: 0;
   font-size: 30px;
+}
+.allauth button:active,
+.allauth button:focus {
+  outline-width: 1px;
+  outline-color: white;
+  outline-style: dotted;
 }
 .allauth button:hover {
   background-color: white;
   color: black;
+}
+.allauth input:active,
+.allauth input:focus {
+  outline-width: 1px;
+  outline-color: white;
+  outline-style: dotted;
 }
 .menu {
   display: none;
@@ -326,6 +341,7 @@ form input[type=submit] {
 .buttons .center h1 {
   padding: 20px;
   color: #cbcbcb;
+  border: 1px rgba(255, 255, 255, 0.5) solid;
   background-color: black;
 }
 .buttons .center a {
