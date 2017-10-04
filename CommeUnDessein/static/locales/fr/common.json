@@ -78,7 +78,8 @@
     "Error: a path has not been saved yet, please wait until the path is saved before creating the drawing": "Erreur: un tracé n'a pas encore été sauvegardé. Veuillez attendre que le tracé soit sauvegardé avant de soumettre le dessin.",
     "Your item overlaps with two planets": "Le tracé sors du cadre",
     "Error: The drawing is empty": "Le dessin est vide",
-    "Drawing successfully submitted": "Le dessin à été soumis au vote, il sera dessiné s'il reçoit {{positiveVoteThreshold}} votes",
+    "Drawing successfully submitted": "Le dessin a été soumit au vote, il sera dessiné s'il reçoit {{positiveVoteThreshold}} votes",
+    "Drawing successfully submitted but email not confirmed": "Le dessin sera soumit au vote lorsque vous aurez validé votre compte par email, il sera dessiné s'il reçoit {{positiveVoteThreshold}} votes",
     "Drawing successfully modified": "Dessin modifié avec succès",
     "Drawing successfully cancelled": "Dessin annulé avec succès",
     "Position invalid": "Position non valide",
@@ -152,6 +153,7 @@
     "A drawing with this name already exists": "Un dessin avec ce nom existe déjà",
     "You successfully voted, the drawing will be rejected": "Votre vote a bien été pris en compte ! Le dessin sera rejeté dans {{duration}} si personne n'annule son vote...",
     "You successfully voted, the drawing will be validated": "Votre vote a bien été pris en compte ! Le dessin sera validé dans {{duration}} si personne n'annule son vote...",
+    "You successfully voted but email not confirmed": "Votre vote a bien été enregistré, il sera pris en compte quand vous aurez validé votre compte par email.",
     "Create mode": "Créer un mode",
     "Modes": "Modes",
     "line": "ligne",
@@ -175,5 +177,6 @@
     "on": "sur",
     "Comment": "Commenter",
     "Add comment": "Ajouter un commentaire",
-    "Modify comment": "Modifier le commentaire"
+    "Modify comment": "Modifier le commentaire",
+    "Drawings sorted by status": "Dessins classés par status"
 }

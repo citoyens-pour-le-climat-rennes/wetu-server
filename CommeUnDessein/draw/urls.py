@@ -19,6 +19,7 @@ urlpatterns = [
     url(r'^terms-of-service\.html', views.termsOfService),
 
     url(r'^debug$', views.index, {'useDebugFiles': True}, name='index'),
+    url(r'^debug/$', views.index, {'useDebugFiles': True}, name='index'),
 
     url(r'^debug-free$', views.index, {'drawingMode': 'free', 'useDebugFiles': True}, name='index'),
     url(r'^debug-pixel$', views.index, {'drawingMode': 'pixel', 'useDebugFiles': True}, name='index'),

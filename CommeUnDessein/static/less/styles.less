@@ -30,6 +30,29 @@ body {
 	overflow: hidden;
 	font-family: 'Open Sans', sans-serif;
 }
+#RItems {
+	h4.panel-title {
+		color: white;
+		background-color: @sidebar-background-color;
+		padding: 10px;
+		a:hover {
+			text-decoration: none;
+		}
+	}
+}
+ul.layers {
+	li {
+		ul.rPath-list {
+			li {
+				padding: 8px;
+				cursor: pointer;
+				&:hover {
+					background-color: @sidebar-light-background-color;
+				}
+			}
+		}
+	}
+}
 
 .glyphicon-refresh-animate {
     -animation: spin 1.25s infinite linear;
@@ -39,6 +62,21 @@ body {
 @keyframes spin {
     from { transform: scale(1) rotate(0deg);}
     to { transform: scale(1) rotate(360deg);}
+}
+
+.modal, #modal-info {
+	display: flex;
+	flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    .modal-dialog {
+    	margin: 0;
+    	display: flex;
+    	flex-direction: column;
+    	min-height: auto;
+    	height: auto;
+    }
 }
 
 .draft-color, .badge.draft-color {
@@ -417,6 +455,7 @@ body.hand {
 		margin: 0;
 		padding: 0;
 		min-height: 30px;
+		height: 62px;
 
 		&.drag-over {
 			border: 1px solid @hover-blue;

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from binascii import a2b_base64
 from threading import Timer
 import datetime
@@ -214,6 +216,9 @@ def on_email_confirmed(sender, **kwargs):
 	Drawing.objects(owner=user.username, status='emailNotConfirmed').update(status='pending')
 	Vote.objects(author=userProfile).update(emailConfirmed=True)
 	Comment.objects(author=userProfile).update(emailConfirmed=True)
+
+	for vote in userProfile.votes:
+		updateDrawingState(vote.drawing.pk)
 
 	return
 
@@ -753,6 +758,19 @@ def loadSVG(request, city=None):
 	# return json.dumps( { 'paths': paths, 'boxes': boxes, 'divs': divs, 'user': user, 'rasters': rasters, 'areasToUpdate': areas, 'zoom': zoom } )
 	return json.dumps( { 'items': items, 'user': request.user.username } )
 
+@checkDebug
+def loadVotes(request, city=None):
+
+	try:
+		userVotes = UserProfile.objects.only('votes').get(username=request.user.username)
+	except UserProfile.DoesNotExist:
+		return json.dumps( { 'state': 'error', 'message': 'User does not exist.' } )
+
+	votes = []
+	for vote in userVotes.votes:
+		votes.append({ 'pk': str(vote.drawing.clientId), 'positive': vote.positive } )
+
+	return json.dumps( { 'votes': votes } )
 
 # @dajaxice_register
 @checkDebug
@@ -1917,10 +1935,11 @@ def computeVotes(drawing):
 	nPositiveVotes = 0
 	nNegativeVotes = 0
 	for vote in drawing.votes:
-		if vote.positive:
-			nPositiveVotes += 1
-		else:
-			nNegativeVotes += 1
+		if vote.emailConfirmed:
+			if vote.positive:
+				nPositiveVotes += 1
+			else:
+				nNegativeVotes += 1
 	return (nPositiveVotes, nNegativeVotes)
 
 def isDrawingValidated(nPositiveVotes, nNegativeVotes):
@@ -1928,6 +1947,26 @@ def isDrawingValidated(nPositiveVotes, nNegativeVotes):
 
 def isDrawingRejected(nNegativeVotes):
 	return nNegativeVotes >= negativeVoteThreshold
+
+def updateDrawingState(drawingPk):
+	try:
+		drawing = Drawing.objects.get(pk=drawingPk)
+	except Drawing.DoesNotExist:
+		return
+
+	(nPositiveVotes, nNegativeVotes) = computeVotes(drawing)
+
+	if isDrawingValidated(nPositiveVotes, nNegativeVotes):
+		drawing.status = 'drawing'
+		drawing.save()
+	elif isDrawingRejected(nNegativeVotes):
+		drawing.status = 'rejected'
+		drawing.save()
+
+	# drawingValidated.send(sender=None, drawingId=drawing.clientId, status=drawing.status)
+	drawingChanged.send(sender=None, type='status', drawingId=drawing.clientId, status=drawing.status)
+
+	return
 
 @checkDebug
 def vote(request, pk, date, positive):
@@ -1995,36 +2034,27 @@ def vote(request, pk, date, positive):
 
 	if validates or rejects:
 
-		def timeout(drawingPk):
-			try:
-				drawing = Drawing.objects.get(pk=pk)
-			except Drawing.DoesNotExist:
-				return
-
-			(nPositiveVotes, nNegativeVotes) = computeVotes(drawing)
-
-			if isDrawingValidated(nPositiveVotes, nNegativeVotes):
-				drawing.status = 'drawing'
-				drawing.save()
-			elif isDrawingRejected(nNegativeVotes):
-				drawing.status = 'rejected'
-				drawing.save()
-
-			# drawingValidated.send(sender=None, drawingId=drawing.clientId, status=drawing.status)
-			drawingChanged.send(sender=None, type='status', drawingId=drawing.clientId, status=drawing.status)
-
-			return
-
 		if datetime.datetime.now() - drawing.date < voteMinDuration:
 			delay = (drawing.date + voteMinDuration - datetime.datetime.now()).total_seconds()
-		
+
 		send_mail('New drawing', 'A new drawing has been submitted.', 'contact@commeundessein.co', ['arthur.sw@gmail.com'], fail_silently=True)
 
-		t = Timer(delay, timeout, args=[pk])
+		t = Timer(delay, updateDrawingState, args=[pk])
 		t.start()
 	
+	owner = None
+	try:
+		owner = User.objects.get(username=drawing.owner)
+	except User.DoesNotExist:
+		print("Owner not found")
+	
+	if owner:
+		forAgainst = 'pour'
+		if not positive:
+			forAgainst = 'contre'
+		send_mail(request.user.username + u' a voté ' + forAgainst + u' votre dessin !', request.user.username + u' a voté ' + forAgainst + u' votre dessin \"' + drawing.title + u'\" sur Comme un Dessein !\n\n Visitez le resultat sur https://commeundessein.co/drawing-'+str(drawing.pk)+u'\n Merci d\'avoir participé à Comme un Dessein,\nLe collectif <a href=\'http://idlv.co/\'>IDLV</a>', 'contact@commeundessein.co', [owner.email], fail_silently=True)
 
-	return json.dumps( {'state': 'success', 'owner': request.user.username, 'drawingPk':str(drawing.pk), 'votePk':str(vote.pk), 'validates': validates, 'rejects': rejects, 'votes': votes, 'delay': delay } )
+	return json.dumps( {'state': 'success', 'owner': request.user.username, 'drawingPk':str(drawing.pk), 'votePk':str(vote.pk), 'validates': validates, 'rejects': rejects, 'votes': votes, 'delay': delay, 'emailConfirmed': user.emailConfirmed } )
 
 # --- Get Next Drawing To Be Drawn / Set Drawing Drawn --- #
 
@@ -2071,6 +2101,14 @@ def addComment(request, drawingPk, comment, date):
 
 	user.comments.append(c)
 	user.save()
+	
+	owner = None
+	try:
+		owner = User.objects.get(username=drawing.owner)
+	except User.DoesNotExist:
+		print("Owner not found")
+	if owner:
+		send_mail(request.user.username + u' a commenté votre dessin !', request.user.username + u' a commenté votre dessin \"' + drawing.title + u'\" sur Comme un Dessein !\n\n Visitez le resultat sur https://commeundessein.co/drawing-'+str(drawing.pk)+u'\n Merci d\'avoir participé à Comme un Dessein,\nLe collectif <a href=\'http://idlv.co/\'>IDLV</a>', 'contact@commeundessein.co', [owner.email], fail_silently=True)
 
 	return json.dumps( {'state': 'success', 'author': request.user.username, 'drawingPk':str(drawing.pk), 'commentPk': str(c.pk), 'comment': c.to_json() } )
 
@@ -2091,7 +2129,7 @@ def modifyComment(request, commentPk, comment):
 	c.text = comment
 	c.save()
 
-	return json.dumps( {'state': 'success' } )
+	return json.dumps( {'state': 'success', 'comment': comment, 'commentPk': str(c.pk), 'drawingPk': str(c.drawing.pk) } )
 
 @checkDebug
 def deleteComment(request, commentPk):
@@ -2113,7 +2151,7 @@ def deleteComment(request, commentPk):
 	comment.author.save()
 	comment.delete()
 
-	return json.dumps( {'state': 'success' } )
+	return json.dumps( {'state': 'success', 'commentPk': str(comment.pk), 'drawingPk': str(comment.drawing.pk) } )
 
 
 @checkDebug
