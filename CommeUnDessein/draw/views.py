@@ -58,6 +58,12 @@ def index(request, site=None, owner=None, city=None, x=0, y=0, useDebugFiles=Fal
 			drawing = Drawing.objects.get(pk=pk)
 			result['drawingTitle'] = drawing.title
 			result['drawingAuthor'] = drawing.owner
+			try:
+				city = City.objects.get(pk=drawing.city)
+				result['drawingCity'] = city.name
+			except City.DoesNotExist:
+				print('City not found')
+			
 		except Drawing.DoesNotExist:
 			print('Drawing not found')
 
