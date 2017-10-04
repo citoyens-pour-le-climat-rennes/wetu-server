@@ -213,12 +213,16 @@ def on_email_confirmed(sender, **kwargs):
 	
 	userProfile.emailConfirmed = True
 	userProfile.save()
-	Drawing.objects(owner=user.username, status='emailNotConfirmed').update(status='pending')
+	drawings = Drawing.objects(owner=user.username, status='emailNotConfirmed')
+	drawings.update(status='pending')
 	Vote.objects(author=userProfile).update(emailConfirmed=True)
 	Comment.objects(author=userProfile).update(emailConfirmed=True)
 
 	for vote in userProfile.votes:
 		updateDrawingState(vote.drawing.pk)
+
+	for drawing in drawings:
+		drawingChanged.send(sender=None, type='new', drawingId=drawing.clientId, pk=str(drawing.pk), svg=drawing.svg, city=drawing.city)
 
 	return
 
@@ -744,7 +748,13 @@ def loadSVG(request, city=None):
 	if not cityPk:
 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
 
-	drawings = Drawing.objects(city=cityPk, status__in=['pending', 'drawing', 'drawn', 'rejected']).only('svg', 'status', 'pk', 'clientId', 'title', 'owner')
+	statusToLoad = ['pending', 'drawing', 'drawn', 'rejected']
+
+	if isAdmin(request.user):
+		statusToLoad.append('emailNotConfirmed')
+		statusToLoad.append('draft')
+
+	drawings = Drawing.objects(city=cityPk, status__in=statusToLoad).only('svg', 'status', 'pk', 'clientId', 'title', 'owner')
 	
 	items = []
 	for drawing in drawings:
@@ -1616,8 +1626,9 @@ def submitDrawing(request, pk, clientId, svg, date, title=None, description=None
 	# fd = open('draw/static/drawings/'+title+'.png', 'wb')
 	# fd.write(binary_data)
 	# fd.close()
-
-	drawingChanged.send(sender=None, type='new', drawingId=d.clientId, pk=str(d.pk), svg=svg, city=cityName)
+	
+	if userProfile.emailConfirmed:
+		drawingChanged.send(sender=None, type='new', drawingId=d.clientId, pk=str(d.pk), svg=svg, city=cityName)
 
 	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk), 'status': d.status, 'negativeVoteThreshold': negativeVoteThreshold, 'positiveVoteThreshold': positiveVoteThreshold, 'voteMinDuration': voteMinDuration.total_seconds() } )
 
@@ -1663,7 +1674,7 @@ def loadComments(request, drawingPk):
 	if drawing.comments:
 		for comment in drawing.comments:
 			if isinstance(comment, Comment):
-				if comment.emailConfirmed or request.user.username == comment.author.username:
+				if comment.emailConfirmed or request.user.username == comment.author.username or isAdmin(request.user):
 					comments.append( { 'comment': comment.to_json(), 'author': comment.author.username, 'authorPk': str(comment.author.pk) } )
 
 	return json.dumps( {'state': 'success', 'comments': comments } )
@@ -1994,8 +2005,11 @@ def vote(request, pk, date, positive):
 	if drawing.owner == request.user.username:
 		return json.dumps({'state': 'error', 'message': 'Cannot vote for own drawing.'})
 
-	if drawing.status != 'pending':
+	if drawing.status != 'pending' and drawing.status != 'emailNotConfirmed':
 		return json.dumps({'state': 'error', 'message': 'The drawing is already validated.'})
+
+	if drawing.status == 'emailNotConfirmed':
+		return json.dumps({'state': 'error', 'message': 'The owner of the drawing has not validated his account.'})
 
 	for vote in drawing.votes:
 		if vote.author.username == request.user.username:
@@ -2154,7 +2168,7 @@ def deleteComment(request, commentPk):
 	except Comment.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': 'Comment does not exist.', 'pk': commentPk})
 
-	if request.user.username != comment.author.username:
+	if request.user.username != comment.author.username or isAdmin(request.user):
 		return json.dumps({'state': 'error', 'message': 'User is not the author of the comment.'})
 
 	comment.drawing.comments.remove(comment)
@@ -3426,6 +3440,18 @@ def getTools(request):
 	return json.dumps( { 'state': 'success', 'tools': tools.to_json() } )
 
 # --- admin --- #
+
+@checkDebug
+def getEmail(request, username):
+	if not isAdmin(request.user):
+		return json.dumps( { 'state': 'error', 'message': 'You must be administrator to get a user email.' } )
+
+	try:
+		user = User.objects.get(username=username)
+	except User.DoesNotExist:
+		return json.dumps( { 'state': 'error', 'message': 'User not found' } )
+
+	return json.dumps( { 'state': 'success', 'email': user.email } )
 
 # @dajaxice_register
 @checkDebug

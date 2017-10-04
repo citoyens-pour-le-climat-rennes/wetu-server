@@ -613,6 +613,7 @@ body.hand #drawingPanel .container .content .votes button img.hand {
 }
 #CommeUnDessein_alerts.r-hidden {
   opacity: 0;
+  pointer-events: none;
 }
 #stage.main {
   background-color: white;
