@@ -1587,7 +1587,7 @@ def submitDrawing(request, pk, clientId, svg, date, title=None, description=None
 	
 	try:
 		userProfile = UserProfile.objects.get(username=request.user.username)
-	except userProfile.DoesNotExist:
+	except UserProfile.DoesNotExist:
 		return json.dumps( { 'status': 'error', 'message': 'The user profile does not exist.' } )
 
 	d = getDrawing(pk, clientId)
@@ -1657,6 +1657,39 @@ def validateDrawing(request, pk):
 		d.status = 'emailNotConfirmed'
 
 	d.save()
+	return json.dumps( {'state': 'success'} )
+
+@checkDebug
+def createUsers(request, logins):
+
+	if not isAdmin(request.user):
+		return json.dumps({"status": "error", "message": "not_admin"})
+	
+	for login in logins:
+		try:
+			user = User.objects.create_user(username=login['username'])
+			user.set_password(login['password'])
+			user.save()
+			userProfile = UserProfile(username=login['username'], emailConfirmed=True)
+			userProfile.save()
+		except Exception:
+  			pass
+
+	return json.dumps( {'state': 'success'} )
+
+@checkDebug
+def deleteUsers(request, logins):
+	if not isAdmin(request.user):
+		return json.dumps({"status": "error", "message": "not_admin"})
+	
+	for login in logins:
+		try:
+			user = User.objects.get(username=login['username'])
+			user.delete()
+			userProfile = UserProfile.objects.get(username=login['username'])
+			userProfile.delete()
+		except Exception:
+  			pass
 	return json.dumps( {'state': 'success'} )
 
 @checkDebug

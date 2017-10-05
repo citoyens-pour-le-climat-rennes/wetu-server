@@ -219,6 +219,7 @@ ANYMAIL = {
     "MAILGUN_SENDER_DOMAIN": 'mg.commeundessein.co',  # your Mailgun domain, if needed
     "MAILJET_API_KEY": localSettings['MAILJET_API_KEY'],
     "MAILJET_SECRET_KEY": localSettings['MAILJET_SECRET_KEY'],
+    "SENDGRID_API_KEY": localSettings['SENDGRID_API_KEY'],
 }
 
 # DAJAXICE_MEDIA_PREFIX="dajaxice"
