@@ -752,6 +752,7 @@ def loadSVG(request, city=None):
 
 	if isAdmin(request.user):
 		statusToLoad.append('emailNotConfirmed')
+		statusToLoad.append('notConfirmed')
 
 	drawings = Drawing.objects(city=cityPk, status__in=statusToLoad).only('svg', 'status', 'pk', 'clientId', 'title', 'owner')
 	
@@ -759,7 +760,7 @@ def loadSVG(request, city=None):
 	for drawing in drawings:
 		items.append(drawing.to_json())
 
-	draftsAndNotConfirmed = Drawing.objects(city=cityPk, status__in=['draft', 'emailNotConfirmed'], owner=request.user.username).only('svg', 'status', 'pk', 'clientId', 'owner', 'pathList', 'title')
+	draftsAndNotConfirmed = Drawing.objects(city=cityPk, status__in=['draft', 'emailNotConfirmed', 'notConfirmed'], owner=request.user.username).only('svg', 'status', 'pk', 'clientId', 'owner', 'pathList', 'title')
 
 	for draft in draftsAndNotConfirmed:
 		items.append(draft.to_json())
@@ -1596,10 +1597,8 @@ def submitDrawing(request, pk, clientId, svg, date, title=None, description=None
 	
 	d.svg = svg
 	d.date = datetime.datetime.fromtimestamp(date/1000.0)
-	if userProfile.emailConfirmed:
-		d.status = 'pending'
-	else:
-		d.status = 'emailNotConfirmed'
+
+	d.status = 'notConfirmed'
 	d.title = title
 	d.description = description
 	
@@ -1626,10 +1625,34 @@ def submitDrawing(request, pk, clientId, svg, date, title=None, description=None
 	# fd.write(binary_data)
 	# fd.close()
 	
+	send_mail('New drawing', u'A new drawing has been submitted: https://commeundessein.co/drawing-'+str(d.pk) + u'\n see thumbnail at: https://commeundessein.co/static/drawings/'+str(d.pk)+u'.png', 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+
 	if userProfile.emailConfirmed:
 		drawingChanged.send(sender=None, type='new', drawingId=d.clientId, pk=str(d.pk), svg=svg, city=cityName)
 
 	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk), 'status': d.status, 'negativeVoteThreshold': negativeVoteThreshold, 'positiveVoteThreshold': positiveVoteThreshold, 'voteMinDuration': voteMinDuration.total_seconds() } )
+
+@checkDebug
+def validateDrawing(request, pk):
+
+	if not isAdmin(request.user):
+		return json.dumps({"status": "error", "message": "not_admin"})
+	
+	d = getDrawing(pk, None)
+
+	if d is None:
+		return json.dumps({'state': 'error', 'message': 'Drawing does not exist'})
+
+	if d.status != 'notConfirmed':
+		return json.dumps({'state': 'error', 'message': 'Drawing status is not notConfirmed: ' + d.status })
+
+	if userProfile.emailConfirmed:
+		d.status = 'pending'
+	else:
+		d.status = 'emailNotConfirmed'
+
+	d.save()
+	return json.dumps( {'state': 'success'} )
 
 @checkDebug
 def createDrawingThumbnail(request, pk, png=None):
@@ -1708,7 +1731,7 @@ def updateDrawing(request, pk, title, description=None):
 	if not userAllowed(request, d.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
 	
-	drawingCanBeModified = d.status == 'pending' or d.status == 'emailNotConfirmed'
+	drawingCanBeModified = d.status == 'pending' or d.status == 'emailNotConfirmed' or d.status == 'notConfirmed'
 	if not drawingCanBeModified:
 		return json.dumps({'state': 'error', 'message': 'The drawing is already validated, it cannot be modified anymore.'})
 
@@ -1871,7 +1894,7 @@ def deleteDrawing(request, pk):
 	if not userAllowed(request, d.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
 
-	drawingCanBeModified = d.status == 'pending' or d.status == 'emailNotConfirmed'
+	drawingCanBeModified = d.status == 'pending' or d.status == 'emailNotConfirmed' or d.status == 'notConfirmed'
 	if not drawingCanBeModified:
 		return json.dumps({'state': 'error', 'message': 'The drawing is already validated, it cannot be cancelled anymore.'})
 
@@ -1894,7 +1917,7 @@ def cancelDrawing(request, pk):
 	if not userAllowed(request, d.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
 	
-	drawingCanBeModified = d.status == 'pending' or d.status == 'emailNotConfirmed'
+	drawingCanBeModified = d.status == 'pending' or d.status == 'emailNotConfirmed' or d.status == 'notConfirmed'
 	if not drawingCanBeModified:
 		return json.dumps({'state': 'error', 'message': 'The drawing is already validated, it cannot be cancelled anymore.'})
 
@@ -2004,11 +2027,14 @@ def vote(request, pk, date, positive):
 	if drawing.owner == request.user.username:
 		return json.dumps({'state': 'error', 'message': 'Cannot vote for own drawing.'})
 
-	if drawing.status != 'pending' and drawing.status != 'emailNotConfirmed':
+	if drawing.status != 'pending' and drawing.status != 'emailNotConfirmed' and drawing.status != 'notConfirmed':
 		return json.dumps({'state': 'error', 'message': 'The drawing is already validated.'})
 
 	if drawing.status == 'emailNotConfirmed':
 		return json.dumps({'state': 'error', 'message': 'The owner of the drawing has not validated his account.'})
+	
+	if drawing.status == 'notConfirmed':
+		return json.dumps({'state': 'error', 'message': 'The drawing has not been confirmed.'})
 
 	for vote in drawing.votes:
 		if vote.author.username == request.user.username:
@@ -2062,8 +2088,6 @@ def vote(request, pk, date, positive):
 		if datetime.datetime.now() - drawing.date < voteMinDuration:
 			delay = (drawing.date + voteMinDuration - datetime.datetime.now()).total_seconds()
 
-		send_mail('New drawing', 'A new drawing has been submitted.', 'contact@commeundessein.co', ['arthur.sw@gmail.com'], fail_silently=True)
-
 		t = Timer(delay, updateDrawingState, args=[pk])
 		t.start()
 	
@@ -2108,7 +2132,7 @@ def addComment(request, drawingPk, comment, date):
 	except Drawing.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': 'Drawing does not exist.', 'pk': drawingPk})
 
-	if drawing.status == 'draft' or drawing.status == 'emailNotConfirmed':
+	if drawing.status == 'draft' or drawing.status == 'emailNotConfirmed' or drawing.status == 'notConfirmed':
 		return json.dumps({'state': 'error', 'message': 'Cannot comment on this drawing.'})
 
 	user = None
