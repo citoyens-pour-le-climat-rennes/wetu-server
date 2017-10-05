@@ -234,6 +234,25 @@ form {
     	border: none;
     }
 }
+.social-buttons {
+	li > a {
+		padding: 10px;
+	}
+}
+body.allauth > div {
+	max-width: 600px;
+	margin: auto;
+	input {
+		background-color: #222222;
+		border: solid 1px white;
+    	padding: 5px 10px;
+	}
+	p {
+		// font-family: 'Open sans';
+		// font-size: 14px;
+	}
+}
+
 .allauth {
 	overflow-y: auto;
 	input {
@@ -269,7 +288,11 @@ form {
 }
 
 .form-signin-heading {
-	display: none;
+	// display: none;
+}
+
+#id_remember {
+	height: 20px;
 }
 
 .cd-form {

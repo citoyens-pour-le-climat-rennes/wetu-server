@@ -31,8 +31,12 @@ $(document).ready () ->
 
 	# if window.location.pathname == "/accounts/login/" and errors == "L’adresse e-mail ou le mot de passe sont incorrects."
 		# window.location = "/connexion/#wrongPassword"
+	
 	if window.location.pathname == "/accounts/signup/"
 		window.location = "/connexion/"
+
+	# if window.location.pathname != '/connexion/'
+	# 	$('.form-signin-heading').removeClass('cd-hidden').show()
 
 	signupLabelJ = $('#cd-signup-label')
 	signinLabelJ = $('#cd-signin-label')

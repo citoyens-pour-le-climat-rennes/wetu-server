@@ -270,6 +270,18 @@ form input[type=submit] {
   background-color: #000000;
   border: none;
 }
+.social-buttons li > a {
+  padding: 10px;
+}
+body.allauth > div {
+  max-width: 600px;
+  margin: auto;
+}
+body.allauth > div input {
+  background-color: #222222;
+  border: solid 1px white;
+  padding: 5px 10px;
+}
 .allauth {
   overflow-y: auto;
 }
@@ -301,8 +313,8 @@ form input[type=submit] {
 .menu {
   display: none;
 }
-.form-signin-heading {
-  display: none;
+#id_remember {
+  height: 20px;
 }
 .cd-form {
   background-color: rgba(0, 0, 0, 0.7);
