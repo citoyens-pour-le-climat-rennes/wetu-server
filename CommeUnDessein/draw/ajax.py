@@ -1646,6 +1646,11 @@ def validateDrawing(request, pk):
 	if d.status != 'notConfirmed':
 		return json.dumps({'state': 'error', 'message': 'Drawing status is not notConfirmed: ' + d.status })
 
+	try:
+		userProfile = UserProfile.objects.get(username=d.owner)
+	except userProfile.DoesNotExist:
+		return json.dumps( { 'status': 'error', 'message': 'The user profile does not exist.' } )
+
 	if userProfile.emailConfirmed:
 		d.status = 'pending'
 	else:
