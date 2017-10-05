@@ -222,7 +222,13 @@ def on_email_confirmed(sender, **kwargs):
 		updateDrawingState(vote.drawing.pk)
 
 	for drawing in drawings:
-		drawingChanged.send(sender=None, type='new', drawingId=drawing.clientId, pk=str(drawing.pk), svg=drawing.svg, city=drawing.city)
+		cityName = 'CommeUnDessein'
+		try:
+			city = City.objects.get(pk=drawing.city)
+			cityName = city.name
+		except City.DoesNotExist:
+			print('The city does not exist')
+		drawingChanged.send(sender=None, type='new', drawingId=drawing.clientId, pk=str(drawing.pk), svg=drawing.svg, city=cityName)
 
 	return
 
@@ -1627,9 +1633,6 @@ def submitDrawing(request, pk, clientId, svg, date, title=None, description=None
 	
 	send_mail('New drawing', u'A new drawing has been submitted: https://commeundessein.co/drawing-'+str(d.pk) + u'\n see thumbnail at: https://commeundessein.co/static/drawings/'+str(d.pk)+u'.png', 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 
-	if userProfile.emailConfirmed:
-		drawingChanged.send(sender=None, type='new', drawingId=d.clientId, pk=str(d.pk), svg=svg, city=cityName)
-
 	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk), 'status': d.status, 'negativeVoteThreshold': negativeVoteThreshold, 'positiveVoteThreshold': positiveVoteThreshold, 'voteMinDuration': voteMinDuration.total_seconds() } )
 
 @checkDebug
@@ -1653,6 +1656,13 @@ def validateDrawing(request, pk):
 
 	if userProfile.emailConfirmed:
 		d.status = 'pending'
+		cityName = 'CommeUnDessein'
+		try:
+			city = City.objects.get(pk=d.city)
+			cityName = city.name
+		except City.DoesNotExist:
+			print('The city does not exist')
+		drawingChanged.send(sender=None, type='new', drawingId=d.clientId, pk=str(d.pk), svg=d.svg, city=cityName)
 	else:
 		d.status = 'emailNotConfirmed'
 
