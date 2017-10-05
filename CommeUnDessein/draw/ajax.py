@@ -1666,13 +1666,26 @@ def createUsers(request, logins):
 		return json.dumps({"status": "error", "message": "not_admin"})
 	
 	for login in logins:
+		print('user: ' + login['username'])
 		try:
-			user = User.objects.create_user(username=login['username'])
-			user.set_password(login['password'])
+			user = User.objects.create_user(username=''+login['username'])
+			user.set_password(''+login['password'])
 			user.save()
-			userProfile = UserProfile(username=login['username'], emailConfirmed=True)
+			userProfile = UserProfile(username=''+login['username'], emailConfirmed=True)
 			userProfile.save()
-		except Exception:
+			print('created ' + userProfile.username)
+			try:
+				userTest = User.objects.get(username=''+login['username'])
+			except Exception as e:
+				print('could not get User')
+				print(e)
+			try:
+				userProfileTest = UserProfile.objects.get(username=''+login['username'])
+			except Exception as e:
+				print('could not get UserProfile')
+				print(e)
+		except Exception as e:
+			print(e)
   			pass
 
 	return json.dumps( {'state': 'success'} )
@@ -1683,12 +1696,28 @@ def deleteUsers(request, logins):
 		return json.dumps({"status": "error", "message": "not_admin"})
 	
 	for login in logins:
+		print('user: ' + login['username'])
 		try:
 			user = User.objects.get(username=login['username'])
 			user.delete()
 			userProfile = UserProfile.objects.get(username=login['username'])
 			userProfile.delete()
-		except Exception:
+			print('deleted ' + login['username'])
+			try:
+				userTest = User.objects.get(username=''+login['username'])
+				print('could get User')
+			except Exception as e:
+				print('could not get User')
+				print(e)
+			try:
+				userProfileTest = UserProfile.objects.get(username=''+login['username'])
+				print('could get UserProfile')
+			except Exception as e:
+				print('could not get UserProfile')
+				print(e)
+
+		except Exception as e:
+			print(e)
   			pass
 	return json.dumps( {'state': 'success'} )
 
@@ -1977,7 +2006,7 @@ def cancelDrawing(request, pk):
 	return json.dumps( { 'state': 'success', 'pk': pk, 'status': d.status, 'pathList': d.pathList } )
 
 @checkDebug
-def deleteDrawings(request, drawingsToDelete, confirm):
+def deleteDrawings(request, drawingsToDelete, confirm=None):
 	if not isAdmin(request.user):
 		return json.dumps( {'state': 'error', 'message': 'not admin' } )
 
