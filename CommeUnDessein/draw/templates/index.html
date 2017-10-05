@@ -120,16 +120,21 @@
             {% else %}
 
               <div id="user-login-group" class="btn-group">
-                <button type="button" class="btn btn-warning submit mode-button log-in dropdown-toggle" data-toggle="dropdown">
+                <a href="https://commeundessein.co/">
+                  <button type="button" class="btn btn-warning submit mode-button log-in dropdown-toggle">
+                    <span class="glyphicon glyphicon-log-in"></span><span class="text" data-i18n="Sign in / up">Sign in / up</span>
+                  </button>
+                </a>
+                <!-- <button type="button" class="btn btn-warning submit mode-button log-in dropdown-toggle" data-toggle="dropdown">
                   <span class="glyphicon glyphicon-log-in"></span><span class="text" data-i18n="Sign in / up">Sign in / up</span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
+                </button> -->
+                <!-- <ul class="dropdown-menu" role="menu">
                   <li><a href="{% provider_login_url "google" %}">Google</a></li>
-                  <!-- <li><a href="{% provider_login_url "github" %}">Github</a></li> -->
+                  <li><a href="{% provider_login_url "github" %}">Github</a></li>
                   <li><a href="/accounts/facebook/login/"><div class="fb">Facebook</div></a></li>
                   <li><a href="{% url 'account_login' %}">Comme un Dessein</a></li>
                   <li class="sign-up"><a href="{% url 'account_signup' %}" data-i18n='Sign up'>Sign up</a></li>
-                </ul>
+                </ul> -->
               </div>
 
               {% include "socialaccount/snippets/login_extra.html" %}
@@ -883,8 +888,8 @@
               <div class="modal-body">
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-default" name="cancel" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" name="submit">Ok</button>
+                <button type="button" class="btn btn-default" name="cancel" data-dismiss="modal" data-i18n="Cancel">Cancel</button>
+                <button type="button" class="btn btn-primary" name="submit" data-i18n="Ok">Ok</button>
               </div>
             </div>
           </div>
