@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^debug-ortho-diag$', views.index, {'drawingMode': 'orthoDiag', 'useDebugFiles': True}, name='index'),
     url(r'^debug-line-ortho-diag$', views.index, {'drawingMode': 'lineOrthoDiag', 'useDebugFiles': True}, name='index'),
     url(r'^debug-line$', views.index, {'drawingMode': 'line', 'useDebugFiles': True}, name='index'),
+    url(r'^debug-pen$', views.index, {'drawingMode': 'pen', 'useDebugFiles': True}, name='index'),
 
     url(r'^free$', views.index, {'drawingMode': 'free'}, name='index'),
     url(r'^pixel$', views.index, {'drawingMode': 'pixel'}, name='index'),
@@ -36,6 +37,7 @@ urlpatterns = [
     url(r'^ortho-diag$', views.index, {'drawingMode': 'orthoDiag'}, name='index'),
     url(r'^line-ortho-diag$', views.index, {'drawingMode': 'lineOrthoDiag'}, name='index'),
     url(r'^line$', views.index, {'drawingMode': 'line'}, name='index'),
+    url(r'^pen$', views.index, {'drawingMode': 'pen'}, name='index'),
 
     url(r'^$', views.index, name='index'),
     url(r'^ajaxCall/$', views.ajaxCall),
