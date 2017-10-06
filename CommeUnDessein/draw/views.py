@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from django.shortcuts import get_object_or_404, get_list_or_404, render_to_response, render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
@@ -57,7 +59,7 @@ def index(request, site=None, owner=None, city=None, x=0, y=0, useDebugFiles=Fal
 		try:
 			drawing = Drawing.objects.get(pk=pk)
 			result['drawingTitle'] = drawing.title
-			result['drawingDescription'] = drawing.title ' by ' + drawing.owner + ' on Comme un Dessein.'
+			result['drawingDescription'] = drawing.title + ' by ' + drawing.owner + ' on Comme un Dessein.'
 			result['drawingAuthor'] = drawing.owner
 			try:
 				city = City.objects.get(pk=drawing.city)
