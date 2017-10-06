@@ -11,6 +11,15 @@ body {
 #RItems h4.panel-title a:hover {
   text-decoration: none;
 }
+.btn.cd-no-radius {
+  border-radius: 0;
+}
+.btn.btn-beta {
+  margin: 5px;
+}
+.btn.btn-beta:last-child {
+  margin-bottom: 10px;
+}
 ul.layers li ul.rPath-list li {
   padding: 8px;
   cursor: pointer;
@@ -1329,6 +1338,9 @@ li.tool-btn.selected .favorite-btn {
 .cd-flex {
   display: -webkit-box;
   display: flex;
+}
+.cd-wrap {
+  flex-wrap: wrap;
 }
 .cd-column {
   display: -webkit-box;

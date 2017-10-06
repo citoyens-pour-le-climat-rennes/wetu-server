@@ -57,6 +57,7 @@ def index(request, site=None, owner=None, city=None, x=0, y=0, useDebugFiles=Fal
 		try:
 			drawing = Drawing.objects.get(pk=pk)
 			result['drawingTitle'] = drawing.title
+			result['drawingDescription'] = drawing.title ' by ' + drawing.owner + ' on Comme un Dessein.'
 			result['drawingAuthor'] = drawing.owner
 			try:
 				city = City.objects.get(pk=drawing.city)
@@ -66,6 +67,10 @@ def index(request, site=None, owner=None, city=None, x=0, y=0, useDebugFiles=Fal
 			
 		except Drawing.DoesNotExist:
 			print('Drawing not found')
+	else:
+		result['drawingImageURL'] = 'http://commeundessein.co/static/images/CommeUnDessein1024x724.png'
+		result['drawingTitle'] = 'Comme un Dessein'
+		result['drawingDescription'] = u'Comme un Dessein est un dispositif qui invite les citoyens à composer une œuvre collective et utopique, à l’aide d’une interface web connectée à un traceur vertical.'
 
 	result['positiveVoteThreshold'] = getPositiveVoteThreshold()
 	result['negativeVoteThreshold'] = getNegativeVoteThreshold()
