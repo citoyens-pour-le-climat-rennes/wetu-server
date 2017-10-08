@@ -2210,8 +2210,6 @@ def vote(request, pk, date, positive):
 				vote.delete()
 				break
 
-	user = None
-
 
 	emailConfirmed = EmailAddress.objects.filter(user=request.user, verified=True).exists()
 	user.emailConfirmed = emailConfirmed
