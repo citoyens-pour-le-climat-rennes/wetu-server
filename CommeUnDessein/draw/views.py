@@ -70,7 +70,7 @@ def index(request, site=None, owner=None, city=None, x=0, y=0, useDebugFiles=Fal
 		except Drawing.DoesNotExist:
 			print('Drawing not found')
 	else:
-		result['drawingImageURL'] = 'http://commeundessein.co/static/images/CommeUnDessein1024x724.png'
+		result['drawingImageURL'] = 'http://commeundessein.co/static/images/CommeUnDessein1200x630.png'
 		result['drawingTitle'] = 'Comme un Dessein'
 		result['drawingDescription'] = u'Comme un Dessein est un dispositif qui invite les citoyens à composer une œuvre collective et utopique, à l’aide d’une interface web connectée à un traceur vertical.'
 
