@@ -1628,20 +1628,24 @@ li.tool-btn.selected .favorite-btn {
   font-weight: bold;
 }
 #drawingPanel .container .content .action-buttons button,
-#drawingPanel .container .content .share-buttons button {
+#drawingPanel .container .content .share-buttons button,
+#drawingPanel .container .content .admin-buttons button {
   margin-bottom: 10px;
   padding: 10px;
 }
 #drawingPanel .container .content .action-buttons.cd-row button,
-#drawingPanel .container .content .share-buttons.cd-row button {
+#drawingPanel .container .content .share-buttons.cd-row button,
+#drawingPanel .container .content .admin-buttons.cd-row button {
   margin-left: 10px;
 }
 #drawingPanel .container .content .action-buttons.cd-row button:first-child,
-#drawingPanel .container .content .share-buttons.cd-row button:first-child {
+#drawingPanel .container .content .share-buttons.cd-row button:first-child,
+#drawingPanel .container .content .admin-buttons.cd-row button:first-child {
   margin-left: 0px;
 }
 #drawingPanel .container .content .action-buttons.cd-column button,
-#drawingPanel .container .content .share-buttons.cd-column button {
+#drawingPanel .container .content .share-buttons.cd-column button,
+#drawingPanel .container .content .admin-buttons.cd-column button {
   margin-bottom: 10px;
 }
 #drawingPanel .container .content .comments-container {
