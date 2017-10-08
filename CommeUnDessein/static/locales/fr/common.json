@@ -216,5 +216,9 @@
     "You drawing has been submitted": "Votre dessin {{drawingTitle}} a été soumit au vote !",
     "Someone has commented your drawing": "{{author}} a commenté votre dessin {{drawingTitle}}",
     "Someone has modified a comment on your drawing": "{{author}} a modifié un commentaire sur votre dessin {{drawingTitle}}",
-    "Someone has deleted a comment on your drawing": "{{author}} a supprimé un commentaire sur votre dessin {{drawingTitle}}"
+    "Someone has deleted a comment on your drawing": "{{author}} a supprimé un commentaire sur votre dessin {{drawingTitle}}",
+    "Are you sure you really want to delete the drawing": "Etes vous sure de vouloir supprimer ce dessein ?",
+    "There is no way to undo this action": "Il n'y a aucun moyen d'annuler cette action.",
+    "Help": "Aide",
+    "Move": "Naviguer"
 }

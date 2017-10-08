@@ -761,11 +761,15 @@ def loadSVG(request, city=None):
 	if not cityPk:
 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
 
-	userProfile = UserProfile.objects.get(username=request.user.username)
-	if not userProfile.emailConfirmed:
-		emailConfirmed = EmailAddress.objects.filter(user=request.user, verified=True).exists()
-		userProfile.emailConfirmed = emailConfirmed
-		userProfile.save()
+	try:
+		userProfile = UserProfile.objects.get(username=request.user.username)
+		if not userProfile.emailConfirmed:
+			emailConfirmed = EmailAddress.objects.filter(user=request.user, verified=True).exists()
+			userProfile.emailConfirmed = emailConfirmed
+			userProfile.save()
+	except UserProfile.DoesNotExist:
+		print('User does not exist')
+
 
 	statusToLoad = ['pending', 'drawing', 'drawn', 'rejected']
 

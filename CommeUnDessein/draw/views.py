@@ -25,11 +25,14 @@ def index(request, site=None, owner=None, city=None, x=0, y=0, useDebugFiles=Fal
 
 	if not visit and not request.user.is_authenticated():
 		return render_to_response(	"welcome.html", {}, RequestContext(request) )
-
+	
+	result = {}
 	profileImageURL = ''
 
 	try:
-		profileImageURL = UserProfile.objects.get(username=request.user.username).profile_image_url
+		userProfile = UserProfile.objects.get(username=request.user.username)
+		profileImageURL = userProfile.profile_image_url
+		result['userIsAdmin'] = userProfile.admin
 	except UserProfile.DoesNotExist:
 		print 'user profile does not exist.'
 
@@ -43,7 +46,7 @@ def index(request, site=None, owner=None, city=None, x=0, y=0, useDebugFiles=Fal
 	# except:
 	# 	print 'can not load social account.'
 
-	result = {}
+	
 	if site:
 		result = loadSite(request, site)
 

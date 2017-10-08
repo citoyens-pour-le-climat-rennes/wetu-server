@@ -448,7 +448,7 @@
           <div class="hidden text-separator"></div>
 
           <!-- <canvas id="background-canvas" resize hidpi="off"></canvas> -->
-          <canvas id="canvas" resize hidpi="off" data-pos-x="{{ x }}" data-pos-y="{{ y }}" data-points="{{ points }}" data-box="{{ box }}" data-site="{{ site }}" data-message="{{ message }}" data-load-entire-area="{{ loadEntireArea }}" data-city="{{ drawingCity }}" data-owner="{{ owner }}" data-github-login="{{ githubLogin }}" data-username="{{ request.user.username }}" data-is-authenticated="{{ request.user.is_authenticated }}" data-drawing-mode="{{ drawingMode }}" data-positiveVoteThreshold="{{ positiveVoteThreshold }}" data-negativeVoteThreshold="{{ negativeVoteThreshold }}" data-voteMinDuration="{{ voteMinDuration }}"></canvas>
+          <canvas id="canvas" resize hidpi="off" data-pos-x="{{ x }}" data-pos-y="{{ y }}" data-points="{{ points }}" data-box="{{ box }}" data-site="{{ site }}" data-message="{{ message }}" data-load-entire-area="{{ loadEntireArea }}" data-city="{{ drawingCity }}" data-owner="{{ owner }}" data-is-admin="{{ userIsAdmin }}"  data-github-login="{{ githubLogin }}" data-username="{{ request.user.username }}" data-is-authenticated="{{ request.user.is_authenticated }}" data-drawing-mode="{{ drawingMode }}" data-positiveVoteThreshold="{{ positiveVoteThreshold }}" data-negativeVoteThreshold="{{ negativeVoteThreshold }}" data-voteMinDuration="{{ voteMinDuration }}"></canvas>
           <div id="rasters"></div>
 
           <div id="submit-drawing-button">
@@ -667,6 +667,12 @@
                         <button class="cd-grow btn btn-primary original-color share-facebook" type="button" data-toggle="popover" data-trigger="hover" data-i18n="[data-content]Share on Facebook" data-content="Share on Facebook" data-placement="top" data-container="body"><span class="glyphicon glyphicon-facebook"><img src="static/images/icons/inverted/facebook.png"></span><span class='text'></span></button>
 
                         <button class="cd-grow btn btn-info original-color share-twitter" type="button" data-toggle="popover" data-trigger="hover" data-i18n="[data-content]Tweet" data-content="Tweet" data-placement="top" data-container="body"><span class="glyphicon glyphicon-tiwtter"><img src="static/images/icons/inverted/twitter.png"></span><span  class='text'></span></button>
+
+                      </div>
+
+                      <div class="cd-row cd-end admin-buttons hidden">
+
+                        <button class="cd-grow btn btn-danger original-color delete-drawing" type="button"><span class="glyphicon glyphicon-trash"></span><span data-i18n="Delete drawing" class='text'>Delete drawing</span></button>
 
                       </div>
 
