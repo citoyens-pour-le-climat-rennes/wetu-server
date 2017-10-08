@@ -104,7 +104,8 @@
                   <div class="btn-group">
 
                     <button type="button" class="btn btn-transparent mode-button dropdown-toggle" data-toggle="dropdown">
-                    <img class="user-img" src="{{ profileImageURL }}"/>
+                    <!-- <img class="user-img" src="{{ profileImageURL }}"/> -->
+                    <img class="glyphicon" src="{% static 'images/icons/inverted/icones_user_picture_02.png' %}"/>
                     <span class="username">
                       {% if request.user.first_name or request.user.last_name %}
                         {{ request.user.first_name }} {{ request.user.last_name }}
@@ -356,28 +357,6 @@
                     </h4>
                   </div>
 
-                  <div id="RItems" class="panel-collapse in">
-
-                    <div class="panel-body">
-                      <h4 class="panel-title">
-                        <a data-i18n='Drawings sorted by status'>
-                          Drawings sorted by status
-                        </a>
-                      </h4>
-
-                      <div class="mCustomScrollbar rItems tree">
-                        <ul class="layers folder">
-                          <!-- <li class="main-layer">
-                            <h6 class="title">Main layer</h6>
-                            <ul class="commeUnDessein-ui rPath-list">
-                            </ul>
-                            <ul class="commeUnDessein-ui rDiv-list">
-                            </ul>
-                          </li> -->
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
 
                 </div>
 
@@ -482,7 +461,12 @@
 
         </div>
 
+
         <div id="drawingPanel" class="commeUnDessein-ui">
+
+          <button id="drawing-panel-handle" type="button" class="btn btn-default">
+            <span class="glyphicon glyphicon-chevron-left"></span>
+          </button>
 
           <div class='header item'>
             <h4 class="drawing-panel-title" data-i18n="Drawing">Drawing</h4>
@@ -500,6 +484,10 @@
           </div>
           -->
 
+          <!-- <h4 id="RItems-title" class="panel-title" data-i18n='Drawings sorted by status'>
+              Drawings sorted by status
+          </h4> -->
+
           <div class="container cd-column cd-grow">
 
             <div class="content-container cd-column cd-grow">
@@ -510,6 +498,38 @@
 
 
                   <div class="cd-column-row cd-grow">
+
+                    <div id="drawing-panel-no-selection" class="cd-hidden cd-column">
+                      <div id="RItems" class="">
+
+                        <div class="panel-body">
+                          <div class="mCustomScrollbar rItems tree">
+                            <ul class="layers folder">
+                              <!-- <li class="main-layer">
+                                <h6 class="title">Main layer</h6>
+                                <ul class="commeUnDessein-ui rPath-list">
+                                </ul>
+                                <ul class="commeUnDessein-ui rDiv-list">
+                                </ul>
+                              </li> -->
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div id="information-footer" class="cd-column cd-center">
+
+                        <a href="http://idlv.co/"><img src="static/images/icons/inverted/icones_idlv.png"></a>
+                        <img src="static/images/icons/inverted/icones_CC_NCSABY.png">
+                        
+                        <a id="about-link" href="/about.html" data-i18n="About">About</a>
+                        <a id="terms-of-service-link" href="/terms-of-service.html" data-i18n="Terms of Service">Terms of Service</a>
+                        <a id="privacy-policy-link" href="/privacy-policy.html" data-i18n="Privacy Policy">Privacy Policy</a>
+
+                      </div>   <!-- about panel   -->
+
+                    </div>  <!-- no selection  -->
+
 
                     <div class="cd-column">
                       <div class="thumbnail drawing-thumbnail">
@@ -551,7 +571,7 @@
                         <button class="btn btn-warning original-color cancel" type="button"><span class="glyphicon glyphicon-remove"></span><span data-i18n='Cancel' class='text'>Cancel</span></button>
 
 
-                        <!-- <button class="btn btn-danger original-color delete" type="button"><span class="glyphicon glyphicon-trash"></span><span data-i18n='Delete'>Delete</span></button> -->
+                        <!-- <button class="btn btn-danger original-color" type="button"><span class="glyphicon glyphicon-flag"></span><span data-i18n='Report abuse'>Report abuse</span></button> -->
                         
                         
                       </div>
@@ -608,11 +628,46 @@
 
                       </div>
 
-                      <div class="cd-row cd-end share-buttons">
+                      <!-- <div class="cd-column share-buttons">
+
+                        <button class="cd-grow btn btn-danger original-color flag-drawing" type="button"><span class="glyphicon glyphicon-flag"></span><span data-i18n='Report abuse' class='text'>Report abuse</span></button>
+
+                        <button class="cd-grow btn btn-warning original-color copy-link" type="button"><span class="glyphicon glyphicon-link"></span><span data-i18n='Copy drawing link' class='text'>Copy drawing link</span></button>
+
 
                         <button class="cd-grow btn btn-primary original-color share-facebook" type="button"><span class="glyphicon glyphicon-facebook"><img src="static/images/icons/inverted/facebook.png"></span><span data-i18n='Share on Facebook' class='text'>Share on Facebook</span></button>
 
                         <button class="cd-grow btn btn-info original-color share-twitter" type="button"><span class="glyphicon glyphicon-tiwtter"><img src="static/images/icons/inverted/twitter.png"></span><span data-i18n='Tweet' class='text'>Tweet</span></button>
+
+                      </div>
+
+                      <div class="cd-row cd-end share-buttons">
+
+                        <button class="cd-grow btn btn-danger original-color flag-drawing" type="button"><span class="glyphicon glyphicon-flag"></span><span data-i18n='Report abuse' class='text'>Report abuse</span></button>
+
+                        <button class="cd-grow btn btn-warning original-color copy-link" type="button"><span class="glyphicon glyphicon-link"></span><span data-i18n='Copy drawing link' class='text'>Copy drawing link</span></button>
+
+                      </div>
+
+                      <div class="cd-row cd-end share-buttons">
+
+
+                        <button class="cd-grow btn btn-primary original-color share-facebook" type="button"><span class="glyphicon glyphicon-facebook"><img src="static/images/icons/inverted/facebook.png"></span><span data-i18n='Share on Facebook' class='text'>Share on Facebook</span></button>
+
+                        <button class="cd-grow btn btn-info original-color share-twitter" type="button"><span class="glyphicon glyphicon-tiwtter"><img src="static/images/icons/inverted/twitter.png"></span><span data-i18n='Tweet' class='text'>Tweet</span></button>
+
+                      </div> -->
+
+                      <div class="cd-row cd-end share-buttons">
+
+                        <button class="cd-grow btn btn-danger original-color report-abuse" type="button" data-toggle="popover" data-trigger="hover" data-i18n="[data-content]Report abuse" data-content="Report abuse" data-placement="top" data-container="body"><span class="glyphicon glyphicon-flag"></span><span  class='text'></span></button>
+
+                        <button class="cd-grow btn btn-warning original-color copy-link" type="button" data-toggle="popover" data-trigger="hover" data-i18n="[data-content]Copy drawing link to clipboard" data-content="Copy drawing link to clipboard" data-placement="top" data-container="body"><span class="glyphicon glyphicon-link"></span><span  class='text'></span></button>
+
+
+                        <button class="cd-grow btn btn-primary original-color share-facebook" type="button" data-toggle="popover" data-trigger="hover" data-i18n="[data-content]Share on Facebook" data-content="Share on Facebook" data-placement="top" data-container="body"><span class="glyphicon glyphicon-facebook"><img src="static/images/icons/inverted/facebook.png"></span><span class='text'></span></button>
+
+                        <button class="cd-grow btn btn-info original-color share-twitter" type="button" data-toggle="popover" data-trigger="hover" data-i18n="[data-content]Tweet" data-content="Tweet" data-placement="top" data-container="body"><span class="glyphicon glyphicon-tiwtter"><img src="static/images/icons/inverted/twitter.png"></span><span  class='text'></span></button>
 
                       </div>
 
@@ -639,7 +694,7 @@
               </div>
 
                 <div class="loading-animation">
-                    <span class=""><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> <span data-i18n="Loading...">Loading</span>...</span>
+                    <span class=""><span class="loading-gif glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> <span data-i18n="Loading...">Loading</span>...</span>
                 </div>
 
                 <div class="selected-drawings cd-column mCustomScrollbar">
@@ -742,7 +797,7 @@
 
         <p><a href="https://gaming.youtube.com/channel/UCRMrTkJJYvGAerb1j-H-Miw/live">Regardez le robot dessiner en directe</a><p>
 
-          <iframe width="560" height="315" src="https://www.youtube.com/embed/live_stream?channel=UCRMrTkJJYvGAerb1j-H-Miw" frameborder="0" allowfullscreen></iframe>
+        <div id="tipibot-live"></div>
 
         <p>Les règles de vote (ces règles seront différentes lors de l'événement) :
 

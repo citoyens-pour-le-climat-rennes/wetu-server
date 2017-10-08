@@ -38,6 +38,7 @@ class Comment(Document):
 def createUserProfile(sender, user, **kwargs):
     profile = UserProfile(username=user.username)
     profile.save()
+    import pdb; pdb.set_trace()
     return
 
 class UserProfile(Document):
@@ -47,6 +48,7 @@ class UserProfile(Document):
     emailConfirmed = BooleanField(default=False)
     votes = ListField(ReferenceField('Vote', reverse_delete_rule=PULL))
     comments = ListField(ReferenceField('Comment', reverse_delete_rule=PULL))
+    banned = BooleanField(default=False)
 
     def profile_image_url(self):
 

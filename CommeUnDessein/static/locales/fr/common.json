@@ -189,5 +189,21 @@
     "Share your drawing": "Partager votre dessin",
     "Would you like to share your drawing on Facebook or Twitter": "Voulez-vous partager votre dessin sur Facebook ou Twitter ?",
     "Choose you mode": "Choisissez votre mode de dessin",
-    "Choose random mode": "Choisir un mode aléatoire"
+    "Choose random mode": "Choisir un mode aléatoire",
+    "voted for": "voté pour",
+    "voted against": "voté contre",
+    "Drawings": "Dessins",
+    "Report abuse": "Signaler un abus",
+    "Copy drawing link": "Copier le lien du dessin",
+    "Copy drawing link to clipboard": "Copier le lien du dessin dans le presse papier",
+    "Your report was taken into account": "Votre signalement a bien été pris en compte.",
+    "You are about to report an abuse": "Vous êtes sur le point de signaler un abus.",
+    "Make sure the drawing is really inappropiate, false reports can lead to suspension of account": "Vérifiez que le dessin est réellement inapproprié, les faux signalements pourront conduire à la suppression de votre comtpe.",
+    "If you are unsure about what to do plase send an email to idlv": "Si vous ne savez pas quoi faire, envoyez un mail à {{mail}} ",
+    "The drawing will be hidden and checked by a moderator": "Le dessin sera caché le temps qu'un modérateur le vérifie. ",
+    "The drawing link was successfully copied to the clipboard": "Le lien du dessin a bien été copié dans le presse papier.",
+    "An error occured while copying the drawing link to the clipboard": "Une erreur est survenue lors de la copie dans le presse papier.",
+    "Flagged": "Signalé",
+    "flagged": "signalé",
+    "User is banned": "L'utilisateur a été bannit"
 }

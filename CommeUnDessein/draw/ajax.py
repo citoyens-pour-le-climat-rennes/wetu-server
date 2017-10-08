@@ -193,17 +193,18 @@ def setVoteMinDuration(request, hours, minutes, seconds):
 
 # allauth.account.signals.email_confirmed(request, email_address)
 @receiver(email_confirmed)
-def on_email_confirmed(sender, **kwargs):
+def on_email_confirmed(sender, email_address, request, **kwargs):
 	if kwargs is None or 'email_address' not in kwargs:
 		print("Error: no email_address in on_email_confirmed")
 		return
 
-	request = kwargs['request']
-	email_address = kwargs['email_address']
+	# request = kwargs['request']
+	# email_address = kwargs['email_address']
 	
 	print("on_email_confirmed")
 
-	user = request.user
+	# user = request.user
+	user = email_address.user
 	
 	try:
 		userProfile = UserProfile.objects.get(username=user.username)
@@ -754,11 +755,18 @@ def loadSVG(request, city=None):
 	if not cityPk:
 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
 
+	userProfile = UserProfile.objects.get(username=request.user.username)
+	if not userProfile.emailConfirmed:
+		emailConfirmed = EmailAddress.objects.filter(user=request.user, verified=True).exists()
+		userProfile.emailConfirmed = emailConfirmed
+		userProfile.save()
+
 	statusToLoad = ['pending', 'drawing', 'drawn', 'rejected']
 
 	if isAdmin(request.user):
 		statusToLoad.append('emailNotConfirmed')
 		statusToLoad.append('notConfirmed')
+		statusToLoad.append('flagged')
 
 	drawings = Drawing.objects(city=cityPk, status__in=statusToLoad).only('svg', 'status', 'pk', 'clientId', 'title', 'owner')
 	
@@ -1595,6 +1603,9 @@ def submitDrawing(request, pk, clientId, svg, date, title=None, description=None
 		userProfile = UserProfile.objects.get(username=request.user.username)
 	except UserProfile.DoesNotExist:
 		return json.dumps( { 'status': 'error', 'message': 'The user profile does not exist.' } )
+	
+	if userProfile.banned:
+		return json.dumps({'state': 'error', 'message': 'User is banned.'})
 
 	d = getDrawing(pk, clientId)
 
@@ -1604,7 +1615,7 @@ def submitDrawing(request, pk, clientId, svg, date, title=None, description=None
 	d.svg = svg
 	d.date = datetime.datetime.fromtimestamp(date/1000.0)
 
-	d.status = 'notConfirmed'
+	d.status = 'pending'
 	d.title = title
 	d.description = description
 	
@@ -1630,7 +1641,16 @@ def submitDrawing(request, pk, clientId, svg, date, title=None, description=None
 	# fd = open('draw/static/drawings/'+title+'.png', 'wb')
 	# fd.write(binary_data)
 	# fd.close()
-	
+
+	cityName = 'CommeUnDessein'
+	try:
+		city = City.objects.get(pk=d.city)
+		cityName = city.name
+	except City.DoesNotExist:
+		print('The city does not exist')
+
+	drawingChanged.send(sender=None, type='new', drawingId=d.clientId, pk=str(d.pk), svg=d.svg, city=cityName)
+
 	send_mail('New drawing', u'A new drawing has been submitted: https://commeundessein.co/drawing-'+str(d.pk) + u'\n see thumbnail at: https://commeundessein.co/static/drawings/'+str(d.pk)+u'.png', 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 
 	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk), 'status': d.status, 'negativeVoteThreshold': negativeVoteThreshold, 'positiveVoteThreshold': positiveVoteThreshold, 'voteMinDuration': voteMinDuration.total_seconds() } )
@@ -1640,7 +1660,9 @@ def validateDrawing(request, pk):
 
 	if not isAdmin(request.user):
 		return json.dumps({"status": "error", "message": "not_admin"})
-	
+	else:
+		return json.dumps({"status": "error", "message": "deprecated function: no need to validate drawings anymore."})
+
 	d = getDrawing(pk, None)
 
 	if d is None:
@@ -1670,6 +1692,32 @@ def validateDrawing(request, pk):
 	return json.dumps( {'state': 'success'} )
 
 @checkDebug
+def bannUser(request, username, removeDrawings=False, removeVotes=False, removeComments=False):
+	if not isAdmin(request.user):
+		return json.dumps({"status": "error", "message": "not_admin"})
+	try:
+		userProfile = UserProfile.objects.get(username=username)
+	except UserProfile.DoesNotExist:
+		return json.dumps({"status": "error", "message": "The user does not exists."})
+
+	userProfile.banned = True
+
+	if removeDrawings:
+		drawings = Drawing.objects(owner=userProfile.username)
+		for drawing in drawings:
+			drawing.delete()
+
+	if removeVotes:
+		for vote in userProfile.votes:
+			vote.delete()
+	
+	if removeComments:
+		for comment in userProfile.comments:
+			comment.delete()
+
+	return
+
+@checkDebug
 def createUsers(request, logins):
 
 	if not isAdmin(request.user):
@@ -1697,6 +1745,22 @@ def createUsers(request, logins):
 		except Exception as e:
 			print(e)
   			pass
+
+	return json.dumps( {'state': 'success'} )
+
+@checkDebug
+def reportAbuse(request, pk):
+	try:
+		d = Drawing.objects.get(pk=pk)
+	except Drawing.DoesNotExist:
+		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
+
+	d.status = 'flagged'
+	d.save()
+	
+	send_mail('Un dessin a été signalé !', u'Le dessin \"' + d.title + u'\" a été signalé sur Comme un Dessein !\n\n Vérifiez le sur https://commeundessein.co/drawing-'+str(d.pk)+u'\n Merci d\'avoir participé à Comme un Dessein,\nLe collectif <a href=\'http://idlv.co/\'>IDLV</a>', 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+
+	drawingChanged.send(sender=None, type='status', drawingId=d.clientId, status=d.status, pk=str(d.pk))
 
 	return json.dumps( {'state': 'success'} )
 
@@ -1799,6 +1863,14 @@ def updateDrawing(request, pk, title, description=None):
 	
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
+
+	try:
+		user = UserProfile.objects.get(username=request.user.username)
+	except UserProfile.DoesNotExist:
+		return json.dumps({'state': 'error', 'message': 'The user profile does not exist.'})
+	
+	if user.banned:
+		return json.dumps({'state': 'error', 'message': 'User is banned.'})
 
 	try:
 		d = Drawing.objects.get(pk=pk)
@@ -1977,7 +2049,7 @@ def deleteDrawing(request, pk):
 
 	d.delete()
 
-	drawingChanged.send(sender=None, type='delete', drawingId=d.clientId, pk=d.pk)
+	drawingChanged.send(sender=None, type='delete', drawingId=d.clientId, pk=str(d.pk))
 
 	return json.dumps( { 'state': 'success', 'pk': pk } )
 
@@ -2086,7 +2158,7 @@ def updateDrawingState(drawingPk):
 		drawing.save()
 
 	# drawingValidated.send(sender=None, drawingId=drawing.clientId, status=drawing.status)
-	drawingChanged.send(sender=None, type='status', drawingId=drawing.clientId, status=drawing.status)
+	drawingChanged.send(sender=None, type='status', drawingId=drawing.clientId, status=drawing.status, pk=str(drawing.pk))
 
 	return
 
@@ -2094,6 +2166,14 @@ def updateDrawingState(drawingPk):
 def vote(request, pk, date, positive):
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
+
+	try:
+		user = UserProfile.objects.get(username=request.user.username)
+	except UserProfile.DoesNotExist:
+		return json.dumps({'state': 'error', 'message': 'The user profile does not exist.'})
+
+	if user.banned:
+		return json.dumps({'state': 'error', 'message': 'User is banned.'})
 
 	drawing = None
 	try:
@@ -2132,12 +2212,11 @@ def vote(request, pk, date, positive):
 
 	user = None
 
-	try:
-		user = UserProfile.objects.get(username=request.user.username)
-	except UserProfile.DoesNotExist:
-		return json.dumps({'state': 'error', 'message': 'The user profile does not exist.'})
 
-	vote = Vote(author=user, drawing=drawing, positive=positive, date=datetime.datetime.fromtimestamp(date/1000.0), emailConfirmed=user.emailConfirmed)
+	emailConfirmed = EmailAddress.objects.filter(user=request.user, verified=True).exists()
+	user.emailConfirmed = emailConfirmed
+
+	vote = Vote(author=user, drawing=drawing, positive=positive, date=datetime.datetime.fromtimestamp(date/1000.0), emailConfirmed=emailConfirmed)
 	vote.save()
 
 	drawing.votes.append(vote)
@@ -2218,8 +2297,14 @@ def addComment(request, drawingPk, comment, date):
 		user = UserProfile.objects.get(username=request.user.username)
 	except UserProfile.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': 'The user profile does not exist.'})
+	
+	if user.banned:
+		return json.dumps({'state': 'error', 'message': 'User is banned.'})
 
-	c = Comment(author=user, drawing=drawing, text=comment, date=datetime.datetime.fromtimestamp(date/1000.0), emailConfirmed=user.emailConfirmed)
+	emailConfirmed = EmailAddress.objects.filter(user=request.user, verified=True).exists()
+	user.emailConfirmed = emailConfirmed
+
+	c = Comment(author=user, drawing=drawing, text=comment, date=datetime.datetime.fromtimestamp(date/1000.0), emailConfirmed=emailConfirmed)
 	c.save()
 
 	drawing.comments.append(c)
@@ -2242,6 +2327,14 @@ def addComment(request, drawingPk, comment, date):
 def modifyComment(request, commentPk, comment):
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
+	
+	try:
+		user = UserProfile.objects.get(username=request.user.username)
+	except UserProfile.DoesNotExist:
+		return json.dumps({'state': 'error', 'message': 'The user profile does not exist.'})
+	
+	if user.banned:
+		return json.dumps({'state': 'error', 'message': 'User is banned.'})
 
 	c = None
 	try:
@@ -2261,6 +2354,14 @@ def modifyComment(request, commentPk, comment):
 def deleteComment(request, commentPk):
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
+
+	try:
+		user = UserProfile.objects.get(username=request.user.username)
+	except UserProfile.DoesNotExist:
+		return json.dumps({'state': 'error', 'message': 'The user profile does not exist.'})
+	
+	if user.banned:
+		return json.dumps({'state': 'error', 'message': 'User is banned.'})
 
 	comment = None
 	try:
