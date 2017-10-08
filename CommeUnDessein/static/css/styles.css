@@ -41,12 +41,21 @@ body .popover.top > .arrow:after {
   margin: 0px 4px;
 }
 #RItems ul.layers li.layer ul li .badge {
-  margin-left: auto;
   display: -webkit-box;
   display: flex;
   -webkit-box-orient: horizontal;
   -webkit-box-direction: normal;
           flex-direction: row;
+}
+#RItems ul.layers li.layer ul li .badge-container {
+  margin-left: auto;
+}
+#RItems ul.layers li.layer ul li .badge-container .show-btn {
+  margin-right: 0;
+  height: 10px;
+  padding: 0;
+  -webkit-box-ordinal-group: 6;
+          order: 5;
 }
 .btn.cd-no-radius {
   border-radius: 0;
@@ -1719,7 +1728,8 @@ li.tool-btn.selected .favorite-btn {
 #drawingPanel .container .content .comments-container .edit-buttons button:hover {
   background-color: #464c53;
 }
-#drawingPanel .container .content .comments-container .submit-comment {
+#drawingPanel .container .content .comments-container .submit-comment,
+#drawingPanel .container .content .comments-container .start-discussion {
   margin: 5px;
   margin-top: 0;
 }

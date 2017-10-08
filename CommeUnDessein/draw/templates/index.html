@@ -659,14 +659,14 @@
 
                       <div class="cd-row cd-end share-buttons">
 
-                        <button class="cd-grow btn btn-danger original-color report-abuse" type="button" data-toggle="popover" data-trigger="hover" data-i18n="[data-content]Report abuse" data-content="Report abuse" data-placement="top" data-container="body"><span class="glyphicon glyphicon-flag"></span><span  class='text'></span></button>
+                        <button class="cd-grow btn btn-danger original-color report-abuse" type="button" data-toggle="popover" data-trigger="hover" data-i18n="[data-content]Report abuse" data-content="Report abuse" data-placement="top" data-container="#popovers"><span class="glyphicon glyphicon-flag"></span><span  class='text'></span></button>
 
-                        <button class="cd-grow btn btn-warning original-color copy-link" type="button" data-toggle="popover" data-trigger="hover" data-i18n="[data-content]Copy drawing link to clipboard" data-content="Copy drawing link to clipboard" data-placement="top" data-container="body"><span class="glyphicon glyphicon-link"></span><span  class='text'></span></button>
+                        <button class="cd-grow btn btn-warning original-color copy-link" type="button" data-toggle="popover" data-trigger="hover" data-i18n="[data-content]Copy drawing link to clipboard" data-content="Copy drawing link to clipboard" data-placement="top" data-container="#popovers"><span class="glyphicon glyphicon-link"></span><span  class='text'></span></button>
 
 
-                        <button class="cd-grow btn btn-primary original-color share-facebook" type="button" data-toggle="popover" data-trigger="hover" data-i18n="[data-content]Share on Facebook" data-content="Share on Facebook" data-placement="top" data-container="body"><span class="glyphicon glyphicon-facebook"><img src="static/images/icons/inverted/facebook.png"></span><span class='text'></span></button>
+                        <button class="cd-grow btn btn-primary original-color share-facebook" type="button" data-toggle="popover" data-trigger="hover" data-i18n="[data-content]Share on Facebook" data-content="Share on Facebook" data-placement="top" data-container="#popovers"><span class="glyphicon glyphicon-facebook"><img src="static/images/icons/inverted/facebook.png"></span><span class='text'></span></button>
 
-                        <button class="cd-grow btn btn-info original-color share-twitter" type="button" data-toggle="popover" data-trigger="hover" data-i18n="[data-content]Tweet" data-content="Tweet" data-placement="top" data-container="body"><span class="glyphicon glyphicon-tiwtter"><img src="static/images/icons/inverted/twitter.png"></span><span  class='text'></span></button>
+                        <button class="cd-grow btn btn-info original-color share-twitter" type="button" data-toggle="popover" data-trigger="hover" data-i18n="[data-content]Tweet" data-content="Tweet" data-placement="top" data-container="#popovers"><span class="glyphicon glyphicon-tiwtter"><img src="static/images/icons/inverted/twitter.png"></span><span  class='text'></span></button>
 
                       </div>
 
@@ -676,8 +676,7 @@
 
                       </div>
 
-                      <div id='discourse-comments'></div>
-                      
+
                       <div class="cd-column cd-end comments-container">
                         <div class="cd-row comment-header">
                           <h4>Commentaires</h4>
@@ -688,6 +687,9 @@
                         </div>
                         <div class="comment-area" contenteditable="true"></div>
                         <button class="btn btn-primary original-color submit-comment" type="button"><span class="glyphicon glyphicon-ok"></span><span data-i18n='Add comment' class='text'>Add comment</span></button>
+
+                        <button class="cd-grow btn btn-success original-color start-discussion" type="button"><span class="glyphicon glyphicon-comment"></span><span data-i18n="Participate in discussion" class='text'>Participate in discussion</span></button>
+
                       </div>
 
                     </form>
@@ -793,6 +795,8 @@
     <div id="drawingBar" ><span data-i18n='Drawing'>Drawing</span>...</div>
     <div id="loadingBar"><div id="spinner"></div><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> <span data-i18n='Loading'>Loading</span>...</div>
     <!-- <canvas id="loadingBar"></canvas> -->
+    
+    <div id="popovers"></div>
 
     <div id="templates">
 

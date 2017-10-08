@@ -84,6 +84,7 @@ class Drawing(Document):
     paths = ListField(ReferenceField('Path'))
     svg = StringField()
     pathList = ListField(StringField())
+    bounds = StringField()
 
     date = DateTimeField(default=datetime.datetime.now, required=True)
     votes = ListField(ReferenceField('Vote', reverse_delete_rule=PULL))
@@ -91,6 +92,8 @@ class Drawing(Document):
     
     title = StringField()
     description = StringField()
+
+    discussionId = IntField()
 
     # lastUpdate = DateTimeField(default=datetime.datetime.now)
     

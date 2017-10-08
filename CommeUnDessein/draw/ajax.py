@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from binascii import a2b_base64
-from threading import Timer
+from threading import Timer, Thread
 import datetime
 import logging
 import os
@@ -9,6 +9,8 @@ import shutil
 import os.path
 import errno
 import json
+import urllib
+import urllib2
 
 # from django.utils import json
 # from dajaxice.decorators import dajaxice_register
@@ -115,6 +117,9 @@ with open('/data/accesstoken_github.txt') as f:
 
 with open('/data/openaccesstoken_github.txt') as f:
 	OPEN_ACCESS_TOKEN = f.read().strip()
+
+with open('/data/settings.json') as f:
+    localSettings = json.loads(f.read().strip())
 
 # pprint(vars(object))
 # import pdb; pdb.set_trace()
@@ -778,7 +783,7 @@ def loadSVG(request, city=None):
 		statusToLoad.append('notConfirmed')
 		statusToLoad.append('flagged')
 
-	drawings = Drawing.objects(city=cityPk, status__in=statusToLoad).only('svg', 'status', 'pk', 'clientId', 'title', 'owner')
+	drawings = Drawing.objects(city=cityPk, status__in=statusToLoad).only('svg', 'status', 'pk', 'clientId', 'title', 'owner', 'bounds')
 	
 	items = []
 	for drawing in drawings:
@@ -1605,7 +1610,7 @@ def saveDrawing2(request, clientId, date, pathPks, title, description):
 	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk), 'pathPks': pathPks, 'negativeVoteThreshold': negativeVoteThreshold, 'positiveVoteThreshold': positiveVoteThreshold, 'voteMinDuration': voteMinDuration.total_seconds() } )
 
 @checkDebug
-def submitDrawing(request, pk, clientId, svg, date, title=None, description=None, png=None):
+def submitDrawing(request, pk, clientId, svg, date, bounds, title=None, description=None, png=None):
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
 	
@@ -1628,6 +1633,7 @@ def submitDrawing(request, pk, clientId, svg, date, title=None, description=None
 	d.status = 'pending'
 	d.title = title
 	d.description = description
+	d.bounds = bounds
 	
 	try:
 		d.save()
@@ -1647,10 +1653,9 @@ def submitDrawing(request, pk, clientId, svg, date, title=None, description=None
 	output.write(imgstr.decode('base64'))
 	output.close()
 
-	# binary_data = a2b_base64(png)
-	# fd = open('draw/static/drawings/'+title+'.png', 'wb')
-	# fd.write(binary_data)
-	# fd.close()
+	svgFile = open('CommeUnDessein/static/drawings/'+pk+'.svg', 'wb')
+	svgFile.write(svg)
+	svgFile.close()
 
 	cityName = 'CommeUnDessein'
 	try:
@@ -1661,9 +1666,30 @@ def submitDrawing(request, pk, clientId, svg, date, title=None, description=None
 
 	drawingChanged.send(sender=None, type='new', drawingId=d.clientId, pk=str(d.pk), svg=d.svg, city=cityName)
 
-	send_mail('[Comme un Dessein] New drawing', u'A new drawing has been submitted: https://commeundessein.co/drawing-'+str(d.pk) + u'\n see thumbnail at: https://commeundessein.co/static/drawings/'+str(d.pk)+u'.png', 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+	send_mail('[Comme un Dessein] New drawing', u'A new drawing has been submitted: https://commeundessein.co/drawing-'+str(d.pk) + u'\nsee thumbnail at: https://commeundessein.co/static/drawings/'+str(d.pk)+u'.png', 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+
+	thread = Thread(target = createDrawingDiscussion, args = (d,))
+	thread.start()
+	thread.join()
 
 	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk), 'status': d.status, 'negativeVoteThreshold': negativeVoteThreshold, 'positiveVoteThreshold': positiveVoteThreshold, 'voteMinDuration': voteMinDuration.total_seconds() } )
+
+def createDrawingDiscussion(drawing):
+	values = { 'title': drawing.title, 'raw': u'Discussion à propos de ' + drawing.title + u'.', 'category': 'dessins', 'api_username': localSettings['DISCOURSE_USERNAME'], 'api_key': localSettings['DISCOURSE_API_KEY'] }
+
+	values_data = {}
+	for k, v in values.iteritems():
+		values_data[k] = unicode(v).encode('utf-8')
+	data = urllib.urlencode(values_data)
+
+	url = 'http://discussion.commeundessein.co/posts'
+	req = urllib2.Request(url, data)
+	response = urllib2.urlopen(req)
+	resultJson = response.read()
+	result = json.loads(resultJson)
+	drawing.discussionId = result['topic_id']
+	drawing.save()
+	return
 
 @checkDebug
 def validateDrawing(request, pk):
@@ -1760,6 +1786,15 @@ def createUsers(request, logins):
 
 @checkDebug
 def reportAbuse(request, pk):
+
+	try:
+		userProfile = UserProfile.objects.get(username=request.user.username)
+	except UserProfile.DoesNotExist:
+		return json.dumps({"status": "error", "message": "The user does not exists."})
+
+	if not userProfile.emailConfirmed:
+		return json.dumps({"status": "error", "message": "Your email must be confirmed to report an abuse."})
+
 	try:
 		d = Drawing.objects.get(pk=pk)
 	except Drawing.DoesNotExist:
@@ -1768,9 +1803,26 @@ def reportAbuse(request, pk):
 	d.status = 'flagged'
 	d.save()
 	
-	send_mail('[Comme un Dessein] Abuse report !', u'The drawing \"' + d.title + u'\" has been reported on Comme un Dessein !\n\n Verify it on https://commeundessein.co/drawing-'+str(d.pk)+u'\n Merci d\'avoir participé à Comme un Dessein,\nLe collectif <a href=\'http://idlv.co/\'>IDLV</a>', 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+	emailOfDrawingOwner = ''
+	try:
+		ownerOfDrawing = User.objects.get(username=d.owner)
+		emailOfDrawingOwner = ownerOfDrawing.email
+	except User.DoesNotExist:
+		print('OwnerOfDrawing does not exist.')
+
+	send_mail('[Comme un Dessein] Abuse report !', u'The drawing \"' + d.title + u'\" has been reported on Comme un Dessein !\n\nVerify it on https://commeundessein.co/drawing-'+str(d.pk)+u'\nAuthor of the report: ' + request.user.username + u', email: ' + request.user.email + u'\nAuthor of the flagged drawing: ' + d.owner + ', email: ' + emailOfDrawingOwner, 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 
 	drawingChanged.send(sender=None, type='status', drawingId=d.clientId, status=d.status, pk=str(d.pk))
+
+	return json.dumps( {'state': 'success'} )
+
+@checkDebug
+def cancelAbuse(request, pk):
+
+	if not isAdmin(request.user):
+		return json.dumps({"status": "error", "message": "not_admin"})
+
+	updateDrawingState(pk)
 
 	return json.dumps( {'state': 'success'} )
 
@@ -1819,22 +1871,37 @@ def createDrawingThumbnail(request, pk, png=None):
 
 # @dajaxice_register
 @checkDebug
-def loadDrawing(request, pk, loadSVG=False):
+def loadDrawing(request, pk, loadSVG=False, loadVotes=True, svgOnly=False):
 	try:
-		drawingSet = Drawing.objects.only('status', 'pk', 'clientId', 'title', 'owner', 'votes')
-		if loadSVG:
+		drawingSet = Drawing.objects.only('pk')
+		if not svgOnly:
+			drawingSet = drawingSet.only('status', 'clientId', 'title', 'owner', 'discussionId')
+		if loadSVG or svgOnly:
 			drawingSet = drawingSet.only('svg')
+		if loadVotes:
+			drawingSet = drawingSet.only('votes')
 		d = drawingSet.get(pk=pk)
 	except Drawing.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
 	
 	votes = []
-	for vote in d.votes:
-		if isinstance(vote, Vote):
-			if vote.emailConfirmed or request.user.username == vote.author.username:
-				votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk) } )
+	
+	if loadVotes:
+		for vote in d.votes:
+			if isinstance(vote, Vote):
+				if vote.emailConfirmed or request.user.username == vote.author.username:
+					votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk) } )
 
 	return json.dumps( {'state': 'success', 'votes': votes, 'drawing': d.to_json() } )
+
+@checkDebug
+def getDrawingDiscussionId(request, pk):
+	try:
+		drawing = Drawing.objects.only('discussionId').get(pk=pk)
+	except Drawing.DoesNotExist:
+		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
+
+	return  json.dumps( {'state': 'success', 'drawing': drawing.to_json() } )
 
 @checkDebug
 def loadComments(request, drawingPk):
@@ -2025,6 +2092,25 @@ def updateDrawings(request):
 	return json.dumps( {'state': 'success' } )
 
 @checkDebug
+def updateDrawingBounds(request, pk, bounds, svg):
+	if not isAdmin(request.user):
+		return json.dumps( { 'state': 'error', 'message': 'You must be administrator to update drawings.' } )
+	
+	try:
+		d = Drawing.objects.get(pk=pk)
+	except Drawing.DoesNotExist:
+		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
+
+	d.bounds = bounds
+	d.save()
+
+	svgFile = open('CommeUnDessein/static/drawings/'+pk+'.svg', 'wb')
+	svgFile.write(svg)
+	svgFile.close()
+
+	return json.dumps( {'state': 'success' } )
+
+@checkDebug
 def updateDrawingSVG(request, pk, svg):
 	if not isAdmin(request.user):
 		return json.dumps( { 'state': 'error', 'message': 'You must be administrator to update drawings.' } )
@@ -2163,6 +2249,9 @@ def updateDrawingState(drawingPk):
 	elif isDrawingRejected(nNegativeVotes):
 		drawing.status = 'rejected'
 		drawing.save()
+	elif drawing.status == 'flagged':
+		drawing.status = 'pending'
+		drawing.save()
 
 	# drawingValidated.send(sender=None, drawingId=drawing.clientId, status=drawing.status)
 	drawingChanged.send(sender=None, type='status', drawingId=drawing.clientId, status=drawing.status, pk=str(drawing.pk))
@@ -2245,7 +2334,7 @@ def vote(request, pk, date, positive):
 		if isinstance(vote, Vote):
 			votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk) } )
 
-	drawingChanged.send(sender=None, type='votes', drawingId=drawing.clientId, status=drawing.status, votes=votes, positive=positive)
+	drawingChanged.send(sender=None, type='votes', drawingId=drawing.clientId, status=drawing.status, votes=votes, positive=positive, author=vote.author.username)
 
 	if validates or rejects:
 
@@ -2265,7 +2354,7 @@ def vote(request, pk, date, positive):
 		forAgainst = 'pour'
 		if not positive:
 			forAgainst = 'contre'
-		send_mail('[Comme un Dessein]' + request.user.username + u' a voté ' + forAgainst + u' votre dessin !', request.user.username + u' a voté ' + forAgainst + u' votre dessin \"' + drawing.title + u'\" sur Comme un Dessein !\n\n Visitez le resultat sur https://commeundessein.co/drawing-'+str(drawing.pk)+u'\n Merci d\'avoir participé à Comme un Dessein,\nLe collectif <a href=\'http://idlv.co/\'>IDLV</a>', 'contact@commeundessein.co', [owner.email], fail_silently=True)
+		send_mail('[Comme un Dessein]' + request.user.username + u' a voté ' + forAgainst + u' votre dessin !', request.user.username + u' a voté ' + forAgainst + u' votre dessin \"' + drawing.title + u'\" sur Comme un Dessein !\n\nVisitez le resultat sur https://commeundessein.co/drawing-'+str(drawing.pk)+u'\nMerci d\'avoir participé à Comme un Dessein,\nLe collectif Indien dans la ville\nhttp://idlv.co/', 'contact@commeundessein.co', [owner.email], fail_silently=True)
 
 	return json.dumps( {'state': 'success', 'owner': request.user.username, 'drawingPk':str(drawing.pk), 'votePk':str(vote.pk), 'validates': validates, 'rejects': rejects, 'votes': votes, 'delay': delay, 'emailConfirmed': user.emailConfirmed } )
 
@@ -2327,7 +2416,7 @@ def addComment(request, drawingPk, comment, date):
 	except User.DoesNotExist:
 		print("Owner not found")
 	if owner:
-		send_mail('[Comme un Dessein] ' + request.user.username + u' a commenté votre dessin !', request.user.username + u' a commenté votre dessin \"' + drawing.title + u'\" sur Comme un Dessein !\n\n Visitez le resultat sur https://commeundessein.co/drawing-'+str(drawing.pk)+u'\n Merci d\'avoir participé à Comme un Dessein,\nLe collectif <a href=\'http://idlv.co/\'>IDLV</a>', 'contact@commeundessein.co', [owner.email], fail_silently=True)
+		send_mail('[Comme un Dessein] ' + request.user.username + u' a commenté votre dessin !', request.user.username + u' a commenté votre dessin \"' + drawing.title + u'\" sur Comme un Dessein !\n\nVisitez le resultat sur https://commeundessein.co/drawing-'+str(drawing.pk)+u'\nMerci d\'avoir participé à Comme un Dessein,\nLe collectif Indien dans la ville\nhttp://idlv.co/', 'contact@commeundessein.co', [owner.email], fail_silently=True)
 
 	return json.dumps( {'state': 'success', 'author': request.user.username, 'drawingPk':str(drawing.pk), 'commentPk': str(c.pk), 'comment': c.to_json() } )
 
