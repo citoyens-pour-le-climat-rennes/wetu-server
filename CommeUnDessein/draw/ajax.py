@@ -42,7 +42,7 @@ from CommeUnDessein import settings
 from allauth.socialaccount.models import SocialToken
 # import collaboration
 
-from allauth.account.signals import email_confirmed
+from allauth.account.signals import email_confirmed, email_confirmation_sent
 
 import base64
 
@@ -231,6 +231,12 @@ def on_email_confirmed(sender, email_address, request, **kwargs):
 			print('The city does not exist')
 		drawingChanged.send(sender=None, type='new', drawingId=drawing.clientId, pk=str(drawing.pk), svg=drawing.svg, city=cityName)
 
+	return
+
+#allauth.account.signals.email_confirmation_sent(request, confirmation, signup)
+@receiver(email_confirmation_sent)
+def on_email_confirmation_sent(sender, request, confirmation, signup, **kwargs):
+	send_mail('[Comme un dessein] New email confirmation sent', u'A new email confirmation was sent, to confirm his email manually follow the link: https://commeundessein.co/accounts/confirm-email/' + confirmation.key, 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 	return
 
 @checkDebug
@@ -1651,7 +1657,7 @@ def submitDrawing(request, pk, clientId, svg, date, title=None, description=None
 
 	drawingChanged.send(sender=None, type='new', drawingId=d.clientId, pk=str(d.pk), svg=d.svg, city=cityName)
 
-	send_mail('New drawing', u'A new drawing has been submitted: https://commeundessein.co/drawing-'+str(d.pk) + u'\n see thumbnail at: https://commeundessein.co/static/drawings/'+str(d.pk)+u'.png', 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+	send_mail('[Comme un Dessein] New drawing', u'A new drawing has been submitted: https://commeundessein.co/drawing-'+str(d.pk) + u'\n see thumbnail at: https://commeundessein.co/static/drawings/'+str(d.pk)+u'.png', 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 
 	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk), 'status': d.status, 'negativeVoteThreshold': negativeVoteThreshold, 'positiveVoteThreshold': positiveVoteThreshold, 'voteMinDuration': voteMinDuration.total_seconds() } )
 
@@ -1758,7 +1764,7 @@ def reportAbuse(request, pk):
 	d.status = 'flagged'
 	d.save()
 	
-	send_mail('Un dessin a été signalé !', u'Le dessin \"' + d.title + u'\" a été signalé sur Comme un Dessein !\n\n Vérifiez le sur https://commeundessein.co/drawing-'+str(d.pk)+u'\n Merci d\'avoir participé à Comme un Dessein,\nLe collectif <a href=\'http://idlv.co/\'>IDLV</a>', 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+	send_mail('[Comme un Dessein] Abuse report !', u'The drawing \"' + d.title + u'\" has been reported on Comme un Dessein !\n\n Verify it on https://commeundessein.co/drawing-'+str(d.pk)+u'\n Merci d\'avoir participé à Comme un Dessein,\nLe collectif <a href=\'http://idlv.co/\'>IDLV</a>', 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 
 	drawingChanged.send(sender=None, type='status', drawingId=d.clientId, status=d.status, pk=str(d.pk))
 
@@ -1880,8 +1886,7 @@ def updateDrawing(request, pk, title, description=None):
 	if not userAllowed(request, d.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
 	
-	drawingCanBeModified = d.status == 'pending' or d.status == 'emailNotConfirmed' or d.status == 'notConfirmed'
-	if not drawingCanBeModified:
+	if isDrawingStatusValidated(d):
 		return json.dumps({'state': 'error', 'message': 'The drawing is already validated, it cannot be modified anymore.'})
 
 	d.title = title
@@ -2043,8 +2048,7 @@ def deleteDrawing(request, pk):
 	if not userAllowed(request, d.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
 
-	drawingCanBeModified = d.status == 'pending' or d.status == 'emailNotConfirmed' or d.status == 'notConfirmed'
-	if not drawingCanBeModified:
+	if isDrawingStatusValidated(d):
 		return json.dumps({'state': 'error', 'message': 'The drawing is already validated, it cannot be cancelled anymore.'})
 
 	d.delete()
@@ -2066,8 +2070,7 @@ def cancelDrawing(request, pk):
 	if not userAllowed(request, d.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
 	
-	drawingCanBeModified = d.status == 'pending' or d.status == 'emailNotConfirmed' or d.status == 'notConfirmed'
-	if not drawingCanBeModified:
+	if isDrawingStatusValidated(d):
 		return json.dumps({'state': 'error', 'message': 'The drawing is already validated, it cannot be cancelled anymore.'})
 
 	d.status = 'draft'
@@ -2162,6 +2165,9 @@ def updateDrawingState(drawingPk):
 
 	return
 
+def isDrawingStatusValidated(drawing):
+	return drawing.status == 'drawing' or drawing.status == 'drawn'
+
 @checkDebug
 def vote(request, pk, date, positive):
 	if not request.user.is_authenticated():
@@ -2184,11 +2190,11 @@ def vote(request, pk, date, positive):
 	if drawing.owner == request.user.username:
 		return json.dumps({'state': 'error', 'message': 'Cannot vote for own drawing.'})
 
-	if drawing.status != 'pending' and drawing.status != 'emailNotConfirmed' and drawing.status != 'notConfirmed':
+	if isDrawingStatusValidated(drawing):
 		return json.dumps({'state': 'error', 'message': 'The drawing is already validated.'})
 
-	if drawing.status == 'emailNotConfirmed':
-		return json.dumps({'state': 'error', 'message': 'The owner of the drawing has not validated his account.'})
+	# if drawing.status == 'emailNotConfirmed':
+	# 	return json.dumps({'state': 'error', 'message': 'The owner of the drawing has not validated his account.'})
 	
 	if drawing.status == 'notConfirmed':
 		return json.dumps({'state': 'error', 'message': 'The drawing has not been confirmed.'})
@@ -2235,7 +2241,7 @@ def vote(request, pk, date, positive):
 		if isinstance(vote, Vote):
 			votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk) } )
 
-	drawingChanged.send(sender=None, type='votes', drawingId=drawing.clientId, status=drawing.status, votes=votes)
+	drawingChanged.send(sender=None, type='votes', drawingId=drawing.clientId, status=drawing.status, votes=votes, positive=positive)
 
 	if validates or rejects:
 
@@ -2255,7 +2261,7 @@ def vote(request, pk, date, positive):
 		forAgainst = 'pour'
 		if not positive:
 			forAgainst = 'contre'
-		send_mail(request.user.username + u' a voté ' + forAgainst + u' votre dessin !', request.user.username + u' a voté ' + forAgainst + u' votre dessin \"' + drawing.title + u'\" sur Comme un Dessein !\n\n Visitez le resultat sur https://commeundessein.co/drawing-'+str(drawing.pk)+u'\n Merci d\'avoir participé à Comme un Dessein,\nLe collectif <a href=\'http://idlv.co/\'>IDLV</a>', 'contact@commeundessein.co', [owner.email], fail_silently=True)
+		send_mail('[Comme un Dessein]' + request.user.username + u' a voté ' + forAgainst + u' votre dessin !', request.user.username + u' a voté ' + forAgainst + u' votre dessin \"' + drawing.title + u'\" sur Comme un Dessein !\n\n Visitez le resultat sur https://commeundessein.co/drawing-'+str(drawing.pk)+u'\n Merci d\'avoir participé à Comme un Dessein,\nLe collectif <a href=\'http://idlv.co/\'>IDLV</a>', 'contact@commeundessein.co', [owner.email], fail_silently=True)
 
 	return json.dumps( {'state': 'success', 'owner': request.user.username, 'drawingPk':str(drawing.pk), 'votePk':str(vote.pk), 'validates': validates, 'rejects': rejects, 'votes': votes, 'delay': delay, 'emailConfirmed': user.emailConfirmed } )
 
@@ -2317,7 +2323,7 @@ def addComment(request, drawingPk, comment, date):
 	except User.DoesNotExist:
 		print("Owner not found")
 	if owner:
-		send_mail(request.user.username + u' a commenté votre dessin !', request.user.username + u' a commenté votre dessin \"' + drawing.title + u'\" sur Comme un Dessein !\n\n Visitez le resultat sur https://commeundessein.co/drawing-'+str(drawing.pk)+u'\n Merci d\'avoir participé à Comme un Dessein,\nLe collectif <a href=\'http://idlv.co/\'>IDLV</a>', 'contact@commeundessein.co', [owner.email], fail_silently=True)
+		send_mail('[Comme un Dessein] ' + request.user.username + u' a commenté votre dessin !', request.user.username + u' a commenté votre dessin \"' + drawing.title + u'\" sur Comme un Dessein !\n\n Visitez le resultat sur https://commeundessein.co/drawing-'+str(drawing.pk)+u'\n Merci d\'avoir participé à Comme un Dessein,\nLe collectif <a href=\'http://idlv.co/\'>IDLV</a>', 'contact@commeundessein.co', [owner.email], fail_silently=True)
 
 	return json.dumps( {'state': 'success', 'author': request.user.username, 'drawingPk':str(drawing.pk), 'commentPk': str(c.pk), 'comment': c.to_json() } )
 
@@ -2431,7 +2437,8 @@ def setDrawingStatusDrawn(request, pk, secret):
 	drawing.status = 'drawn'
 	drawing.save()
 
-	drawingValidated.send(sender=None, drawingId=drawing.clientId, status=drawing.status)
+	# drawingValidated.send(sender=None, drawingId=drawing.clientId, status=drawing.status)
+	drawingChanged.send(sender=None, type='status', drawingId=drawing.clientId, status=drawing.status, pk=str(drawing.pk))
 
 	return json.dumps( {'state': 'success', 'message': 'Drawing status successfully updated.', 'pk': pk } )
 

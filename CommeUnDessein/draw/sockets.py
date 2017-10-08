@@ -63,6 +63,8 @@ def on_drawing_changed(sender, **kwargs):
             args['description'] = kwargs['description']
         if 'svg' in kwargs:
             args['svg'] = kwargs['svg']
+        if 'positive' in kwargs:
+            args['positive'] = kwargs['positive']
         chatNamespace.broadcast_event('drawing change', args)
 
 @namespace('/chat')

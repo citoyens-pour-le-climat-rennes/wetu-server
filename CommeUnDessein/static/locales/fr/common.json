@@ -205,5 +205,16 @@
     "An error occured while copying the drawing link to the clipboard": "Une erreur est survenue lors de la copie dans le presse papier.",
     "Flagged": "Signalé",
     "flagged": "signalé",
-    "User is banned": "L'utilisateur a été bannit"
+    "User is banned": "L'utilisateur a été bannit",
+    "Someone voted for your drawing": "Quelqu'un a voté pour votre dessin {{drawingTitle}} !",
+    "Someone voted against your drawing": "Quelqu'un a voté contre votre dessin {{drawingTitle}} !",
+    "A new drawing has been created": "Un nouveau dessin a été créé ! Retrouvez le sur {{drawingLink}}",
+    "You drawing has been validated": "Votre dessin {{drawingTitle}} a été validé !",
+    "You drawing has been rejected": "Votre dessin {{drawingTitle}} a été rejeté !",
+    "You drawing has been drawn": "Votre dessin {{drawingTitle}} a été dessiné !",
+    "You drawing has been flagged": "Votre dessin {{drawingTitle}} a été modéré !",
+    "You drawing has been submitted": "Votre dessin {{drawingTitle}} a été soumit au vote !",
+    "Someone has commented your drawing": "{{author}} a commenté votre dessin {{drawingTitle}}",
+    "Someone has modified a comment on your drawing": "{{author}} a modifié un commentaire sur votre dessin {{drawingTitle}}",
+    "Someone has deleted a comment on your drawing": "{{author}} a supprimé un commentaire sur votre dessin {{drawingTitle}}"
 }

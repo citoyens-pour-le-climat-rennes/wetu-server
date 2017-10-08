@@ -38,7 +38,6 @@ class Comment(Document):
 def createUserProfile(sender, user, **kwargs):
     profile = UserProfile(username=user.username)
     profile.save()
-    import pdb; pdb.set_trace()
     return
 
 class UserProfile(Document):
