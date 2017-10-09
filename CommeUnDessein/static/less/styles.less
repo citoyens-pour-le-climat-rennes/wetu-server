@@ -45,6 +45,8 @@ body {
 }
 
 #RItems {
+
+    overflow-y: auto;
 	// margin-bottom: 300px;
 
 	h4.panel-title {
@@ -314,6 +316,9 @@ input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill {
     	}
     	&:hover {
 			background-color: @hover-purple;
+			h6 {
+				background-color: @hover-purple;
+			}
     	}
     }
 
@@ -1050,7 +1055,7 @@ body.hand {
 		&.lock, &.link {
 			padding: 1px;
 
-			&.selected {
+			&.selected {
 				// padding: 20px;
 			}
 		}
@@ -1263,7 +1268,7 @@ body.hand {
 		input {
 			flex: 1;
 		}
-		button {
+		button {
 			margin-left: -1px;
 			width: 29px;
 		}
@@ -1329,7 +1334,7 @@ li.tool-btn {
 	}
 }
 
-.mCustomScrollbar.tree {
+.cd-tree {
 	.folder {
 		list-style: none;
 		padding: 0;
@@ -1368,7 +1373,7 @@ li.tool-btn {
 		}
 		ul {
 			padding-left: 5px;
-			&.rPath-list {
+			&.rPath-list {
 				li:last-child  {
 					// border-bottom: solid 1px white;
 				}
@@ -1383,9 +1388,10 @@ li.tool-btn {
 				}
 			}
 			ul, hr {
-				visibility: hidden;
-				height: 0px;
-				.vendor(transition, height 0.5s ease-out);
+				display: none;
+				// visibility: hidden;
+				// height: 0px;
+				// .vendor(transition, height 0.5s ease-out);
 			}
 		}
 	}
@@ -1411,7 +1417,7 @@ li.tool-btn {
 		z-index: 998; 			// two below the sidebar, one below the code editor
 	}
 
-	.dat-gui-toggle {
+	.dat-gui-toggle {
 		position: absolute;
 		top: 3px;
 		right: 3px;
@@ -1509,14 +1515,14 @@ li.tool-btn {
 			button {
 				width: 22px;
 				padding: 0;
-				img {
+				img {
 					width: 20px;
 					height: 20px;
 					margin-top: -1px;
 				}
 			}
 		}
-		.align-btn-group {
+		.align-btn-group {
 			margin-top: -5px;
 			border-color: #575757;
 			// background-color: #F9F9F9;
@@ -1625,12 +1631,6 @@ li.tool-btn {
 // 	}
 // }
 
-.cd-column, .cd-row {
-	.mCustomScrollBox {
-		flex-grow: 1;
-	}
-}
-
 .cd-flex {
 	display: flex;
 }
@@ -1642,18 +1642,10 @@ li.tool-btn {
 .cd-column {
 	display: flex;
 	flex-direction: column;
-	flex-grow: 1;
-	&.cd-end, &.align-end {
-		flex-grow: inherit;
-	}
 }
 .cd-row {
 	display: flex;
 	flex-direction: row;
-	flex-grow: 1;
-	&.cd-end, &.align-end {
-		flex-grow: inherit;
-	}
 }
 
 .cd-grow {
@@ -1681,17 +1673,20 @@ li.tool-btn {
 }
 
 ::-webkit-scrollbar {
-    width: 12px;
+    width: 10px;
+    height: 10px;
 }
  
 ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
-    border-radius: 10px;
+    // -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    // border-radius: 10px;
+    background-color: darken(@sidebar-background-color, 5%); 
 }
  
 ::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.95); 
+    // border-radius: 10px;
+    // -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.95); 
+    background-color: lighten(@sidebar-light-background-color, 5%);
 }
 
 #submit-drawing-button {
@@ -1728,12 +1723,9 @@ li.tool-btn {
 		.main-content {
 			// margin-bottom: 250px;
 
-			// #information-footer {
-			// 	position: fixed;
-			//     bottom: 40px;
-			//     left: 50%;
-			//     transform: translateX(-50%);
-			// }
+			#information-footer {
+				margin-top: 50px;
+			}
 		}
 	}
 
@@ -1799,9 +1791,12 @@ li.tool-btn {
 	.container {
 		.content {
 			.main-content {
-				
+				overflow-y: auto;
+				padding: 5px;
 			}
 			.cd-column-row {
+				min-height: min-content;
+				// height: fit-content;
 				padding-bottom: 40px;
 			}
 			.cd-column-row.cd-row {
@@ -1887,7 +1882,7 @@ li.tool-btn {
 		min-height: 100%;
 		width: auto;
 		margin-right: 0;
-		padding: 10px;
+		padding: 5px;
 
 		
 		.content {
@@ -2279,7 +2274,7 @@ li.tool-btn {
 		width: inherit;
 		max-width: 100%;
 	}
-	.handle {
+	.handle {
 		position: absolute;
 		top: 0;
 		bottom: 0;

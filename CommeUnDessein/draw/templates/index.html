@@ -25,7 +25,7 @@
     <!-- <link href="{% static 'libs/nanoscroller.css' %}" rel="stylesheet"> -->
     <!-- <link href="{% static 'libs/pace/themes/pace-theme-center-circle.css' %}" rel="stylesheet" /> -->
 
-    <link href="{% static 'libs/jquery.mCustomScrollbar.css' %}" rel="stylesheet">
+    <!-- <link href="{% static 'libs/jquery.mCustomScrollbar.css' %}" rel="stylesheet"> -->
 
     <!-- Bootstrap core CSS -->
     <link href="{% static 'libs/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
@@ -35,7 +35,7 @@
 
     <!-- Custom styles -->
     <!-- <link href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/bootstrap-table.min.css" rel="stylesheet"> -->
-    <link href="{% static 'libs/bootstrap-colorpickersliders/bootstrap.colorpickersliders.css' %}" rel="stylesheet">
+    <!-- <link href="{% static 'libs/bootstrap-colorpickersliders/bootstrap.colorpickersliders.css' %}" rel="stylesheet"> -->
     <!-- <link href="{% static 'libs/jqtree/jqtree.css' %}" rel="stylesheet"> -->
     <!-- <link href="{% static 'libs/slider.css' %}" rel="stylesheet"> -->
     <link href="{% static 'css/styles.css' %}" rel="stylesheet">
@@ -486,6 +486,7 @@
           <!-- <h4 id="RItems-title" class="panel-title" data-i18n='Drawings sorted by status'>
               Drawings sorted by status
           </h4> -->
+          
 
           <div class="container cd-column cd-grow">
 
@@ -499,11 +500,12 @@
                   <div class="cd-column-row cd-grow">
 
                     <div id="drawing-panel-no-selection" class="cd-hidden cd-column">
+                      
                       <div id="RItems" class="">
 
                         <div class="panel-body">
-                          <div class="mCustomScrollbar rItems tree">
-                            <ul class="layers folder">
+                          <div class="rItems cd-tree">
+                            <ul class="layers folder overflow-y-auto">
                               <!-- <li class="main-layer">
                                 <h6 class="title">Main layer</h6>
                                 <ul class="commeUnDessein-ui rPath-list">
@@ -798,7 +800,7 @@
     
     <div id="popovers"></div>
 
-    <div id="templates">
+    <div id="templates" class="hidden">
 
       <div id="welcome-text">
 
@@ -807,8 +809,6 @@
         <p>L’installation <strong><em>Comme un dessein</em></strong> fait écho à cette question actuelle en vous invitant à voter et proposer des dessins pour composer une œuvre collective et utopique, à l'aide d'une interface web connectée à un traceur vertical.</p>
 
         <p><a href="https://gaming.youtube.com/channel/UCRMrTkJJYvGAerb1j-H-Miw/live">Regardez le robot dessiner en directe</a><p>
-
-        <div id="tipibot-live"></div>
 
         <p>Les règles de vote (ces règles seront différentes lors de l'événement) :
 
