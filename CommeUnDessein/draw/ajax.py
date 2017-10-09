@@ -182,6 +182,14 @@ def setNegativeVoteThreshold(request, voteThreshold):
 	negativeVoteThreshold = voteThreshold
 	return json.dumps({"message": "success"})
 
+def recomputeDrawingStates(request):
+	drawings = Drawing.objects.get(status__in=['pending', 'drawing', 'rejected'])
+	
+	for drawing in drawings:
+		updateDrawingState(drawing.pk, drawing)
+
+	return json.dumps({"message": "success"})
+
 def setVoteValidationDelay(request, hours, minutes, seconds):
 	if not isAdmin(request.user):
 		return json.dumps({"status": "error", "message": "not_admin"})
@@ -225,7 +233,7 @@ def on_email_confirmed(sender, email_address, request, **kwargs):
 	Comment.objects(author=userProfile).update(emailConfirmed=True)
 
 	for vote in userProfile.votes:
-		updateDrawingState(vote.drawing.pk)
+		updateDrawingState(vote.drawing.pk, vote.drawing)
 
 	for drawing in drawings:
 		cityName = 'CommeUnDessein'
@@ -241,7 +249,7 @@ def on_email_confirmed(sender, email_address, request, **kwargs):
 #allauth.account.signals.email_confirmation_sent(request, confirmation, signup)
 @receiver(email_confirmation_sent)
 def on_email_confirmation_sent(sender, request, confirmation, signup, **kwargs):
-	send_mail('[Comme un dessein] New email confirmation sent', u'A new email confirmation was sent, to confirm his email manually follow the link: https://commeundessein.co/accounts/confirm-email/' + confirmation.key, 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+	send_mail('[Comme un dessein] New email confirmation sent', u'A new email confirmation was sent, to confirm his email manually follow the link: https://commeundessein.co/accounts/confirm-email/' + confirmation.key , 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 	return
 
 @checkDebug
@@ -1822,7 +1830,7 @@ def cancelAbuse(request, pk):
 	if not isAdmin(request.user):
 		return json.dumps({"status": "error", "message": "not_admin"})
 
-	updateDrawingState(pk)
+	updateDrawingState(pk, True)
 
 	return json.dumps( {'state': 'success'} )
 
@@ -2235,11 +2243,15 @@ def isDrawingValidated(nPositiveVotes, nNegativeVotes):
 def isDrawingRejected(nNegativeVotes):
 	return nNegativeVotes >= negativeVoteThreshold
 
-def updateDrawingState(drawingPk):
-	try:
-		drawing = Drawing.objects.get(pk=drawingPk)
-	except Drawing.DoesNotExist:
+def updateDrawingState(drawingPk=None, drawing=None, unflag=False):
+	if not drawing and not drawingPk:
 		return
+
+	if not drawing:
+		try:
+			drawing = Drawing.objects.get(pk=drawingPk)
+		except Drawing.DoesNotExist:
+			return
 
 	(nPositiveVotes, nNegativeVotes) = computeVotes(drawing)
 
@@ -2249,7 +2261,7 @@ def updateDrawingState(drawingPk):
 	elif isDrawingRejected(nNegativeVotes):
 		drawing.status = 'rejected'
 		drawing.save()
-	elif drawing.status == 'flagged':
+	elif drawing.status == 'flagged' and unflag: 	# not accepted nor rejected: it was pending
 		drawing.status = 'pending'
 		drawing.save()
 
@@ -2334,7 +2346,7 @@ def vote(request, pk, date, positive):
 		if isinstance(vote, Vote):
 			votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk) } )
 
-	drawingChanged.send(sender=None, type='votes', drawingId=drawing.clientId, status=drawing.status, votes=votes, positive=positive, author=vote.author.username)
+	drawingChanged.send(sender=None, type='votes', drawingId=drawing.clientId, status=drawing.status, votes=votes, positive=positive, author=vote.author.username, title=drawing.title)
 
 	if validates or rejects:
 
@@ -2506,16 +2518,44 @@ def getNextValidatedDrawing(request, city=None):
 	
 	drawings = Drawing.objects(status='drawing', city=cityPk)
 
-	drawing = drawings.first()
-	if drawing is not None:
-		# get all path of the first drawing
-		paths = []
-		for path in drawing.paths:
-			paths.append(path.to_json())
+	for drawing in drawings:
+		for vote in drawing.votes:
+			try:
+				author = UserProfile.objects.get(username=vote.author)
+			except UserProfile.DoesNotExist:
+				print('user does not exist')
+				continue
 
-		return  json.dumps( {'state': 'success', 'pk': str(drawing.pk), 'items': paths } )
-	else:
-		return  json.dumps( {'state': 'success', 'message': 'no path' } )
+			if author.admin:
+
+				if drawing is not None:
+
+					# get all path of the first drawing
+					paths = []
+					for path in drawing.paths:
+						paths.append(path.to_json())
+
+					return  json.dumps( {'state': 'success', 'pk': str(drawing.pk), 'items': paths } )
+	
+	if len(drawings) > 0:
+		send_mail('[Comme un dessein] Drawing validated but no moderator voted for it', '[Comme un dessein] One or more drawing has been validated but no moderator voted for it', 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+	return  json.dumps( {'state': 'success', 'message': 'no path' } )
+
+@checkDebug
+def setDrawingStatus(request, pk, status):
+
+	if not isAdmin(request.user):
+		return json.dumps( { 'state': 'error', 'message': 'You must be administrator to move a drawing.' } )
+	
+	try:
+		drawing = Drawing.objects.get(pk=pk)
+	except Drawing.DoesNotExist:
+		return json.dumps({'state': 'error', 'message': 'Drawing does not exist.', 'pk': pk})
+	
+	drawing.status = status
+	drawing.save()
+
+	return json.dumps( {'state': 'success', 'message': 'Drawing status successfully updated.', 'pk': pk, 'status': status } )
 
 @checkDebug
 def setDrawingStatusDrawn(request, pk, secret):
