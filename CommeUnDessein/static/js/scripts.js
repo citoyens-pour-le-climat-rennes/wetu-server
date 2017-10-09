@@ -155,10 +155,9 @@
               username += Math.random().toFixed(2).substring(2);
             }
             usernameJ.val(username);
-            setState('Username');
-            labelJ.text("Nom d'utilisateur :");
-            usernameJ.removeClass('cd-hidden').show();
-            deferredFocus(usernameJ);
+            setState('AcceptEmails');
+            labelJ.text("Vous devez accepter de recevoir des emails de Comme un Dessein pour continuer");
+            deferredFocus(primaryButtonJ.focus());
           } else {
             titleJ.text('Se connecter');
             if (result.emailIsKnown) {
@@ -174,6 +173,11 @@
             deferredFocus(passwordJ);
           }
         });
+      } else if (state === 'AcceptEmails') {
+        setState('Username');
+        labelJ.text("Nom d'utilisateur :");
+        usernameJ.removeClass('cd-hidden').show();
+        deferredFocus(usernameJ);
       } else if (state === 'Username') {
         username = usernameJ.val();
         errorJ.hide();
@@ -235,7 +239,7 @@
         window.location = '/';
       } else if (state === 'Email') {
         window.location = '/';
-      } else if (state === 'Username') {
+      } else if (state === 'Username' || state === 'AcceptEmails') {
         setState('Email');
         titleJ.text('Créer un compte ou se connecter');
         labelJ.text("Email ou nom d'utilisateur :");

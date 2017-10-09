@@ -703,7 +703,7 @@
               </div>
 
                 <div class="loading-animation">
-                    <span class=""><span class="loading-gif glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> <span data-i18n="Loading...">Loading</span>...</span>
+                    <span class=""><span class="loading-gif glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> <span class="text" data-i18n="Loading...">Loading</span>...</span>
                 </div>
 
                 <div class="selected-drawings cd-column mCustomScrollbar">
@@ -793,7 +793,7 @@
 
     <!-- <div id="loadingBar"><img src="static/images/loader.GIF"></div> -->
     <div id="drawingBar" ><span data-i18n='Drawing'>Drawing</span>...</div>
-    <div id="loadingBar"><div id="spinner"></div><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> <span data-i18n='Loading'>Loading</span>...</div>
+    <div id="loadingBar"><div id="spinner"></div><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> <span class="text" data-i18n='Loading'>Loading</span>...</div>
     <!-- <canvas id="loadingBar"></canvas> -->
     
     <div id="popovers"></div>
@@ -1110,18 +1110,18 @@
 
     </div>
 
-    <object id="wacomPlugin" type="application/x-wacomtabletplugin" width="0" height="0" style="position:absolute; left:0px; top:0px">
+<!--     <object id="wacomPlugin" type="application/x-wacomtabletplugin" width="0" height="0" style="position:absolute; left:0px; top:0px">
       <param name="onload" value="pluginLoaded" />
-    </object>
+    </object> -->
 
     <script src="{% static 'libs/break-on-access.js' %}"></script>
     <script>WEB_SOCKET_SWF_LOCATION="{% static 'flashsocket/WebSocketMain.swf' %}";</script>
 
 
     {% if useDebugFiles %}
-      <script data-main="{% static 'comme-un-dessein-client/js/App' %}" src="{% static 'libs/require.js' %}"></script>
+      <script data-main="{% static 'comme-un-dessein-client/js/App' %}" src="{% static 'libs/require.js' %}" async></script>
     {% else %}
-      <script src="{% static 'comme-un-dessein-client/js/App-built.js' %}"></script>
+      <script src="{% static 'comme-un-dessein-client/js/App-built.js' %}" async></script>
     {% endif %}
 
   </body>

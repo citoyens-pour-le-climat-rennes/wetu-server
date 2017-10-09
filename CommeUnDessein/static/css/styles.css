@@ -2135,11 +2135,8 @@ li.tool-btn.selected .favorite-btn {
   left: 50%;
   top: 50%;
 }
-#loadingBar #spinner {
-  margin-left: 170px;
-}
-#loadingBar .glyphicon-refresh-animate {
-  margin-right: 10px;
+#loadingBar span.text {
+  margin-left: 10px;
 }
 .form-control {
   height: auto;

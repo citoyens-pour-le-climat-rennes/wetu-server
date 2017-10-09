@@ -31,7 +31,7 @@ $(document).ready () ->
 
 	# if window.location.pathname == "/accounts/login/" and errors == "L’adresse e-mail ou le mot de passe sont incorrects."
 		# window.location = "/connexion/#wrongPassword"
-	
+
 	if window.location.pathname == "/accounts/signup/"
 		window.location = "/connexion/"
 
@@ -170,10 +170,9 @@ $(document).ready () ->
 					if result.emailShortNameIsKnown 
 						username += Math.random().toFixed(2).substring(2)
 					usernameJ.val(username)
-					setState('Username')
-					labelJ.text("Nom d'utilisateur :")
-					usernameJ.removeClass('cd-hidden').show()
-					deferredFocus(usernameJ)
+					setState('AcceptEmails')
+					labelJ.text("Vous devez accepter de recevoir des emails de Comme un Dessein pour continuer")
+					deferredFocus(primaryButtonJ.focus())
 				else
 					titleJ.text('Se connecter')
 					if result.emailIsKnown
@@ -188,6 +187,13 @@ $(document).ready () ->
 					deferredFocus(passwordJ)
 				
 				return
+		else if state == 'AcceptEmails'
+
+			setState('Username')
+			labelJ.text("Nom d'utilisateur :")
+			usernameJ.removeClass('cd-hidden').show()
+			deferredFocus(usernameJ)
+
 		else if state == 'Username'
 			
 			username = usernameJ.val()
@@ -258,7 +264,8 @@ $(document).ready () ->
 			# backJ.hide()
 			# primaryButtonJ.hide()
 			window.location = '/'
-		else if state == 'Username'
+		
+		else if state == 'Username' or state == 'AcceptEmails'
 			setState('Email')
 			
 			titleJ.text('Créer un compte ou se connecter')
