@@ -2520,13 +2520,8 @@ def getNextValidatedDrawing(request, city=None):
 
 	for drawing in drawings:
 		for vote in drawing.votes:
-			try:
-				author = UserProfile.objects.get(username=vote.author)
-			except UserProfile.DoesNotExist:
-				print('user does not exist')
-				continue
 
-			if author.admin:
+			if vote.author.admin:
 
 				if drawing is not None:
 
