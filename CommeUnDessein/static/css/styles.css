@@ -1883,6 +1883,10 @@ li.tool-btn.selected .favorite-btn {
 #drawingPanel .container .selected-drawings {
   width: 100%;
 }
+#drawingPanel .container .selected-drawings .drawing-list-container {
+  overflow-y: auto;
+  padding: 5px;
+}
 #drawingPanel .container .selected-drawings .drawing-list-container ul {
   padding-left: 0px;
   padding-right: 0px;
