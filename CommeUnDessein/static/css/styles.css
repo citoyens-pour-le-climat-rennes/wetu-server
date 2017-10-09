@@ -635,7 +635,7 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   padding: 9px;
   text-align: center;
   max-height: 50px;
-  overflow-y: overlay;
+  overflow-y: auto;
   border-radius: 0;
 }
 #CommeUnDessein_alerts .show-btn-container {
