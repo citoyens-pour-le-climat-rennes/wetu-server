@@ -1398,6 +1398,13 @@ li.tool-btn.selected .favorite-btn {
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
           flex-direction: column;
+  -webkit-box-flex: 1;
+          flex-grow: 1;
+}
+.cd-column.cd-end,
+.cd-column.align-end {
+  -webkit-box-flex: inherit;
+          flex-grow: inherit;
 }
 .cd-row {
   display: -webkit-box;
@@ -1405,6 +1412,13 @@ li.tool-btn.selected .favorite-btn {
   -webkit-box-orient: horizontal;
   -webkit-box-direction: normal;
           flex-direction: row;
+  -webkit-box-flex: 1;
+          flex-grow: 1;
+}
+.cd-row.cd-end,
+.cd-row.align-end {
+  -webkit-box-flex: inherit;
+          flex-grow: inherit;
 }
 .cd-grow {
   -webkit-box-flex: 1;

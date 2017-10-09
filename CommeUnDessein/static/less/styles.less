@@ -1636,10 +1636,18 @@ li.tool-btn {
 .cd-column {
 	display: flex;
 	flex-direction: column;
+	flex-grow: 1;
+	&.cd-end, &.align-end {
+		flex-grow: inherit;
+	}
 }
 .cd-row {
 	display: flex;
 	flex-direction: row;
+	flex-grow: 1;
+	&.cd-end, &.align-end {
+		flex-grow: inherit;
+	}
 }
 
 .cd-grow {
