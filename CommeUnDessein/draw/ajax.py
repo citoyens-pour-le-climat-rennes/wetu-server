@@ -791,8 +791,9 @@ def loadSVG(request, city=None):
 		statusToLoad.append('notConfirmed')
 		statusToLoad.append('flagged')
 
-	drawings = Drawing.objects(city=cityPk, status__in=statusToLoad).only('svg', 'status', 'pk', 'clientId', 'title', 'owner', 'bounds')
-	
+	# drawings = Drawing.objects(city=cityPk, status__in=statusToLoad).only('svg', 'status', 'pk', 'clientId', 'title', 'owner', 'bounds')
+	drawings = Drawing.objects(city=cityPk, status__in=statusToLoad).only('status', 'pk', 'clientId', 'title', 'owner', 'bounds')
+
 	items = []
 	for drawing in drawings:
 		items.append(drawing.to_json())
@@ -1879,7 +1880,7 @@ def createDrawingThumbnail(request, pk, png=None):
 
 # @dajaxice_register
 @checkDebug
-def loadDrawing(request, pk, loadSVG=False, loadVotes=True, svgOnly=False):
+def loadDrawing(request, pk, loadSVG=False, loadVotes=True, svgOnly=False, loadPathList=False):
 	try:
 		drawingSet = Drawing.objects.only('pk')
 		if not svgOnly:
@@ -1888,6 +1889,8 @@ def loadDrawing(request, pk, loadSVG=False, loadVotes=True, svgOnly=False):
 			drawingSet = drawingSet.only('svg')
 		if loadVotes:
 			drawingSet = drawingSet.only('votes')
+		if loadPathList:
+			drawingSet = drawingSet.only('pathList')
 		d = drawingSet.get(pk=pk)
 	except Drawing.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
@@ -2527,13 +2530,15 @@ def getNextValidatedDrawing(request, city=None):
 
 					# get all path of the first drawing
 					paths = []
-					for path in drawing.paths:
-						paths.append(path.to_json())
-
+					# for path in drawing.paths:
+					# 	paths.append(path.to_json())
+					for path in drawing.pathList:
+						paths.append(json.loads(path))
+					
 					return  json.dumps( {'state': 'success', 'pk': str(drawing.pk), 'items': paths } )
 	
-	if len(drawings) > 0:
-		send_mail('[Comme un dessein] Drawing validated but no moderator voted for it', '[Comme un dessein] One or more drawing has been validated but no moderator voted for it', 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+	# if len(drawings) > 0 and :
+	#	 send_mail('[Comme un dessein] Drawing validated but no moderator voted for it', '[Comme un dessein] One or more drawing has been validated but no moderator voted for it', 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 	return  json.dumps( {'state': 'success', 'message': 'no path' } )
 
 @checkDebug
