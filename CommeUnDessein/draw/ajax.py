@@ -2541,7 +2541,7 @@ def getNextValidatedDrawing(request, city=None):
 
 					return  json.dumps( {'state': 'success', 'pk': str(drawing.pk), 'items': paths } )
 	
-	if len(drawings) > 0 and :
+	if len(drawings) > 0:
 		drawingChanged.send(sender=None, type='adminMessage', title='Drawing validated but no moderator', description='Drawing names: ' + json.dumps(drawingNames))
 
 	#	 send_mail('[Comme un dessein] Drawing validated but no moderator voted for it', '[Comme un dessein] One or more drawing has been validated but no moderator voted for it', 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
