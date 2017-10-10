@@ -3028,8 +3028,20 @@ body.allauth p input[type="email"] {
 .cd-small-link:focus {
   color: #64B5F6;
 }
+img.cd-small-link {
+  width: 60px;
+  margin: 20px;
+  margin-left: 41px;
+}
 .cd-medium-link {
   margin: 5px;
+}
+.cd-medium-link img {
+  width: 150px;
+  margin: 20px;
+}
+.cd-medium-link:first-child {
+  margin-left: 0;
 }
 .cd-large-link {
   margin: 10px;

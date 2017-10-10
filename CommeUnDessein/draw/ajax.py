@@ -233,7 +233,11 @@ def on_email_confirmed(sender, email_address, request, **kwargs):
 	Comment.objects(author=userProfile).update(emailConfirmed=True)
 
 	for vote in userProfile.votes:
-		updateDrawingState(vote.drawing.pk, vote.drawing)
+		if isinstance(vote, Vote):
+			try:
+				updateDrawingState(vote.drawing.pk, vote.drawing)
+			except DoesNotExist:
+				pass
 
 	for drawing in drawings:
 		cityName = 'CommeUnDessein'
@@ -816,7 +820,11 @@ def loadVotes(request, city=None):
 
 	votes = []
 	for vote in userVotes.votes:
-		votes.append({ 'pk': str(vote.drawing.clientId), 'positive': vote.positive } )
+		if isinstance(vote, Vote):
+			try:
+				votes.append({ 'pk': str(vote.drawing.clientId), 'positive': vote.positive } )
+			except DoesNotExist:
+				pass
 
 	return json.dumps( { 'votes': votes } )
 
@@ -1754,11 +1762,29 @@ def bannUser(request, username, removeDrawings=False, removeVotes=False, removeC
 
 	if removeVotes:
 		for vote in userProfile.votes:
-			vote.delete()
+			if isinstance(vote, Vote):
+				try:
+					vote.author.votes.remove(vote)
+				except DoesNotExist:
+					pass
+				try:
+					vote.drawing.votes.remove(vote)
+				except DoesNotExist:
+					pass
+				vote.delete()
 	
 	if removeComments:
 		for comment in userProfile.comments:
-			comment.delete()
+			if isinstance(comment, Comment):
+				try:
+					comment.author.votes.remove(vote)
+				except DoesNotExist:
+					pass
+				try:
+					comment.drawing.votes.remove(vote)
+				except DoesNotExist:
+					pass
+				comment.delete()
 
 	return
 
@@ -1900,8 +1926,11 @@ def loadDrawing(request, pk, loadSVG=False, loadVotes=True, svgOnly=False, loadP
 	if loadVotes:
 		for vote in d.votes:
 			if isinstance(vote, Vote):
-				if vote.emailConfirmed or request.user.username == vote.author.username:
-					votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk) } )
+				try:
+					if vote.emailConfirmed or request.user.username == vote.author.username:
+						votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk) } )
+				except DoesNotExist:
+					pass
 
 	return json.dumps( {'state': 'success', 'votes': votes, 'drawing': d.to_json() } )
 
@@ -1925,8 +1954,11 @@ def loadComments(request, drawingPk):
 	if drawing.comments:
 		for comment in drawing.comments:
 			if isinstance(comment, Comment):
-				if comment.emailConfirmed or request.user.username == comment.author.username or isAdmin(request.user):
-					comments.append( { 'comment': comment.to_json(), 'author': comment.author.username, 'authorPk': str(comment.author.pk) } )
+				try:
+					if comment.emailConfirmed or request.user.username == comment.author.username or isAdmin(request.user):
+						comments.append( { 'comment': comment.to_json(), 'author': comment.author.username, 'authorPk': str(comment.author.pk) } )
+				except DoesNotExist:
+					pass
 
 	return json.dumps( {'state': 'success', 'comments': comments } )
 
@@ -2209,6 +2241,53 @@ def deleteDrawings(request, drawingsToDelete, confirm=None):
 	return json.dumps( { 'state': 'success', 'pks': drawingsToDelete } )
 
 # --- get drafts --- #
+
+@checkDebug
+def removeDeadReferences(request):
+
+	if not isAdmin(request.user):
+		return json.dumps( {'state': 'error', 'message': 'not admin' } )
+
+	users = UserProfile.objects()
+	for user in users:
+		modified = False
+		for vote in user.votes[:]:
+			if not isinstance(vote, Vote):
+				user.votes.remove(vote)
+				modified = True
+		for comment in user.comments[:]:
+			if not isinstance(comment, Comment):
+				user.comments.remove(comment)
+				modified = True
+		if modified:
+			user.save()
+
+	# votes = Vote.objects()
+	# for vote in votes:
+	# 	if not isinstance(vote.author, UserProfile) or not isinstance(vote.drawing, Drawing):
+	# 		vote.delete()
+	
+	# comments = Comment.objects()
+	# for comment in comments:
+	# 	if not isinstance(comment.author, UserProfile) or not isinstance(comment.drawing, Drawing):
+	# 		comment.delete()
+
+	drawings = Drawing.objects()
+	for drawing in drawings:
+		modified = False
+		for vote in drawing.votes[:]:
+			if not isinstance(vote, Vote):
+				drawing.votes.remove(vote)
+				modified = True
+		for comment in drawing.comments[:]:
+			if not isinstance(comment, Comment):
+				drawing.comments.remove(comment)
+				modified = True
+		if modified:
+			drawing.save()
+
+	return json.dumps( { 'state': 'success' } )
+
 @checkDebug
 def getDrafts(request, city=None):
 
@@ -2233,7 +2312,7 @@ def computeVotes(drawing):
 	nPositiveVotes = 0
 	nNegativeVotes = 0
 	for vote in drawing.votes:
-		if vote.emailConfirmed:
+		if isinstance(vote, Vote) and vote.emailConfirmed:
 			if vote.positive:
 				nPositiveVotes += 1
 			else:
@@ -2276,6 +2355,10 @@ def updateDrawingState(drawingPk=None, drawing=None, unflag=False):
 def isDrawingStatusValidated(drawing):
 	return drawing.status == 'drawing' or drawing.status == 'drawn'
 
+def hasOwnerDisabledEmail(owner):
+	return hasattr(owner, 'disableEmail') and owner.disableEmail
+
+
 @checkDebug
 def vote(request, pk, date, positive):
 	if not request.user.is_authenticated():
@@ -2308,21 +2391,24 @@ def vote(request, pk, date, positive):
 		return json.dumps({'state': 'error', 'message': 'The drawing has not been confirmed.'})
 
 	for vote in drawing.votes:
-		if vote.author.username == request.user.username:
-			if vote.positive == positive:
-				if datetime.datetime.now() - vote.date < voteValidationDelay:
-					return json.dumps({'state': 'error', 'message': 'You must wait before cancelling your vote', 'cancelled': False, 'voteValidationDelay': voteValidationDelay.total_seconds(), 'messageOptions': ['voteValidationDelay'] })
-				# cancel vote: delete vote and return:
-				vote.author.votes.remove(vote)
-				drawing.votes.remove(vote)
-				vote.delete()
-				return json.dumps({'state': 'success', 'message': 'Your vote was cancelled', 'cancelled': True })
-			else:
-				# votes are different: delete vote and break (create a new one):
-				vote.author.votes.remove(vote)
-				drawing.votes.remove(vote)
-				vote.delete()
-				break
+		try:
+			if isinstance(vote, Vote) and vote.author.username == request.user.username:
+				if vote.positive == positive:
+					if datetime.datetime.now() - vote.date < voteValidationDelay:
+						return json.dumps({'state': 'error', 'message': 'You must wait before cancelling your vote', 'cancelled': False, 'voteValidationDelay': voteValidationDelay.total_seconds(), 'messageOptions': ['voteValidationDelay'] })
+					# cancel vote: delete vote and return:
+					vote.author.votes.remove(vote)
+					drawing.votes.remove(vote)
+					vote.delete()
+					return json.dumps({'state': 'success', 'message': 'Your vote was cancelled', 'cancelled': True })
+				else:
+					# votes are different: delete vote and break (create a new one):
+					vote.author.votes.remove(vote)
+					drawing.votes.remove(vote)
+					vote.delete()
+					break
+		except DoesNotExist:
+			pass
 
 
 	emailConfirmed = EmailAddress.objects.filter(user=request.user, verified=True).exists()
@@ -2347,7 +2433,10 @@ def vote(request, pk, date, positive):
 	votes = []
 	for vote in drawing.votes:
 		if isinstance(vote, Vote):
-			votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk) } )
+			try:
+				votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk) } )
+			except DoesNotExist:
+				pass
 
 	drawingChanged.send(sender=None, type='votes', drawingId=drawing.clientId, status=drawing.status, votes=votes, positive=positive, author=vote.author.username, title=drawing.title)
 
@@ -2365,7 +2454,7 @@ def vote(request, pk, date, positive):
 	except User.DoesNotExist:
 		print("Owner not found")
 	
-	if owner and not owner.disableEmail:
+	if owner and not hasOwnerDisabledEmail(owner):
 		forAgainst = 'pour'
 		if not positive:
 			forAgainst = 'contre'
@@ -2430,7 +2519,7 @@ def addComment(request, drawingPk, comment, date):
 		owner = User.objects.get(username=drawing.owner)
 	except User.DoesNotExist:
 		print("Owner not found")
-	if owner and not owner.disableEmail:
+	if owner and not hasOwnerDisabledEmail(owner):
 		send_mail('[Comme un Dessein] ' + request.user.username + u' a commenté votre dessin !', request.user.username + u' a commenté votre dessin \"' + drawing.title + u'\" sur Comme un Dessein !\n\nVisitez le resultat sur https://commeundessein.co/drawing-'+str(drawing.pk)+u'\nMerci d\'avoir participé à Comme un Dessein,\nLe collectif Indien dans la ville\nhttp://idlv.co/\nidlv.contact@gmail.com', 'contact@commeundessein.co', [owner.email], fail_silently=True)
 
 	return json.dumps( {'state': 'success', 'author': request.user.username, 'drawingPk':str(drawing.pk), 'commentPk': str(c.pk), 'comment': c.to_json() } )
@@ -2526,21 +2615,24 @@ def getNextValidatedDrawing(request, city=None):
 	for drawing in drawings:
 		for vote in drawing.votes:
 
-			if vote.author.admin:
+			try:
+				if isinstance(vote, Vote) and vote.author.admin:
 
-				if drawing is not None:
-					
-					drawingNames.append(drawing.title)
+					if drawing is not None:
+						
+						drawingNames.append(drawing.title)
 
-					# get all path of the first drawing
-					paths = []
-					# for path in drawing.paths:
-					# 	paths.append(path.to_json())
-					for path in drawing.pathList:
-						paths.append(json.dumps({'data': json.dumps({'points': json.loads(path), 'planet': {'x': 0, 'y': 0}}), '_id': {'$oid': None} }))
+						# get all path of the first drawing
+						paths = []
+						# for path in drawing.paths:
+						# 	paths.append(path.to_json())
+						for path in drawing.pathList:
+							paths.append(json.dumps({'data': json.dumps({'points': json.loads(path), 'planet': {'x': 0, 'y': 0}}), '_id': {'$oid': None} }))
 
-					return  json.dumps( {'state': 'success', 'pk': str(drawing.pk), 'items': paths } )
-	
+						return  json.dumps( {'state': 'success', 'pk': str(drawing.pk), 'items': paths } )
+			except DoesNotExist:
+				pass
+		
 	if len(drawings) > 0:
 		drawingChanged.send(sender=None, type='adminMessage', title='Drawing validated but no moderator', description='Drawing names: ' + json.dumps(drawingNames))
 
