@@ -207,16 +207,16 @@ def setVoteMinDuration(request, hours, minutes, seconds):
 # allauth.account.signals.email_confirmed(request, email_address)
 @receiver(email_confirmed)
 def on_email_confirmed(sender, email_address, request, **kwargs):
-	if kwargs is None or 'email_address' not in kwargs:
-		print("Error: no email_address in on_email_confirmed")
-		return
+	# if kwargs is None or 'email_address' not in kwargs:
+	# 	print("Error: no email_address in on_email_confirmed")
+	# 	return
 
 	# request = kwargs['request']
 	# email_address = kwargs['email_address']
 	
 	print("on_email_confirmed")
 
-	# user = request.user
+	user = request.user
 	user = email_address.user
 	
 	try:
