@@ -233,5 +233,7 @@
     "Your email must be confirmed to report an abuse": "Votre email doit être confirmé pour signaler un abus.",
     "You must submit your draft before cancelling a drawing": "Vous devez soumettre votre brouillon avant d'annuler un dessin",
     "Contact us at": "Pour toute question, remarque ou suggestion :",
-    "You can discuss about drawings": "Venez discuter sur http://discussion.commeundessein.co/ pour créer une oeuvre collective !"
+    "You can discuss about drawings": "Venez discuter sur http://discussion.commeundessein.co/ pour créer une oeuvre collective !",
+    "Your vote was successfully sent, but you must confirm your email before it is taken into account": "Votre vote a bien été envoyé, mais vous devez confirmer votre adresse email pour qu'il soit pris en compte (vous avez reçu un email pour activer votre compte).",
+    "If you have troubles confirming your account, please email us": "Si vous rencontrez des problèmes pour valider votre compte, contactez nous à l'adresse idlv.contact@gmail.com"
 }

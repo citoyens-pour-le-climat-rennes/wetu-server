@@ -56,10 +56,10 @@ import base64
 import functools
 
 debugMode = False
-positiveVoteThreshold = 50
-negativeVoteThreshold = 5
+positiveVoteThreshold = 10
+negativeVoteThreshold = 3
 voteValidationDelay = datetime.timedelta(minutes=1) 		# once the drawing gets positiveVoteThreshold votes, the duration before the drawing gets validated (the drawing is not immediately validated in case the user wants to cancel its vote)
-voteMinDuration = datetime.timedelta(hours=6)				# the minimum duration the vote will last (to make sure a good moderation happens)
+voteMinDuration = datetime.timedelta(hours=1)				# the minimum duration the vote will last (to make sure a good moderation happens)
 drawingMaxSize = 1000
 
 drawingModes = ['free', 'ortho', 'orthoDiag', 'pixel', 'image']
@@ -1692,7 +1692,7 @@ def submitDrawing(request, pk, clientId, svg, date, bounds, title=None, descript
 	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk), 'status': d.status, 'negativeVoteThreshold': negativeVoteThreshold, 'positiveVoteThreshold': positiveVoteThreshold, 'voteMinDuration': voteMinDuration.total_seconds() } )
 
 def createDrawingDiscussion(drawing):
-	values = { 'title': drawing.title, 'raw': u'Discussion à propos de ' + drawing.title + u'.\n\nhttps://commeundessein.co/drawing-'+str(drawing.pk)+'\n\nhttps://commeundessein.co/static/drawings/'+str(drawing.pk), 'category': 'dessins', 'api_username': localSettings['DISCOURSE_USERNAME'], 'api_key': localSettings['DISCOURSE_API_KEY'] }
+	values = { 'title': drawing.title, 'raw': u'Discussion à propos de ' + drawing.title + u'.\n\nhttps://commeundessein.co/drawing-'+str(drawing.pk)+'\n\nhttps://commeundessein.co/static/drawings/'+str(drawing.pk)+'.png', 'category': 'dessins', 'api_username': localSettings['DISCOURSE_USERNAME'], 'api_key': localSettings['DISCOURSE_API_KEY'] }
 
 	values_data = {}
 	for k, v in values.iteritems():
@@ -2434,7 +2434,8 @@ def vote(request, pk, date, positive):
 	for vote in drawing.votes:
 		if isinstance(vote, Vote):
 			try:
-				votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk) } )
+				if vote.author.emailConfirmed:
+					votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk) } )
 			except DoesNotExist:
 				pass
 
