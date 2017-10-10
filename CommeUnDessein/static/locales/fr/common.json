@@ -187,7 +187,7 @@
     "Ok": "Ok",
     "Cancel": "Annuler",
     "No thanks": "Non merci",
-    "Drawing submitted": "Dessin validé !",
+    "Drawing submitted": "Dessin soumit au vote !",
     "Share your drawing": "Partager votre dessin",
     "Would you like to share your drawing on Facebook or Twitter": "Voulez-vous partager votre dessin sur Facebook ou Twitter ?",
     "Choose you mode": "Choisissez votre mode de dessin",
@@ -234,6 +234,11 @@
     "You must submit your draft before cancelling a drawing": "Vous devez soumettre votre brouillon avant d'annuler un dessin",
     "Contact us at": "Pour toute question, remarque ou suggestion :",
     "You can discuss about drawings": "Venez discuter sur http://discussion.commeundessein.co/ pour créer une oeuvre collective !",
-    "Your vote was successfully sent, but you must confirm your email before it is taken into account": "Votre vote a bien été envoyé, mais vous devez confirmer votre adresse email pour qu'il soit pris en compte (vous avez reçu un email pour activer votre compte).",
-    "If you have troubles confirming your account, please email us": "Si vous rencontrez des problèmes pour valider votre compte, contactez nous à l'adresse idlv.contact@gmail.com"
+    "Your vote was received": "Votre vote a bien été reçu",
+    "Your vote was successfully received, but you must confirm your email before it is taken into account": "Votre vote a bien été reçu, mais vous devez confirmer votre adresse email pour qu'il soit pris en compte.",
+    "You received an email to activate your account": "(vous avez reçu un email pour activer votre compte)",
+    "If you have troubles confirming your account, please email us": "Si vous rencontrez des problèmes pour valider votre compte, contactez nous à l'adresse idlv.contact@gmail.com",
+    "Your comment was successfully received, but you must confirm your email before it is taken into account": "Votre commentaire a bien été reçu, mais vous devez confirmer votre adresse email pour qu'il soit pris en compte.",
+    "You voted up": "Vous avez voté pour",
+    "You voted down": "Vous avez voté contre"
 }

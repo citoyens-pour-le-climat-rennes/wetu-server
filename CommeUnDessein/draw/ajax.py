@@ -206,6 +206,7 @@ def setVoteMinDuration(request, hours, minutes, seconds):
 
 # allauth.account.signals.email_confirmed(request, email_address)
 @receiver(email_confirmed)
+@checkDebug
 def on_email_confirmed(sender, email_address, request, **kwargs):
 	# if kwargs is None or 'email_address' not in kwargs:
 	# 	print("Error: no email_address in on_email_confirmed")
@@ -216,7 +217,6 @@ def on_email_confirmed(sender, email_address, request, **kwargs):
 	
 	print("on_email_confirmed")
 
-	user = request.user
 	user = email_address.user
 	
 	try:
@@ -224,9 +224,19 @@ def on_email_confirmed(sender, email_address, request, **kwargs):
 	except UserProfile.DoesNotExist:
 		print("Error: the user profile who confirmed his email is not found")
 		return
-	
+
+	try: 
+		emailAddress = EmailAddress.objects.get(user=request.user)
+		if not emailAddress.verified:
+			emailAddress.verified = True
+			emailAddress.save()
+	except EmailAddress.DoesNotExist:
+		print("Error: the email address which was confirmed his email is not found")
+		return
+
 	userProfile.emailConfirmed = True
 	userProfile.save()
+
 	drawings = Drawing.objects(owner=user.username, status='emailNotConfirmed')
 	drawings.update(status='pending')
 	Vote.objects(author=userProfile).update(emailConfirmed=True)
@@ -822,7 +832,7 @@ def loadVotes(request, city=None):
 	for vote in userVotes.votes:
 		if isinstance(vote, Vote):
 			try:
-				votes.append({ 'pk': str(vote.drawing.clientId), 'positive': vote.positive } )
+				votes.append({ 'pk': str(vote.drawing.clientId), 'positive': vote.positive, 'emailConfirmed': vote.author.emailConfirmed } )
 			except DoesNotExist:
 				pass
 
@@ -1927,8 +1937,7 @@ def loadDrawing(request, pk, loadSVG=False, loadVotes=True, svgOnly=False, loadP
 		for vote in d.votes:
 			if isinstance(vote, Vote):
 				try:
-					if vote.emailConfirmed or request.user.username == vote.author.username:
-						votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk) } )
+					votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk), 'emailConfirmed': vote.author.emailConfirmed } )
 				except DoesNotExist:
 					pass
 
@@ -1955,8 +1964,7 @@ def loadComments(request, drawingPk):
 		for comment in drawing.comments:
 			if isinstance(comment, Comment):
 				try:
-					if comment.emailConfirmed or request.user.username == comment.author.username or isAdmin(request.user):
-						comments.append( { 'comment': comment.to_json(), 'author': comment.author.username, 'authorPk': str(comment.author.pk) } )
+					comments.append( { 'comment': comment.to_json(), 'author': comment.author.username, 'authorPk': str(comment.author.pk), 'emailConfirmed': comment.author.emailConfirmed } )
 				except DoesNotExist:
 					pass
 
@@ -2312,7 +2320,7 @@ def computeVotes(drawing):
 	nPositiveVotes = 0
 	nNegativeVotes = 0
 	for vote in drawing.votes:
-		if isinstance(vote, Vote) and vote.emailConfirmed:
+		if isinstance(vote, Vote) and vote.author.emailConfirmed:
 			if vote.positive:
 				nPositiveVotes += 1
 			else:
@@ -2414,7 +2422,7 @@ def vote(request, pk, date, positive):
 	emailConfirmed = EmailAddress.objects.filter(user=request.user, verified=True).exists()
 	user.emailConfirmed = emailConfirmed
 
-	vote = Vote(author=user, drawing=drawing, positive=positive, date=datetime.datetime.fromtimestamp(date/1000.0), emailConfirmed=emailConfirmed)
+	vote = Vote(author=user, drawing=drawing, positive=positive, date=datetime.datetime.fromtimestamp(date/1000.0))
 	vote.save()
 
 	drawing.votes.append(vote)
@@ -2434,8 +2442,7 @@ def vote(request, pk, date, positive):
 	for vote in drawing.votes:
 		if isinstance(vote, Vote):
 			try:
-				if vote.author.emailConfirmed:
-					votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk) } )
+				votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk), 'emailConfirmed': vote.author.emailConfirmed } )
 			except DoesNotExist:
 				pass
 
@@ -2506,7 +2513,7 @@ def addComment(request, drawingPk, comment, date):
 	emailConfirmed = EmailAddress.objects.filter(user=request.user, verified=True).exists()
 	user.emailConfirmed = emailConfirmed
 
-	c = Comment(author=user, drawing=drawing, text=comment, date=datetime.datetime.fromtimestamp(date/1000.0), emailConfirmed=emailConfirmed)
+	c = Comment(author=user, drawing=drawing, text=comment, date=datetime.datetime.fromtimestamp(date/1000.0))
 	c.save()
 
 	drawing.comments.append(c)
@@ -2523,7 +2530,7 @@ def addComment(request, drawingPk, comment, date):
 	if owner and not hasOwnerDisabledEmail(owner):
 		send_mail('[Comme un Dessein] ' + request.user.username + u' a commenté votre dessin !', request.user.username + u' a commenté votre dessin \"' + drawing.title + u'\" sur Comme un Dessein !\n\nVisitez le resultat sur https://commeundessein.co/drawing-'+str(drawing.pk)+u'\nMerci d\'avoir participé à Comme un Dessein,\nLe collectif Indien dans la ville\nhttp://idlv.co/\nidlv.contact@gmail.com', 'contact@commeundessein.co', [owner.email], fail_silently=True)
 
-	return json.dumps( {'state': 'success', 'author': request.user.username, 'drawingPk':str(drawing.pk), 'commentPk': str(c.pk), 'comment': c.to_json() } )
+	return json.dumps( {'state': 'success', 'author': request.user.username, 'drawingPk':str(drawing.pk), 'commentPk': str(c.pk), 'comment': c.to_json(), 'emailConfirmed': emailConfirmed } )
 
 @checkDebug
 def modifyComment(request, commentPk, comment):
