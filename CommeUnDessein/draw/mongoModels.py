@@ -45,6 +45,7 @@ class UserProfile(Document):
     admin = BooleanField(default=False)
     commeUnDesseinCoins = IntField(default=0)
     emailConfirmed = BooleanField(default=False)
+    disableEmail = BooleanField(default=False)
     votes = ListField(ReferenceField('Vote', reverse_delete_rule=PULL))
     comments = ListField(ReferenceField('Comment', reverse_delete_rule=PULL))
     banned = BooleanField(default=False)

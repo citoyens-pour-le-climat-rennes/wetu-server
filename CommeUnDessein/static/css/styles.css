@@ -375,6 +375,9 @@ body.line #FavoriteTools ul.tool-list .tool-btn span.glyphicon {
 body.line #FavoriteTools ul.tool-list .tool-btn:hover {
   background-color: #0089d9;
 }
+body.line #FavoriteTools ul.tool-list .tool-btn.no-hover:hover {
+  background-color: transparent;
+}
 body.line #FavoriteTools ul.tool-list .tool-btn.btn-success {
   background-color: #4cae4c;
 }
@@ -681,7 +684,7 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   opacity: 1;
   z-index: 10;
   position: absolute;
-  top: 62px;
+  top: 60px;
   left: 0;
   bottom: 0;
   right: 0;
@@ -1483,7 +1486,7 @@ li.tool-btn.selected .favorite-btn {
   user-select: none;
 }
 #drawingPanel.general .main-content #information-footer {
-  margin-top: 50px;
+  margin-top: 30px;
 }
 #drawingPanel #drawing-panel-handle {
   position: absolute;
@@ -2364,16 +2367,18 @@ body.allauth p input[type="email"] {
     margin-right: 0;
   }
 }
-@media (max-width: 1024px) {
-  #FavoriteTools h3.title {
-    width: 68px;
-    font-size: 16px;
-  }
+@media (max-width: 1200px) {
   #FavoriteTools #user-profile .username {
     display: none;
   }
   #FavoriteTools #user-profile .dropdown-menu > li > a {
     padding: 3px 5px;
+  }
+}
+@media (max-width: 1024px) {
+  #FavoriteTools h3.title {
+    width: 68px;
+    font-size: 16px;
   }
   #FavoriteTools .mode-button .text {
     display: none;
@@ -2505,7 +2510,7 @@ body.allauth p input[type="email"] {
     width: 100%;
   }
   #stage.main {
-    top: 50px;
+    top: 48px;
   }
   #submit-drawing-button {
     width: 100%;
@@ -2978,4 +2983,22 @@ body.allauth p input[type="email"] {
 .sidebar .about-panel img {
   margin: 15px;
   opacity: 0.7;
+}
+.cd-small-link {
+  margin: 2px;
+  color: #90CAF9;
+}
+.cd-small-link:hover {
+  color: white;
+}
+.cd-small-link:visited,
+.cd-small-link:active,
+.cd-small-link:focus {
+  color: #64B5F6;
+}
+.cd-medium-link {
+  margin: 5px;
+}
+.cd-large-link {
+  margin: 10px;
 }

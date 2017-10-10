@@ -812,7 +812,7 @@ def loadVotes(request, city=None):
 	try:
 		userVotes = UserProfile.objects.only('votes').get(username=request.user.username)
 	except UserProfile.DoesNotExist:
-		return json.dumps( { 'state': 'error', 'message': 'User does not exist.' } )
+		return json.dumps( { 'state': 'fail_silently', 'message': 'User does not exist.' } )
 
 	votes = []
 	for vote in userVotes.votes:
@@ -1684,7 +1684,7 @@ def submitDrawing(request, pk, clientId, svg, date, bounds, title=None, descript
 	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk), 'status': d.status, 'negativeVoteThreshold': negativeVoteThreshold, 'positiveVoteThreshold': positiveVoteThreshold, 'voteMinDuration': voteMinDuration.total_seconds() } )
 
 def createDrawingDiscussion(drawing):
-	values = { 'title': drawing.title, 'raw': u'Discussion à propos de ' + drawing.title + u'.', 'category': 'dessins', 'api_username': localSettings['DISCOURSE_USERNAME'], 'api_key': localSettings['DISCOURSE_API_KEY'] }
+	values = { 'title': drawing.title, 'raw': u'Discussion à propos de ' + drawing.title + u'.\n\nhttps://commeundessein.co/drawing-'+str(drawing.pk)+'\n\nhttps://commeundessein.co/static/drawings/'+str(d.pk), 'category': 'dessins', 'api_username': localSettings['DISCOURSE_USERNAME'], 'api_key': localSettings['DISCOURSE_API_KEY'] }
 
 	values_data = {}
 	for k, v in values.iteritems():
@@ -2365,11 +2365,11 @@ def vote(request, pk, date, positive):
 	except User.DoesNotExist:
 		print("Owner not found")
 	
-	if owner:
+	if owner and not owner.disableEmail:
 		forAgainst = 'pour'
 		if not positive:
 			forAgainst = 'contre'
-		send_mail('[Comme un Dessein]' + request.user.username + u' a voté ' + forAgainst + u' votre dessin !', request.user.username + u' a voté ' + forAgainst + u' votre dessin \"' + drawing.title + u'\" sur Comme un Dessein !\n\nVisitez le resultat sur https://commeundessein.co/drawing-'+str(drawing.pk)+u'\nMerci d\'avoir participé à Comme un Dessein,\nLe collectif Indien dans la ville\nhttp://idlv.co/', 'contact@commeundessein.co', [owner.email], fail_silently=True)
+		send_mail('[Comme un Dessein]' + request.user.username + u' a voté ' + forAgainst + u' votre dessin !', request.user.username + u' a voté ' + forAgainst + u' votre dessin \"' + drawing.title + u'\" sur Comme un Dessein !\n\nVisitez le resultat sur https://commeundessein.co/drawing-'+str(drawing.pk)+u'\nMerci d\'avoir participé à Comme un Dessein,\n\nPour ne plus recevoir de notifications, allez sur https://commeundessein.co/email/desactivation/\n\nLe collectif Indien dans la ville\nhttp://idlv.co/\nidlv.contact@gmail.com', 'contact@commeundessein.co', [owner.email], fail_silently=True)
 
 	return json.dumps( {'state': 'success', 'owner': request.user.username, 'drawingPk':str(drawing.pk), 'votePk':str(vote.pk), 'validates': validates, 'rejects': rejects, 'votes': votes, 'delay': delay, 'emailConfirmed': user.emailConfirmed } )
 
@@ -2430,8 +2430,8 @@ def addComment(request, drawingPk, comment, date):
 		owner = User.objects.get(username=drawing.owner)
 	except User.DoesNotExist:
 		print("Owner not found")
-	if owner:
-		send_mail('[Comme un Dessein] ' + request.user.username + u' a commenté votre dessin !', request.user.username + u' a commenté votre dessin \"' + drawing.title + u'\" sur Comme un Dessein !\n\nVisitez le resultat sur https://commeundessein.co/drawing-'+str(drawing.pk)+u'\nMerci d\'avoir participé à Comme un Dessein,\nLe collectif Indien dans la ville\nhttp://idlv.co/', 'contact@commeundessein.co', [owner.email], fail_silently=True)
+	if owner and not owner.disableEmail:
+		send_mail('[Comme un Dessein] ' + request.user.username + u' a commenté votre dessin !', request.user.username + u' a commenté votre dessin \"' + drawing.title + u'\" sur Comme un Dessein !\n\nVisitez le resultat sur https://commeundessein.co/drawing-'+str(drawing.pk)+u'\nMerci d\'avoir participé à Comme un Dessein,\nLe collectif Indien dans la ville\nhttp://idlv.co/\nidlv.contact@gmail.com', 'contact@commeundessein.co', [owner.email], fail_silently=True)
 
 	return json.dumps( {'state': 'success', 'author': request.user.username, 'drawingPk':str(drawing.pk), 'commentPk': str(c.pk), 'comment': c.to_json() } )
 
@@ -2521,12 +2521,16 @@ def getNextValidatedDrawing(request, city=None):
 	
 	drawings = Drawing.objects(status='drawing', city=cityPk)
 
+	drawingNames = []
+
 	for drawing in drawings:
 		for vote in drawing.votes:
 
 			if vote.author.admin:
 
 				if drawing is not None:
+					
+					drawingNames.append(drawing.title)
 
 					# get all path of the first drawing
 					paths = []
@@ -2537,7 +2541,9 @@ def getNextValidatedDrawing(request, city=None):
 
 					return  json.dumps( {'state': 'success', 'pk': str(drawing.pk), 'items': paths } )
 	
-	# if len(drawings) > 0 and :
+	if len(drawings) > 0 and :
+		drawingChanged.send(sender=None, type='adminMessage', title='Drawing validated but no moderator', description='Drawing names: ' + json.dumps(drawingNames))
+
 	#	 send_mail('[Comme un dessein] Drawing validated but no moderator voted for it', '[Comme un dessein] One or more drawing has been validated but no moderator voted for it', 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 	return  json.dumps( {'state': 'success', 'message': 'no path' } )
 

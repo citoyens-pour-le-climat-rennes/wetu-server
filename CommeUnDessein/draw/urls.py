@@ -43,6 +43,8 @@ urlpatterns = [
     url(r'^ajaxCall/$', views.ajaxCall),
     url(r'^connexion/ajaxCall/$', views.ajaxCall),
     url(r'^live/$', views.live),
+    url(r'^email/desactivation/$', views.disableEmail, {'activation': False}),
+    url(r'^email/reactivation/$', views.disableEmail, {'activation': True}),
     url(r'^ajaxCallNoCSRF/$', views.ajaxCallNoCSRF),
 
     # url(r'^#(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)$', views.index, name='index'),

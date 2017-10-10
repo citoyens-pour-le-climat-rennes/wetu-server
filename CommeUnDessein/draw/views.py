@@ -85,7 +85,26 @@ def index(request, site=None, owner=None, city=None, x=0, y=0, useDebugFiles=Fal
 	return response
 
 def live(request):
-    return redirect('https://www.youtube.com/user/smarthurt/live')
+    return redirect('https://youtu.be/NDi77EhzS7k')
+
+def disableEmail(request, activation=False):
+
+	result = {}
+	
+	result['title'] = 'Desactivation des notifications email'
+
+	try:
+		userProfile = UserProfile.objects.get(username=request.user.username)
+		userProfile.disableEmail = not activation
+		userProfile.save()
+		if activation:
+			result['message'] = u'Votre receverez à nouveau des notifications de la part de Comme un Dessein.'
+		else:
+			result['message'] = u'Votre ne receverez plus de notification de la part de Comme un Dessein. Pour réactivez les notifications, allez sur https://commeundessein.co/email/reactivation/'
+	except UserProfile.DoesNotExist:
+		result['message'] = u"Votre compte n'a pas été trouvé, veuillez vous connecter sur la page d'accueil https://commeundessein.co/ puis revenir sur cette page ."
+	
+	return render_to_response(	"message.html", result, RequestContext(request) )
 
 def about(request):
 	return render_to_response(	"about.html", {}, RequestContext(request) )

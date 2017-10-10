@@ -124,8 +124,8 @@
 
               <div id="user-login-group" class="btn-group">
                 <a href="https://commeundessein.co/">
-                  <button type="button" class="btn btn-warning submit mode-button log-in dropdown-toggle">
-                    <span class="glyphicon glyphicon-log-in"></span><span class="text" data-i18n="Sign in / up">Sign in / up</span>
+                  <button type="button" class="btn btn-success submit mode-button log-in dropdown-toggle">
+                    <img class="glyphicon" src="{% static 'images/icons/inverted/icones_connexion.png' %}"/> <span class="text" data-i18n="Sign in / up">Sign in / up</span>
                   </button>
                 </a>
                 <!-- <button type="button" class="btn btn-warning submit mode-button log-in dropdown-toggle" data-toggle="dropdown">
@@ -422,9 +422,10 @@
                   <a href="http://idlv.co/"><img src="static/images/icons/inverted/icones_idlv.png"></a>
                   <img src="static/images/icons/inverted/icones_CC_NCSABY.png">
                   
-                  <a id="about-link" href="/about.html" data-i18n="About">About</a>
-                  <a id="terms-of-service-link" href="/terms-of-service.html" data-i18n="Terms of Service">Terms of Service</a>
-                  <a id="privacy-policy-link" href="/privacy-policy.html" data-i18n="Privacy Policy">Privacy Policy</a>
+                  <!-- <a id="about-link" href="/about.html" data-i18n="About">About</a> -->
+                  <a id="terms-of-service-link" href="/terms-of-service.html" data-i18n="Terms of Service" class="cd-link">Terms of Service</a>
+                  <a id="privacy-policy-link" href="/privacy-policy.html" data-i18n="Privacy Policy" class="cd-link">Privacy Policy</a>
+                  <a href="mailto:idlv.contact@gmail.com">idlv.contact@gmail.com</a>
 
                 </div>  <!-- about panel   -->
 
@@ -520,12 +521,14 @@
 
                       <div id="information-footer" class="cd-column cd-center">
 
-                        <a href="http://idlv.co/"><img src="static/images/icons/inverted/icones_idlv.png"></a>
-                        <img src="static/images/icons/inverted/icones_CC_NCSABY.png">
+                        <a class="cd-large-link" href="http://idlv.co/" target="_blank"><img src="static/images/icons/inverted/icones_idlv.png"></a>
+
+                        <a class="cd-large-link" href="https://creativecommons.org/licenses/by-nc-sa/3.0/fr/" target="_blank"><img src="static/images/icons/inverted/icones_CC_NCSABY.png"> </a>
                         
-                        <a id="about-link" href="/about.html" data-i18n="About">About</a>
-                        <a id="terms-of-service-link" href="/terms-of-service.html" data-i18n="Terms of Service">Terms of Service</a>
-                        <a id="privacy-policy-link" href="/privacy-policy.html" data-i18n="Privacy Policy">Privacy Policy</a>
+                        <!-- <a id="about-link" href="/about.html" data-i18n="About">About</a> -->
+                        <a class="cd-small-link" id="terms-of-service-link" href="/terms-of-service.html" target="_blank" data-i18n="Terms of Service">Terms of Service</a>
+                        <a class="cd-small-link" id="privacy-policy-link" href="/privacy-policy.html" target="_blank" data-i18n="Privacy Policy">Privacy Policy</a>
+                        <a class="cd-small-link" href="mailto:idlv.contact@gmail.com">idlv.contact@gmail.com</a>
 
                       </div>   <!-- about panel   -->
 
