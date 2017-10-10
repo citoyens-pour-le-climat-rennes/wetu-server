@@ -2,7 +2,7 @@
     "Simple": "Tsimple",
     "You are logged as username": "Tsimple {{username}}",
     "key": "Tsimple {{what}}, {{how}}",
-    "Welcome to Comme Un Dessein": "Bienvenue sur Comme un Dessein",
+    "Welcome to Comme un Dessein": "Bienvenue sur Comme un Dessein !",
     "welcome message original": "Comme un dessein est une pièce participative inventée par le collectif rennais IDLV (Indiens dans la Ville). À l’aide d’un traceur monumental et d’une interface simple, chacun peut proposer une image qui s’intègre dans la fresque et ainsi composer une oeuvre collective et utopique.",
     "welcome message 1": "<strong>« La démocratie participative fait-elle réellement émerger l’intérêt général ? »</strong>",
     "welcome message 2": "L’installation <strong>Comme un dessein</strong> fait écho à cette question actuelle et vous invite à proposer un dessin pour composer une œuvre collective et utopique à l'aide d'une interface web connectée à un traceur vertical.",
@@ -232,5 +232,6 @@
     "The discussion page is not created yet": "La page de discussion n'a pas encore été créée, veuillez réessayez un peu plus tard.",
     "Your email must be confirmed to report an abuse": "Votre email doit être confirmé pour signaler un abus.",
     "You must submit your draft before cancelling a drawing": "Vous devez soumettre votre brouillon avant d'annuler un dessin",
-    "Contact us at": "Pour toute question, remarque ou suggestion :"
+    "Contact us at": "Pour toute question, remarque ou suggestion :",
+    "You can discuss about drawings": "Venez discuter sur http://discussion.commeundessein.co/ pour créer une oeuvre collective !"
 }

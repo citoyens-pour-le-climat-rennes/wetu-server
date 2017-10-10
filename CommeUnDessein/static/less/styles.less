@@ -664,6 +664,7 @@ body.hand {
 	text-align: left;
 	z-index: 2000;		// above the options bar
 
+
 	.alert-controls {
 		position: absolute;
 		top: 5px;
@@ -716,7 +717,7 @@ body.hand {
 		.vendor(transform, translateY(-50%));
 
 		left: 50px;
-		right: 0;
+		right: 40px;
 		margin: 0;
 		margin-left: 12px;
 		margin-right: 7px;
@@ -754,6 +755,43 @@ body.hand {
 
 		&:hover, &:active, &:focus {
 			outline: none;
+		}
+	}
+
+	.btn-close {
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		top: 0;
+		border-radius: 0;
+		background-color: @sidebar-background-color;
+		width: 38px;
+		.glyphicon:hover {
+			color: white;
+		}
+		.glyphicon:active, .glyphicon:visited, .glyphicon:focus {
+			color: rgb(245, 245, 245);
+		}
+		&:hover {
+			background-color: @sidebar-light-background-color;
+			.glyphicon {
+				color: white;
+			}
+		}
+		&:active {
+			.glyphicon {
+				color: rgb(245, 245, 245);
+			}
+		}
+		&:visited {
+			.glyphicon {
+				color: rgb(245, 245, 245);
+			}
+		}
+		&:focus {
+			.glyphicon {
+				color: rgb(245, 245, 245);
+			}
 		}
 	}
 

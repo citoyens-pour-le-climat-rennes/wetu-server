@@ -631,7 +631,7 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   -khtml-transform: translateY(-50%);
   transform: translateY(-50%);
   left: 50px;
-  right: 0;
+  right: 40px;
   margin: 0;
   margin-left: 12px;
   margin-right: 7px;
@@ -665,6 +665,38 @@ body.hand #drawingPanel .container .content .votes button img.hand {
 #CommeUnDessein_alerts .btn.show:active,
 #CommeUnDessein_alerts .btn.show:focus {
   outline: none;
+}
+#CommeUnDessein_alerts .btn-close {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  border-radius: 0;
+  background-color: #33383e;
+  width: 38px;
+}
+#CommeUnDessein_alerts .btn-close .glyphicon:hover {
+  color: white;
+}
+#CommeUnDessein_alerts .btn-close .glyphicon:active,
+#CommeUnDessein_alerts .btn-close .glyphicon:visited,
+#CommeUnDessein_alerts .btn-close .glyphicon:focus {
+  color: #f5f5f5;
+}
+#CommeUnDessein_alerts .btn-close:hover {
+  background-color: #464c53;
+}
+#CommeUnDessein_alerts .btn-close:hover .glyphicon {
+  color: white;
+}
+#CommeUnDessein_alerts .btn-close:active .glyphicon {
+  color: #f5f5f5;
+}
+#CommeUnDessein_alerts .btn-close:visited .glyphicon {
+  color: #f5f5f5;
+}
+#CommeUnDessein_alerts .btn-close:focus .glyphicon {
+  color: #f5f5f5;
 }
 #CommeUnDessein_alerts.activated.show {
   bottom: 0px;
