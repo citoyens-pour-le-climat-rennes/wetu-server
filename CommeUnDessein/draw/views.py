@@ -135,15 +135,18 @@ def ajaxCall(request):
 
 @csrf_exempt
 def ajaxCallNoCSRF(request):
-	if request.is_ajax():
-		import pdb; pdb.Pdb(skip=['django.*', 'gevent.*']).set_trace()
-		data = json.loads(request.POST.get('data'))
-		function = data["function"]
+
+	data = json.loads(request.POST.get('data'))
+	function = data["function"]
+	if function == "getNextTestDrawing" or function == "setDrawingStatusDrawnTest":
 		args = data["args"]
-		if function == "getNextValidatedDrawing" or function == "setDrawingStatusDrawn":
-			ajaxCall(request)
-	else:
-		return HttpResponse("Fail")
+		print "ajaxCallNoCSRF"
+		print function
+		if args is None:
+			args = {}
+		args['request'] = request
+		result = getattr(ajax, function)(**args)
+		return HttpResponse(result, content_type="application/json")
 
 # socketio_manage(request.environ, {'': BaseNamespace, '/chat': ChatNamespace, '/draw': DrawNamespace}, request)
 

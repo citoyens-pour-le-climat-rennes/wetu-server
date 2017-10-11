@@ -2648,6 +2648,31 @@ def getNextValidatedDrawing(request, city=None):
 	return  json.dumps( {'state': 'success', 'message': 'no path' } )
 
 @checkDebug
+def getNextTestDrawing(request, city=None):
+	
+	cityPk = getCity(request, city)
+	if not cityPk:
+		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
+	
+	drawings = Drawing.objects(status='test', city=cityPk)
+
+	for drawing in drawings:
+		if drawing is not None:			
+
+			# get all path of the first drawing
+			paths = []
+			# for path in drawing.paths:
+			# 	paths.append(path.to_json())
+			for path in drawing.pathList:
+				paths.append(json.dumps({'data': json.dumps({'points': json.loads(path), 'planet': {'x': 0, 'y': 0}}), '_id': {'$oid': None} }))
+
+			return  json.dumps( {'state': 'success', 'pk': str(drawing.pk), 'items': paths } )
+		
+	#	 send_mail('[Comme un dessein] Drawing validated but no moderator voted for it', '[Comme un dessein] One or more drawing has been validated but no moderator voted for it', 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+	return  json.dumps( {'state': 'success', 'message': 'no path' } )
+
+
+@checkDebug
 def setDrawingStatus(request, pk, status):
 
 	if not isAdmin(request.user):
@@ -2680,6 +2705,22 @@ def setDrawingStatusDrawn(request, pk, secret):
 	drawingChanged.send(sender=None, type='status', drawingId=drawing.clientId, status=drawing.status, pk=str(drawing.pk))
 
 	return json.dumps( {'state': 'success', 'message': 'Drawing status successfully updated.', 'pk': pk } )
+
+@checkDebug
+def setDrawingStatusDrawnTest(request, pk, secret):
+	if secret != TIPIBOT_PASSWORD:
+		return json.dumps({'state': 'error', 'message': 'Secret invalid.'})
+
+	try:
+		drawing = Drawing.objects.get(pk=pk)
+	except Drawing.DoesNotExist:
+		return json.dumps({'state': 'error', 'message': 'Drawing does not exist.', 'pk': pk})
+	
+	drawing.status = 'drawntest'
+	drawing.save()
+
+	return json.dumps( {'state': 'success', 'message': 'Drawing status successfully updated.', 'pk': pk } )
+
 
 @checkDebug
 def setDrawingToCity(request, pk, city):

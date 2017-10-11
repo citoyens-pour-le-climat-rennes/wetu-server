@@ -79,7 +79,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.github',
     'paypal.standard.ipn',
     'anymail',
-]
+] + localSettings['INSTALLED_APPS']
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
@@ -90,7 +90,9 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
+] + localSettings['MIDDLEWARE_CLASSES']
+
+CORS_ORIGIN_ALLOW_ALL = localSettings['CORS_ORIGIN_ALLOW_ALL']
 
 ROOT_URLCONF = 'CommeUnDessein.urls'
 
