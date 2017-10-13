@@ -762,14 +762,8 @@ def loadAll(request, city=None):
 
 	if not isAdmin(request.user):
 		return json.dumps({"status": "error", "message": "not_admin"})
-	
-	start = time.time()
 
-	cityPk = getCity(request, city)
-	if not cityPk:
-		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
-
-	drawings = Drawing.objects(city=cityPk)
+	drawings = Drawing.objects()
 
 	items = []
 	for drawing in drawings:
