@@ -760,27 +760,66 @@ def load(request, rectangle, areasToLoad, qZoom, city=None):
 @checkDebug
 def loadAll(request, city=None):
 
+	if not isAdmin(request.user):
+		return json.dumps({"status": "error", "message": "not_admin"})
+	
 	start = time.time()
 
 	cityPk = getCity(request, city)
 	if not cityPk:
 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
 
-	drawings = Drawing.objects(city=cityPk, status__in=['pending', 'drawing', 'drawn', 'rejected'] )
+	drawings = Drawing.objects(city=cityPk)
 
 	items = []
 	for drawing in drawings:
 		items.append(drawing.to_json())
 
-	drafts = Drawing.objects(city=cityPk, status='draft', owner=request.user.username)
-	if len(drafts) > 0:
-		items.append(drafts.first().to_json())
+	return json.dumps( { 'items': items, 'user': request.user.username } )
+
+@checkDebug
+def loadSVG(request, city=None):
+
+	start = time.time()
+
+	cityPk = getCity(request, city)
+	if not cityPk:
+		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
+
+	try:
+		userProfile = UserProfile.objects.get(username=request.user.username)
+		if not userProfile.emailConfirmed:
+			emailConfirmed = EmailAddress.objects.filter(user=request.user, verified=True).exists()
+			userProfile.emailConfirmed = emailConfirmed
+			userProfile.save()
+	except UserProfile.DoesNotExist:
+		print('User does not exist')
+
+
+	statusToLoad = ['pending', 'drawing', 'drawn', 'rejected']
+
+	if isAdmin(request.user):
+		statusToLoad.append('emailNotConfirmed')
+		statusToLoad.append('notConfirmed')
+		statusToLoad.append('flagged')
+
+	# drawings = Drawing.objects(city=cityPk, status__in=statusToLoad).only('svg', 'status', 'pk', 'clientId', 'title', 'owner', 'bounds')
+	drawings = Drawing.objects(city=cityPk, status__in=statusToLoad).only('status', 'pk', 'clientId', 'title', 'owner', 'bounds')
+
+	items = []
+	for drawing in drawings:
+		items.append(drawing.to_json())
+
+	draftsAndNotConfirmed = Drawing.objects(city=cityPk, status__in=['draft', 'emailNotConfirmed', 'notConfirmed'], owner=request.user.username).only('svg', 'status', 'pk', 'clientId', 'owner', 'pathList', 'title')
+
+	for draft in draftsAndNotConfirmed:
+		items.append(draft.to_json())
 
 	# return json.dumps( { 'paths': paths, 'boxes': boxes, 'divs': divs, 'user': user, 'rasters': rasters, 'areasToUpdate': areas, 'zoom': zoom } )
 	return json.dumps( { 'items': items, 'user': request.user.username } )
 
 @checkDebug
-def loadSVG(request, city=None):
+def loadAllSVG(request, city=None):
 
 	start = time.time()
 
