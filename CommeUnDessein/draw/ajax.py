@@ -1585,7 +1585,9 @@ def saveDrawing(request, clientId, city, date, title, description=None, points=N
 	if not city:
 		return json.dumps( { 'status': 'error', 'message': 'The city does not exist.' } )
 
-	paths = [json.dumps(points)]
+	paths = []
+	if points:
+		paths.append(json.dumps(points))
 
 	drafts = Drawing.objects(city=city, owner=request.user.username, status='draft')
 	
