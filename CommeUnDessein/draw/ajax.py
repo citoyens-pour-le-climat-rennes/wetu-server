@@ -1678,7 +1678,7 @@ def saveDrawing2(request, clientId, date, pathPks, title, description):
 @checkDebug
 def submitDrawing(request, pk, clientId, svg, date, bounds, title=None, description=None, png=None):
 	return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus dessiner."})
-	
+
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
 	
@@ -2036,7 +2036,8 @@ def loadDrawings(request, pks, loadSVG=False):
 # @dajaxice_register
 @checkDebug
 def updateDrawing(request, pk, title, description=None):
-	
+	return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus modifier de dessin."})
+
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
 
@@ -2098,6 +2099,7 @@ def getDrawing(pk=None, clientId=None):
 # @dajaxice_register
 @checkDebug
 def addPathToDrawing(request, points, pk=None, clientId=None):
+	return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus modifier de dessin."})
 	
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
@@ -2121,7 +2123,8 @@ def addPathToDrawing(request, points, pk=None, clientId=None):
 
 @checkDebug
 def addPathsToDrawing(request, pointLists, pk=None, clientId=None):
-	
+	return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus modifier de dessin."})
+
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
 
@@ -2226,6 +2229,8 @@ def updateDrawingSVG(request, pk, svg):
 # @dajaxice_register
 @checkDebug
 def deleteDrawing(request, pk):
+	return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus supprimer de dessin."})
+
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
 
@@ -2248,6 +2253,8 @@ def deleteDrawing(request, pk):
 
 @checkDebug
 def cancelDrawing(request, pk):
+	return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus annuler de dessin."})
+
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
 
