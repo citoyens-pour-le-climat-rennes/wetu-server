@@ -1578,6 +1578,8 @@ def deleteDiv(request, pk):
 # @dajaxice_register
 @checkDebug
 def saveDrawing(request, clientId, city, date, title, description=None, points=None):
+	return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus dessiner."})
+
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
 
@@ -1675,6 +1677,8 @@ def saveDrawing2(request, clientId, date, pathPks, title, description):
 
 @checkDebug
 def submitDrawing(request, pk, clientId, svg, date, bounds, title=None, description=None, png=None):
+	return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus dessiner."})
+	
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
 	
@@ -2420,6 +2424,8 @@ def hasOwnerDisabledEmail(owner):
 
 @checkDebug
 def vote(request, pk, date, positive):
+	return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus voter."})
+
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
 
