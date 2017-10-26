@@ -2009,10 +2009,10 @@ def loadTimelapse(request, pks):
 		result = { 'pk': str(d.pk), 'votes': votes, 'status': d.status }
 		results.append(result)
 
-	file = json.dumps( {'state': 'success', 'results': results }, indent=4 )
-	output = open('timelapse.json', 'wb')
-	output.write(file)
-	output.close()
+	# file = json.dumps( {'state': 'success', 'results': results }, indent=4 )
+	# output = open('timelapse.json', 'wb')
+	# output.write(file)
+	# output.close()
 
 	return json.dumps( {'state': 'success', 'results': results } )
 
