@@ -734,13 +734,12 @@ body.hand {
 	}
 
 	.btn.show {
-		margin: auto;
-		margin-top: -15px;
-		width: 200px;
-		height: 15px;
+		margin-left: 50px;
+		margin-top: -35px;
+		width: 50px;
+		height: 35px;
 		
-
-		font-size: 9px;
+		font-size: 15px;
 		line-height: 10px;
 
 		border-radius: 0;
@@ -2553,8 +2552,14 @@ li.tool-btn {
 	    left: 50%;
 	    top: 50%;
 	}
-	
+	.background {
+		background-color: white;
+		opacity: 0.8;
+		padding: 15px 25px;
+		// border-radius: 10px;
+	}
 	.glyphicon-refresh-animate {
+		top: 3px;
 	}
 
 	span.text {
@@ -3618,4 +3623,164 @@ img.cd-small-link {
 }
 .cd-large-link {
 	margin: 10px;
+}
+
+body.timeline-active {
+	#CommeUnDessein_alerts {
+		bottom: 50px;
+
+		&.activated {
+			&.show {
+				bottom: 100px;
+			}
+			.btn.show {
+				margin-left: 0;
+			}
+		}
+	}
+}
+
+#timeline {
+    position: fixed;
+    bottom: -100px;
+    left: 0;
+    right: 0;
+    height: 100px;
+    background-color: @sidebar-background-color;
+    z-index: 2001;
+
+    .vendor(transition, ~"opacity 0.25s linear, left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear");
+
+	&.r-alert {
+		
+		.btn.show {
+			top: -85px;
+		}
+	}
+
+	.info {
+		color: white;
+		padding: 3px;
+		.events {
+			margin-left: 20px;
+		}
+	}
+
+	canvas {
+		display: flex;
+	}
+
+	.btn.show {
+		position: absolute;
+		top: -35px;
+		left: 0;
+
+		width: 50px;
+		height: 35px;
+		
+		font-size: 15px;
+		line-height: 10px;
+
+		border-radius: 0;
+		border: 0;
+
+		opacity: 0.75;
+
+		color: white;
+		background-color: @sidebar-background-color;
+
+		.vendor(transition, ~"opacity 0.25s linear, left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear");
+
+		&:hover, &:active, &:focus {
+			outline: none;
+		}
+	}
+
+	.btn-close {
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		top: 0;
+		// display: flex;
+		border-radius: 0;
+		background-color: @sidebar-background-color;
+		width: 26px;
+		height: 26px;
+		padding: 5px;
+		color: rgb(245, 245, 245);
+		.glyphicon:hover {
+			color: white;
+		}
+		.glyphicon:active, .glyphicon:visited, .glyphicon:focus {
+			color: rgb(245, 245, 245);
+		}
+		&:hover {
+			background-color: @sidebar-light-background-color;
+			.glyphicon {
+				color: white;
+			}
+		}
+		&:active {
+			.glyphicon {
+				color: rgb(245, 245, 245);
+			}
+		}
+		&:visited {
+			.glyphicon {
+				color: rgb(245, 245, 245);
+			}
+		}
+		&:focus {
+			.glyphicon {
+				color: rgb(245, 245, 245);
+			}
+		}
+	}
+
+	.btn-navigate {
+		display: flex;
+		// position: relative;
+		// left: 0;
+		// bottom: 0;
+		// top: 0;
+		border-radius: 0;
+		background-color: @sidebar-background-color;
+		width: 38px;
+		color: rgb(245, 245, 245);
+		.glyphicon:hover {
+			color: white;
+		}
+		.glyphicon:active, .glyphicon:visited, .glyphicon:focus {
+			color: rgb(245, 245, 245);
+		}
+		&:hover {
+			background-color: @sidebar-light-background-color;
+			.glyphicon {
+				color: white;
+			}
+		}
+		&:active {
+			.glyphicon {
+				color: rgb(245, 245, 245);
+			}
+		}
+		&:visited {
+			.glyphicon {
+				color: rgb(245, 245, 245);
+			}
+		}
+		&:focus {
+			.glyphicon {
+				color: rgb(245, 245, 245);
+			}
+		}
+	}
+
+    &.active {
+    	bottom: 0px;
+    	.btn.show {
+    		opacity: 0;
+    		pointer-events: none;
+    	}
+    }
 }

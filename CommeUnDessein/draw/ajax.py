@@ -800,13 +800,13 @@ def loadSVG(request, city=None):
 		statusToLoad.append('flagged')
 
 	# drawings = Drawing.objects(city=cityPk, status__in=statusToLoad).only('svg', 'status', 'pk', 'clientId', 'title', 'owner', 'bounds')
-	drawings = Drawing.objects(city=cityPk, status__in=statusToLoad).only('status', 'pk', 'clientId', 'title', 'owner', 'bounds')
+	drawings = Drawing.objects(city=cityPk, status__in=statusToLoad).only('status', 'pk', 'clientId', 'title', 'owner', 'bounds', 'date')
 
 	items = []
 	for drawing in drawings:
 		items.append(drawing.to_json())
 
-	draftsAndNotConfirmed = Drawing.objects(city=cityPk, status__in=['draft', 'emailNotConfirmed', 'notConfirmed'], owner=request.user.username).only('svg', 'status', 'pk', 'clientId', 'owner', 'pathList', 'title')
+	draftsAndNotConfirmed = Drawing.objects(city=cityPk, status__in=['draft', 'emailNotConfirmed', 'notConfirmed'], owner=request.user.username).only('svg', 'status', 'pk', 'clientId', 'owner', 'pathList', 'title', 'date')
 
 	for draft in draftsAndNotConfirmed:
 		items.append(draft.to_json())
@@ -1990,6 +1990,31 @@ def loadDrawing(request, pk, loadSVG=False, loadVotes=True, svgOnly=False, loadP
 					pass
 
 	return json.dumps( {'state': 'success', 'votes': votes, 'drawing': d.to_json() } )
+
+@checkDebug
+def loadTimelapse(request, pks):
+	
+	drawings = Drawing.objects(pk__in=pks, status__in=['rejected', 'drawn', 'drawing', 'pending']).only('pk', 'status', 'votes')
+
+	results = []
+	
+	for d in drawings:
+		votes = []
+		for vote in d.votes:
+			if isinstance(vote, Vote):
+				try:
+					votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk), 'emailConfirmed': vote.author.emailConfirmed } )
+				except DoesNotExist:
+					pass
+		result = { 'pk': str(d.pk), 'votes': votes, 'status': d.status }
+		results.append(result)
+
+	file = json.dumps( {'state': 'success', 'results': results }, indent=4 )
+	output = open('timelapse.json', 'wb')
+	output.write(file)
+	output.close()
+
+	return json.dumps( {'state': 'success', 'results': results } )
 
 @checkDebug
 def getDrawingDiscussionId(request, pk):

@@ -122,6 +122,7 @@ def ajaxCall(request):
 		data = json.loads(request.POST.get('data'))
 		function = data["function"]
 		args = data["args"]
+		
 		print "ajaxCall"
 		print function
 		if args is None:

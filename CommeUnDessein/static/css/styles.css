@@ -647,11 +647,11 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   width: 100%;
 }
 #CommeUnDessein_alerts .btn.show {
-  margin: auto;
-  margin-top: -15px;
-  width: 200px;
-  height: 15px;
-  font-size: 9px;
+  margin-left: 50px;
+  margin-top: -35px;
+  width: 50px;
+  height: 35px;
+  font-size: 15px;
   line-height: 10px;
   border-radius: 0;
   border: 0;
@@ -2205,6 +2205,14 @@ li.tool-btn.selected .favorite-btn {
   left: 50%;
   top: 50%;
 }
+#loadingBar .background {
+  background-color: white;
+  opacity: 0.8;
+  padding: 15px 25px;
+}
+#loadingBar .glyphicon-refresh-animate {
+  top: 3px;
+}
 #loadingBar span.text {
   margin-left: 10px;
 }
@@ -3065,4 +3073,132 @@ img.cd-small-link {
 }
 .cd-large-link {
   margin: 10px;
+}
+body.timeline-active #CommeUnDessein_alerts {
+  bottom: 50px;
+}
+body.timeline-active #CommeUnDessein_alerts.activated.show {
+  bottom: 100px;
+}
+body.timeline-active #CommeUnDessein_alerts.activated .btn.show {
+  margin-left: 0;
+}
+#timeline {
+  position: fixed;
+  bottom: -100px;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background-color: #33383e;
+  z-index: 2001;
+  -khtml-transition: opacity 0.25s linear, left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear;
+  transition: opacity 0.25s linear, left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear;
+}
+#timeline.r-alert .btn.show {
+  top: -85px;
+}
+#timeline .info {
+  color: white;
+  padding: 3px;
+}
+#timeline .info .events {
+  margin-left: 20px;
+}
+#timeline canvas {
+  display: -webkit-box;
+  display: flex;
+}
+#timeline .btn.show {
+  position: absolute;
+  top: -35px;
+  left: 0;
+  width: 50px;
+  height: 35px;
+  font-size: 15px;
+  line-height: 10px;
+  border-radius: 0;
+  border: 0;
+  opacity: 0.75;
+  color: white;
+  background-color: #33383e;
+  -khtml-transition: opacity 0.25s linear, left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear;
+  transition: opacity 0.25s linear, left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear;
+}
+#timeline .btn.show:hover,
+#timeline .btn.show:active,
+#timeline .btn.show:focus {
+  outline: none;
+}
+#timeline .btn-close {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  border-radius: 0;
+  background-color: #33383e;
+  width: 26px;
+  height: 26px;
+  padding: 5px;
+  color: #f5f5f5;
+}
+#timeline .btn-close .glyphicon:hover {
+  color: white;
+}
+#timeline .btn-close .glyphicon:active,
+#timeline .btn-close .glyphicon:visited,
+#timeline .btn-close .glyphicon:focus {
+  color: #f5f5f5;
+}
+#timeline .btn-close:hover {
+  background-color: #464c53;
+}
+#timeline .btn-close:hover .glyphicon {
+  color: white;
+}
+#timeline .btn-close:active .glyphicon {
+  color: #f5f5f5;
+}
+#timeline .btn-close:visited .glyphicon {
+  color: #f5f5f5;
+}
+#timeline .btn-close:focus .glyphicon {
+  color: #f5f5f5;
+}
+#timeline .btn-navigate {
+  display: -webkit-box;
+  display: flex;
+  border-radius: 0;
+  background-color: #33383e;
+  width: 38px;
+  color: #f5f5f5;
+}
+#timeline .btn-navigate .glyphicon:hover {
+  color: white;
+}
+#timeline .btn-navigate .glyphicon:active,
+#timeline .btn-navigate .glyphicon:visited,
+#timeline .btn-navigate .glyphicon:focus {
+  color: #f5f5f5;
+}
+#timeline .btn-navigate:hover {
+  background-color: #464c53;
+}
+#timeline .btn-navigate:hover .glyphicon {
+  color: white;
+}
+#timeline .btn-navigate:active .glyphicon {
+  color: #f5f5f5;
+}
+#timeline .btn-navigate:visited .glyphicon {
+  color: #f5f5f5;
+}
+#timeline .btn-navigate:focus .glyphicon {
+  color: #f5f5f5;
+}
+#timeline.active {
+  bottom: 0px;
+}
+#timeline.active .btn.show {
+  opacity: 0;
+  pointer-events: none;
 }
