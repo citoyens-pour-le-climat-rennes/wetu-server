@@ -623,7 +623,7 @@ def getCity(request, cityObject=None):
 				return None
 		except City.DoesNotExist:
 			return None
-	return str(city.pk)
+	return (str(city.pk), city.finished)
 
 def checkAddItem(item, items, itemsDates=None, ignoreDrafts=False):
 	if not item.pk in items:
@@ -704,7 +704,7 @@ def load(request, rectangle, areasToLoad, qZoom, city=None):
 
 	start = time.time()
 
-	cityPk = getCity(request, city)
+	(cityPk, cityFinished) = getCity(request, city)
 	if not cityPk:
 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
 
@@ -778,7 +778,7 @@ def loadSVG(request, city=None):
 
 	start = time.time()
 
-	cityPk = getCity(request, city)
+	(cityPk, cityFinished) = getCity(request, city)
 	if not cityPk:
 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
 
@@ -819,7 +819,7 @@ def loadAllSVG(request, city=None):
 
 	start = time.time()
 
-	cityPk = getCity(request, city)
+	(cityPk, cityFinished) = getCity(request, city)
 	if not cityPk:
 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
 
@@ -879,7 +879,7 @@ def loadRasterizer(request, areasToLoad, itemsDates, city):
 
 	start = time.time()
 
-	city = getCity(request, city)
+	(city, cityFinished) = getCity(request, city)
 	if not city:
 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.' } )
 
@@ -1166,7 +1166,7 @@ def savePath(request, clientId, points, object_type, box, date, data=None, city=
 	if not request.user.is_authenticated():
 		return json.dumps( { 'state': 'not_logged_in', 'message': 'The user does not exist.' } )
 
-	city = getCity(request, city)
+	(city, cityFinished) = getCity(request, city)
 	if not city:
 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.' } )
 
@@ -1295,7 +1295,7 @@ def saveBox(request, clientId, box, object_type, data=None, siteData=None, siteN
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
 
-	city = getCity(request, city)
+	(city, cityFinished) = getCity(request, city)
 	if not city:
 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.' } )
 
@@ -1486,7 +1486,7 @@ def saveDiv(request, clientId, box, object_type, date=None, data=None, lock=None
 	planetX = box['planet']['x']
 	planetY = box['planet']['y']
 
-	city = getCity(request, city)
+	(city, cityFinished) = getCity(request, city)
 	if not city:
 		return json.dumps( { 'status': 'error', 'message': 'The city does not exist.' } )
 
@@ -1578,14 +1578,16 @@ def deleteDiv(request, pk):
 # @dajaxice_register
 @checkDebug
 def saveDrawing(request, clientId, city, date, title, description=None, points=None):
-	return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus dessiner."})
 
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
 
-	city = getCity(request, city)
+	(city, cityFinished) = getCity(request, city)
 	if not city:
 		return json.dumps( { 'status': 'error', 'message': 'The city does not exist.' } )
+
+	if cityFinished:
+		return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus dessiner."})
 
 	paths = []
 	if points:
@@ -1677,7 +1679,7 @@ def saveDrawing2(request, clientId, date, pathPks, title, description):
 
 @checkDebug
 def submitDrawing(request, pk, clientId, svg, date, bounds, title=None, description=None, png=None):
-	return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus dessiner."})
+	# return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus dessiner."})
 
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
@@ -1695,6 +1697,13 @@ def submitDrawing(request, pk, clientId, svg, date, bounds, title=None, descript
 	if d is None:
 		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
 	
+	try:
+		city = City.objects.get(pk=d.city)
+		if city.finished:
+			return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus dessiner."})
+	except City.DoesNotExist:
+		pass
+
 	d.svg = svg
 	d.date = datetime.datetime.fromtimestamp(date/1000.0)
 
@@ -1717,6 +1726,8 @@ def submitDrawing(request, pk, clientId, svg, date, bounds, title=None, descript
 	except City.DoesNotExist:
 		cityName = 'CommeUnDessein'
 
+	# import pdb; pdb.set_trace()
+	
 	# Save image
 	imgstr = re.search(r'base64,(.*)', png).group(1)
 	output = open('CommeUnDessein/static/drawings/'+pk+'.png', 'wb')
@@ -1752,12 +1763,15 @@ def createDrawingDiscussion(drawing):
 		values_data[k] = unicode(v).encode('utf-8')
 	data = urllib.urlencode(values_data)
 
-	url = 'http://discussion.commeundessein.co/posts'
-	req = urllib2.Request(url, data)
-	response = urllib2.urlopen(req)
-	resultJson = response.read()
-	result = json.loads(resultJson)
-	drawing.discussionId = result['topic_id']
+	try:
+		url = 'http://discussion.commeundessein.co/posts'
+		req = urllib2.Request(url, data)
+		response = urllib2.urlopen(req)
+		resultJson = response.read()
+		result = json.loads(resultJson)
+		drawing.discussionId = result['topic_id']
+	except:
+		pass
 	drawing.save()
 	return
 
@@ -2061,7 +2075,7 @@ def loadDrawings(request, pks, loadSVG=False):
 # @dajaxice_register
 @checkDebug
 def updateDrawing(request, pk, title, description=None):
-	return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus modifier de dessin."})
+	# return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus modifier de dessin."})
 
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
@@ -2078,6 +2092,13 @@ def updateDrawing(request, pk, title, description=None):
 		d = Drawing.objects.get(pk=pk)
 	except Drawing.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
+
+	try:
+		city = City.objects.get(pk=d.city)
+		if city.finished:
+			return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus modifier de dessin."})
+	except City.DoesNotExist:
+		pass
 
 	if not userAllowed(request, d.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
@@ -2124,7 +2145,7 @@ def getDrawing(pk=None, clientId=None):
 # @dajaxice_register
 @checkDebug
 def addPathToDrawing(request, points, pk=None, clientId=None):
-	return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus modifier de dessin."})
+	# return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus modifier de dessin."})
 	
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
@@ -2140,6 +2161,13 @@ def addPathToDrawing(request, points, pk=None, clientId=None):
 	if d.status != 'draft':
 		return json.dumps({'state': 'error', 'message': 'The drawing is not a draft, it cannot be modified anymore.'})
 
+	try:
+		city = City.objects.get(pk=d.city)
+		if city.finished:
+			return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus modifier de dessin."})
+	except City.DoesNotExist:
+		pass
+
 	d.pathList.append(json.dumps(points))
 
 	d.save()
@@ -2148,7 +2176,7 @@ def addPathToDrawing(request, points, pk=None, clientId=None):
 
 @checkDebug
 def addPathsToDrawing(request, pointLists, pk=None, clientId=None):
-	return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus modifier de dessin."})
+	# return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus modifier de dessin."})
 
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
@@ -2160,6 +2188,13 @@ def addPathsToDrawing(request, pointLists, pk=None, clientId=None):
 
 	if d is None:
 		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
+
+	try:
+		city = City.objects.get(pk=d.city)
+		if city.finished:
+			return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus modifier de dessin."})
+	except City.DoesNotExist:
+		pass
 
 	if not userAllowed(request, d.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
@@ -2187,6 +2222,13 @@ def setPathsToDrawing(request, pointLists, pk=None, clientId=None):
 
 	if d is None:
 		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
+
+	try:
+		city = City.objects.get(pk=d.city)
+		if city.finished:
+			return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus modifier de dessin."})
+	except City.DoesNotExist:
+		pass
 
 	if not userAllowed(request, d.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
@@ -2254,7 +2296,6 @@ def updateDrawingSVG(request, pk, svg):
 # @dajaxice_register
 @checkDebug
 def deleteDrawing(request, pk):
-	return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus supprimer de dessin."})
 
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
@@ -2263,6 +2304,14 @@ def deleteDrawing(request, pk):
 		d = Drawing.objects.get(pk=pk)
 	except Drawing.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': 'Element does not exist for this user.'})
+
+	try:
+		city = City.objects.get(pk=d.city)
+		if city.finished:
+			return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus supprimer de dessin."})
+	except City.DoesNotExist:
+		pass
+
 
 	if not userAllowed(request, d.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
@@ -2278,7 +2327,6 @@ def deleteDrawing(request, pk):
 
 @checkDebug
 def cancelDrawing(request, pk):
-	return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus annuler de dessin."})
 
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
@@ -2291,6 +2339,13 @@ def cancelDrawing(request, pk):
 	if not userAllowed(request, d.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
 	
+	try:
+		city = City.objects.get(pk=d.city)
+		if city.finished:
+			return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus annuler de dessin."})
+	except City.DoesNotExist:
+		pass
+
 	if isDrawingStatusValidated(d):
 		return json.dumps({'state': 'error', 'message': 'The drawing is already validated, it cannot be cancelled anymore.'})
 
@@ -2383,7 +2438,7 @@ def getDrafts(request, city=None):
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
 
-	cityPk = getCity(request, city)
+	(cityPk, cityFinished) = getCity(request, city)
 	if not cityPk:
 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
 
@@ -2456,7 +2511,7 @@ def hasOwnerDisabledEmail(owner):
 
 @checkDebug
 def vote(request, pk, date, positive):
-	return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus voter."})
+	# return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus voter."})
 
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
@@ -2474,6 +2529,13 @@ def vote(request, pk, date, positive):
 		drawing = Drawing.objects.get(pk=pk)
 	except Drawing.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': 'Drawing does not exist.', 'pk': pk})
+
+	try:
+		city = City.objects.get(pk=drawing.city)
+		if city.finished:
+			return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus voter."})
+	except City.DoesNotExist:
+		pass
 
 	if drawing.owner == request.user.username:
 		return json.dumps({'state': 'error', 'message': 'Cannot vote for own drawing.'})
@@ -2702,7 +2764,7 @@ def loadItems(request, itemsToLoad):
 @checkDebug
 def getNextValidatedDrawing(request, city=None):
 	
-	cityPk = getCity(request, city)
+	(cityPk, cityFinished) = getCity(request, city)
 	if not cityPk:
 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
 	
@@ -2740,7 +2802,7 @@ def getNextValidatedDrawing(request, city=None):
 @checkDebug
 def getNextTestDrawing(request, city=None):
 	
-	cityPk = getCity(request, city)
+	(cityPk, cityFinished) = getCity(request, city)
 	if not cityPk:
 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
 	
@@ -2822,7 +2884,7 @@ def setDrawingToCity(request, pk, city):
 	if not isAdmin(request.user):
 		return json.dumps( { 'state': 'error', 'message': 'You must be administrator to move a drawing.' } )
 	
-	cityPk = getCity(request, city)
+	(cityPk, cityFinished) = getCity(request, city)
 	if not cityPk:
 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
 
@@ -3621,7 +3683,7 @@ def getAreasToUpdate(request):
 @checkDebug
 def getPathsToUpdate(request, city):
 
-	cityPk = getCity(request, city)
+	(cityPk, cityFinished) = getCity(request, city)
 	if not cityPk:
 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
 

@@ -286,6 +286,7 @@ class City(Document):
     owner = StringField(required=True)
     name = StringField(required=True)
     public = BooleanField(default=False)
+    finished = BooleanField(default=False)
 
     meta = {
         'indexes': [ "owner", "public", "name" ]

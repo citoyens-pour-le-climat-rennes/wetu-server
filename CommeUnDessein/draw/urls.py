@@ -21,6 +21,7 @@ urlpatterns = [
     url(r'^debug$', views.index, {'useDebugFiles': True}, name='index'),
     url(r'^debug/$', views.index, {'useDebugFiles': True}, name='index'),
 
+    url(r'^debug-festival-maintenant$', views.index, {'useDebugFiles': True}, name='index'),
     url(r'^debug-free$', views.index, {'drawingMode': 'free', 'useDebugFiles': True}, name='index'),
     url(r'^debug-pixel$', views.index, {'drawingMode': 'pixel', 'useDebugFiles': True}, name='index'),
     url(r'^debug-image$', views.index, {'drawingMode': 'image', 'useDebugFiles': True}, name='index'),
@@ -30,6 +31,7 @@ urlpatterns = [
     url(r'^debug-line$', views.index, {'drawingMode': 'line', 'useDebugFiles': True}, name='index'),
     url(r'^debug-pen$', views.index, {'drawingMode': 'pen', 'useDebugFiles': True}, name='index'),
 
+    url(r'^festival-maintenant$', views.index, name='index'),
     url(r'^free$', views.index, {'drawingMode': 'free'}, name='index'),
     url(r'^pixel$', views.index, {'drawingMode': 'pixel'}, name='index'),
     url(r'^image$', views.index, {'drawingMode': 'image'}, name='index'),
