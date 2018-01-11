@@ -133,3 +133,27 @@ A bug in gevent can be fixed by reinstalling gevent version 1.1b4
 
 sudo pip uninstall gevent
 sudo pip install gevent==1.1b4
+
+## Running in production
+
+activate your virtualenv with `source bin/activate`
+The goal is to run `python run.py` so that it does not stop when leaving ssh session.
+
+### Simple but unpractical solution with nohup
+
+ - run: `nohup python run.py &`
+ - stop: 
+    - find process id with: `ps -ef | grep "python run.py"` (it will be listed like `idlv     14137 14056  0 13:56 pts/3    00:00:09 python run.py`, the second number is the PID)
+    - kill process by id with: `kill -9 PID`
+
+### Better solution with screen
+
+ - *Only the first time*: create a *commeundessein* session: `screen -S commeundessein`
+ - go to previous *commeundessein* session: `screen -r commeundessein`
+ - then you can use the terminal normally to activate your virtualenv: `source bin/activate` then `cd CommeUnDessein`
+ - then run: `python run.py`
+ - to stop: press `ctrl a then d`
+ - to exit session (should not be necessary): (in a session) `exit`
+
+
+
