@@ -285,6 +285,7 @@ class Site(Document):
 class City(Document):
     owner = StringField(required=True)
     name = StringField(required=True)
+    message = StringField(required=False)
     public = BooleanField(default=False)
     finished = BooleanField(default=False)
 

@@ -21,10 +21,10 @@ import json
 # from sockets import ChatNamespace, DrawNamespace
 # from socketio import socketio_manage
 
-def index(request, site=None, owner=None, city=None, x=0, y=0, useDebugFiles=False, drawingMode=None, visit=False, pk=None):
+def index(request, site=None, owner=None, cityName=None, x=0, y=0, useDebugFiles=False, drawingMode=None, visit=False, pk=None):
 
-	if not visit and not request.user.is_authenticated():
-		return render_to_response(	"welcome.html", {}, RequestContext(request) )
+	# if not visit and not request.user.is_authenticated():
+	# 	return render_to_response(	"welcome.html", {}, RequestContext(request) )
 	
 	result = {}
 	profileImageURL = ''
@@ -56,6 +56,16 @@ def index(request, site=None, owner=None, city=None, x=0, y=0, useDebugFiles=Fal
 	result['githubLogin'] = githubLogin
 	result['drawingMode'] = drawingMode
 	result['useDebugFiles'] = useDebugFiles
+	
+	if cityName:
+		try:
+			city = City.objects.get(name=cityName)
+			result['city'] = city.name
+			result['cityFinished'] = city.finished
+			result['cityMessage'] = city.message
+		except:
+			print('City not found')
+
 	if pk:
 		result['drawingImageURL'] = 'https://commeundessein.co/static/drawings/' + pk + '.png'
 		result['drawingPk'] = pk
@@ -66,11 +76,13 @@ def index(request, site=None, owner=None, city=None, x=0, y=0, useDebugFiles=Fal
 			result['drawingAuthor'] = drawing.owner
 			try:
 				city = City.objects.get(pk=drawing.city)
-				result['drawingCity'] = city.name
-			except City.DoesNotExist:
+				result['city'] = city.name
+				result['cityFinished'] = city.finished
+				result['cityMessage'] = city.message
+			except:
 				print('City not found')
 			
-		except Drawing.DoesNotExist:
+		except:
 			print('Drawing not found')
 	else:
 		result['drawingImageURL'] = 'http://commeundessein.co/static/images/CommeUnDessein1200x630.png'
@@ -109,12 +121,19 @@ def disableEmail(request, activation=False):
 def about(request):
 	return render_to_response(	"about.html", {}, RequestContext(request) )
 
+def welcome(request):
+	return render_to_response(	"welcome.html", {}, RequestContext(request) )
+
 def termsOfService(request):
 	return render_to_response(	"terms-of-service.html", {}, RequestContext(request) )
 
 def privacyPolicy(request):
 	return render_to_response(	"privacy-policy.html", {}, RequestContext(request) )
 
+def connections(request):
+	if not request.user.is_authenticated():
+		return render_to_response(	"connections.html", {}, RequestContext(request) )
+	return index(request)
 
 def ajaxCall(request):
 	# import pdb; pdb.set_trace()
