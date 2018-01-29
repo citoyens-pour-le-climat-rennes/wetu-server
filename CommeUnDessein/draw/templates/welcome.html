@@ -34,6 +34,11 @@
     <meta property="og:image:width"     content="1200" />
     <meta property="og:image:height"    content="630" />
 
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.min.js"
+      integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+      crossorigin="anonymous">
+    </script>
   </head>
 
   <body>
@@ -44,15 +49,16 @@
       <div class="center">
         <h1>Comme un Dessein</h1>
 
-        <ul class="button-list cd-column">
-          <li><a href="/idlv/">IDLV (infini)</a></li>
-          <li><a href='/festival-maintenant/'>Edition Festival Maintenant</a></li>
+        <ul class="button-list cd-column editions">
+          <!-- <li><a href="/idlv/">IDLV (infini)</a></li> -->
           <li><a href="/tech-in-vitre/">Tech-in-Vitré</a></li>
-          <li><a href="/demo/">Démonstration</a></li>
+          <li><a href='/festival-maintenant/'>Edition Festival Maintenant</a></li>
+          <!-- <li><a href="/demo/">Démonstration</a></li> -->
         </ul>
 
         
       </div>
     </div>
+    <script src="{% static 'js/welcome.js' %}"></script>
   </body>
 </html>

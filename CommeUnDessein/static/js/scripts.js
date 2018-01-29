@@ -226,6 +226,7 @@
           return;
         }
         $('#id_password, #id_password1').val(password);
+        localStorage.setItem('just-logged-in', 'true');
         if (userIsKnown) {
           $('#submit-signin').click();
         } else {
