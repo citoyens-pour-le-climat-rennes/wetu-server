@@ -287,6 +287,9 @@ class City(Document):
     name = StringField(required=True)
     message = StringField(required=False)
     public = BooleanField(default=False)
+    strokeWidth = DecimalField(default=7)
+    width = DecimalField(default=4000)
+    height = DecimalField(default=3000)
     finished = BooleanField(default=False)
 
     meta = {

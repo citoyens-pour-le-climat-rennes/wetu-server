@@ -21,6 +21,15 @@ import json
 # from sockets import ChatNamespace, DrawNamespace
 # from socketio import socketio_manage
 
+def addCityToResult(result, city):
+	result['city'] = city.name
+	result['cityFinished'] = city.finished
+	result['cityMessage'] = city.message
+	result['cityStrokeWidth'] = city.strokeWidth
+	result['cityWidth'] = city.width
+	result['cityHeight'] = city.height
+	return
+
 def index(request, site=None, owner=None, cityName=None, x=0, y=0, useDebugFiles=False, drawingMode=None, visit=False, pk=None):
 
 	# if not visit and not request.user.is_authenticated():
@@ -60,9 +69,7 @@ def index(request, site=None, owner=None, cityName=None, x=0, y=0, useDebugFiles
 	if cityName:
 		try:
 			city = City.objects.get(name=cityName)
-			result['city'] = city.name
-			result['cityFinished'] = city.finished
-			result['cityMessage'] = city.message
+			addCityToResult(result, city)
 		except:
 			print('City not found')
 
@@ -76,9 +83,7 @@ def index(request, site=None, owner=None, cityName=None, x=0, y=0, useDebugFiles
 			result['drawingAuthor'] = drawing.owner
 			try:
 				city = City.objects.get(pk=drawing.city)
-				result['city'] = city.name
-				result['cityFinished'] = city.finished
-				result['cityMessage'] = city.message
+				addCityToResult(result, city)
 			except:
 				print('City not found')
 			
