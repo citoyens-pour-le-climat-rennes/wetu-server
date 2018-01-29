@@ -17,7 +17,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="shortcut icon" href="{% static 'images/icons/logo32.png' %}">
+    <!-- <link rel="shortcut icon" href="{% static 'images/icons/logo32.png' %}"> -->
+    <link rel="shortcut icon" href="{% static 'images/icons/icon.png' %}">
 
     <title>Comme Un Dessein - Connexion</title>
 
@@ -45,9 +46,9 @@
         <h1>Comme un Dessein</h1>
 
         <ul class="button-list cd-column">
-          <li><a href='{% provider_login_url "google" %}'>Se connecter avec Google</a></li>
+          <li><a id="google-button" href='{% provider_login_url "google" %}'>Se connecter avec Google</a></li>
           <!-- <li><a href='{% provider_login_url "github" %}'><div>Github</div></a></li> -->
-          <li><a href="/accounts/facebook/login/" class="fb">Se connecter avec Facebook</a></li>
+          <li><a id="facebook-button" href="/accounts/facebook/login/" class="fb">Se connecter avec Facebook</a></li>
           <li><a href="/connexion/" id="connectWithCommeUnDessein">Se connecter avec Comme un Dessein</a></li>
           <li><a class="visit" href="visite">Juste visiter</a></li>
         </ul>
@@ -55,5 +56,6 @@
         
       </div>
     </div>
+    <script src="{% static 'js/connections.js' %}"></script>
   </body>
 </html>

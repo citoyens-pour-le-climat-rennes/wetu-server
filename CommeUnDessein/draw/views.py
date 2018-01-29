@@ -122,7 +122,9 @@ def about(request):
 	return render_to_response(	"about.html", {}, RequestContext(request) )
 
 def welcome(request):
-	return render_to_response(	"welcome.html", {}, RequestContext(request) )
+	result = {}
+	result['is_authenticated'] = request.user.is_authenticated()
+	return render_to_response(	"welcome.html", result, RequestContext(request) )
 
 def termsOfService(request):
 	return render_to_response(	"terms-of-service.html", {}, RequestContext(request) )
