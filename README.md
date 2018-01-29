@@ -155,5 +155,8 @@ The goal is to run `python run.py` so that it does not stop when leaving ssh ses
  - to stop: press `ctrl a then d`
  - to exit session (should not be necessary): (in a session) `exit`
 
+## Warnings when using multiple users (am & idlv)
 
+You can clone the repo multiple times on the server to manage different users.
+Just keep in mind that static files will always be served from the same repo, so pulling and using `collectstatic` will have effect only on the served files.
 
