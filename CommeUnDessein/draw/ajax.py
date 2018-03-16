@@ -186,7 +186,7 @@ def recomputeDrawingStates(request):
 	drawings = Drawing.objects.get(status__in=['pending', 'drawing', 'rejected'])
 	
 	for drawing in drawings:
-		send_mail('[Comme un dessein] recomputeDrawingStates', u'recomputeDrawingStates: updateDrawingState ' + str(drawing.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+		# send_mail('[Comme un dessein] recomputeDrawingStates', u'recomputeDrawingStates: updateDrawingState ' + str(drawing.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 		updateDrawingState(drawing.pk, drawing)
 
 	return json.dumps({"message": "success"})
@@ -246,7 +246,7 @@ def on_email_confirmed(sender, email_address, request, **kwargs):
 	for vote in userProfile.votes:
 		if isinstance(vote, Vote):
 			try:
-				send_mail('[Comme un dessein] on_email_confirmed', u'on_email_confirmed pending ' + str(drawing.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+				# send_mail('[Comme un dessein] on_email_confirmed', u'on_email_confirmed pending ' + str(drawing.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 				updateDrawingState(vote.drawing.pk, vote.drawing)
 			except DoesNotExist:
 				pass
@@ -265,7 +265,7 @@ def on_email_confirmed(sender, email_address, request, **kwargs):
 #allauth.account.signals.email_confirmation_sent(request, confirmation, signup)
 @receiver(email_confirmation_sent)
 def on_email_confirmation_sent(sender, request, confirmation, signup, **kwargs):
-	send_mail('[Comme un dessein] New email confirmation sent', u'A new email confirmation was sent, to confirm his email manually follow the link: https://commeundessein.co/accounts/confirm-email/' + confirmation.key , 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+	send_mail('[Comme un dessein] New email confirmation sent', u'A new email confirmation was sent to ' + str(confirmation.email_address) + ', to confirm his email manually follow the link: https://commeundessein.co/accounts/confirm-email/' + confirmation.key , 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 	return
 
 @checkDebug
@@ -1738,7 +1738,7 @@ def submitDrawing(request, pk, clientId, svg, date, bounds, title=None, descript
 	d.description = description
 	d.bounds = bounds
 	
-	send_mail('[Comme un dessein] submitDrawing pending', u'submitDrawing pending ' + str(d.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+	# send_mail('[Comme un dessein] submitDrawing pending', u'submitDrawing pending ' + str(d.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 
 	try:
 		d.save()
@@ -1824,7 +1824,7 @@ def validateDrawing(request, pk):
 
 	if userProfile.emailConfirmed:
 		d.status = 'pending'
-		send_mail('[Comme un dessein] validateDrawing', u'validateDrawing pending ' + str(d.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+		# send_mail('[Comme un dessein] validateDrawing', u'validateDrawing pending ' + str(d.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 		cityName = 'CommeUnDessein'
 		try:
 			city = City.objects.get(pk=d.city)
@@ -1833,7 +1833,7 @@ def validateDrawing(request, pk):
 			print('The city does not exist')
 		drawingChanged.send(sender=None, type='new', drawingId=d.clientId, pk=str(d.pk), svg=d.svg, city=cityName)
 	else:
-		send_mail('[Comme un dessein] validateDrawing', u'validateDrawing emailNotConfirmed ' + str(d.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+		# send_mail('[Comme un dessein] validateDrawing', u'validateDrawing emailNotConfirmed ' + str(d.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 		d.status = 'emailNotConfirmed'
 
 	d.save()
@@ -1931,7 +1931,7 @@ def reportAbuse(request, pk):
 		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
 
 	d.status = 'flagged'
-	send_mail('[Comme un dessein] reportAbuse', u'reportAbuse flagged ' + str(d.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+	# send_mail('[Comme un dessein] reportAbuse', u'reportAbuse flagged ' + str(d.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 	d.save()
 	
 	emailOfDrawingOwner = ''
@@ -2376,7 +2376,7 @@ def cancelDrawing(request, pk):
 		return json.dumps({'state': 'error', 'message': 'The drawing is already validated, it cannot be cancelled anymore.'})
 
 	d.status = 'draft'
-	send_mail('[Comme un dessein] cancelDrawing', u'cancelDrawing draft ' + str(d.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+	# send_mail('[Comme un dessein] cancelDrawing', u'cancelDrawing draft ' + str(d.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 	d.svg = None
 	
 	try:
@@ -2506,7 +2506,7 @@ def updateDrawingState(drawingPk=None, drawing=None, unflag=False):
 			return
 
 	if isDrawingStatusValidated(drawing):
-		send_mail('[Comme un dessein] updateDrawingState', u'updateDrawingState trying to update status while validated ' + str(drawing.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+		send_mail('[Comme un dessein] WARNING updateDrawingState', u'updateDrawingState trying to update status while validated ' + str(drawing.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 		return
 
 	(nPositiveVotes, nNegativeVotes) = computeVotes(drawing)
@@ -2521,7 +2521,7 @@ def updateDrawingState(drawingPk=None, drawing=None, unflag=False):
 		drawing.status = 'pending'
 		drawing.save()
 
-	send_mail('[Comme un dessein] updateDrawingState', u'updateDrawingState ' + drawing.status + ' ' + str(drawing.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+	# send_mail('[Comme un dessein] updateDrawingState', u'updateDrawingState ' + drawing.status + ' ' + str(drawing.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 
 	# drawingValidated.send(sender=None, drawingId=drawing.clientId, status=drawing.status)
 	drawingChanged.send(sender=None, type='status', drawingId=drawing.clientId, status=drawing.status, pk=str(drawing.pk))
@@ -2865,7 +2865,7 @@ def setDrawingStatus(request, pk, status):
 	drawing.status = status
 	drawing.save()
 
-	send_mail('[Comme un dessein] Set drawing status', u'Set drawing status ' + status + ' ' + str(drawing.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+	# send_mail('[Comme un dessein] Set drawing status', u'Set drawing status ' + status + ' ' + str(drawing.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 
 	return json.dumps( {'state': 'success', 'message': 'Drawing status successfully updated.', 'pk': pk, 'status': status } )
 
