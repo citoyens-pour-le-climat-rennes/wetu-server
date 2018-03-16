@@ -46,8 +46,10 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'django.contrib.staticfiles.finders.DefaultStorageFinder',
-    # 'dajaxice.finders.DajaxiceFinder',
 )
+
+if DEBUG:
+    STATICFILES_FINDERS = STATICFILES_FINDERS + ('draw.fileFinder.StaticRootFinder',)
 
 # Make this unique, and don't share it with anybody.
 with open('/data/secret_key.txt') as f:
@@ -190,6 +192,7 @@ STATICFILES_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(PROJECT_DIR, '../static'),
 )
+
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"

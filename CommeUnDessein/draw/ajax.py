@@ -806,10 +806,23 @@ def loadSVG(request, city=None):
 	for drawing in drawings:
 		items.append(drawing.to_json())
 
-	draftsAndNotConfirmed = Drawing.objects(city=cityPk, status__in=['draft', 'emailNotConfirmed', 'notConfirmed'], owner=request.user.username).only('svg', 'status', 'pk', 'clientId', 'owner', 'pathList', 'title', 'date')
+	# emailNotConfirmed and notConfirmed are out of date
 
-	for draft in draftsAndNotConfirmed:
-		items.append(draft.to_json())
+	# draftsAndNotConfirmed = Drawing.objects(city=cityPk, status__in=['draft', 'emailNotConfirmed', 'notConfirmed'], owner=request.user.username).only('svg', 'status', 'pk', 'clientId', 'owner', 'pathList', 'title', 'date')
+	drafts = Drawing.objects(city=cityPk, status='draft', owner=request.user.username).only('svg', 'status', 'pk', 'clientId', 'owner', 'pathList', 'title')
+	
+	# if we could not find a draft and authenticated : create one
+	if request.user.is_authenticated() and len(drafts) == 0:
+		try:
+			clientId = '' + str(datetime.datetime.now()) + str(random.random())
+			d = Drawing(clientId=clientId, city=cityPk, planetX=0, planetY=0, owner=request.user.username, date=datetime.datetime.now(), status='draft')
+			d.save()
+			drafts = [d]
+		except NotUniqueError:
+			pass
+
+	if len(drafts) > 0:
+		items.append(drafts[0].to_json())
 
 	# return json.dumps( { 'paths': paths, 'boxes': boxes, 'divs': divs, 'user': user, 'rasters': rasters, 'areasToUpdate': areas, 'zoom': zoom } )
 	return json.dumps( { 'items': items, 'user': request.user.username } )
@@ -847,10 +860,23 @@ def loadAllSVG(request, city=None):
 	for drawing in drawings:
 		items.append(drawing.to_json())
 
-	draftsAndNotConfirmed = Drawing.objects(city=cityPk, status__in=['draft', 'emailNotConfirmed', 'notConfirmed'], owner=request.user.username).only('svg', 'status', 'pk', 'clientId', 'owner', 'pathList', 'title')
+	# emailNotConfirmed and notConfirmed are are out of date
 
-	for draft in draftsAndNotConfirmed:
-		items.append(draft.to_json())
+	# draftsAndNotConfirmed = Drawing.objects(city=cityPk, status__in=['draft', 'emailNotConfirmed', 'notConfirmed'], owner=request.user.username).only('svg', 'status', 'pk', 'clientId', 'owner', 'pathList', 'title')
+	drafts = Drawing.objects(city=cityPk, status='draft', owner=request.user.username).only('svg', 'status', 'pk', 'clientId', 'owner', 'pathList', 'title')
+	
+	# if we could not find a draft and authenticated : create one
+	if request.user.is_authenticated() and len(drafts) == 0:
+		try:
+			clientId = '' + str(datetime.datetime.now()) + str(random.random())
+			d = Drawing(clientId=clientId, city=cityPk, planetX=0, planetY=0, owner=request.user.username, date=datetime.datetime.now(), status='draft')
+			d.save()
+			drafts = [d]
+		except NotUniqueError:
+			pass
+
+	if len(drafts) > 0:
+		items.append(drafts[0].to_json())
 
 	# return json.dumps( { 'paths': paths, 'boxes': boxes, 'divs': divs, 'user': user, 'rasters': rasters, 'areasToUpdate': areas, 'zoom': zoom } )
 	return json.dumps( { 'items': items, 'user': request.user.username } )
@@ -1597,7 +1623,7 @@ def saveDrawing(request, clientId, city, date, title, description=None, points=N
 	
 	if drafts is not None and len(drafts) > 0:
 		for draft in drafts:
-			paths += draft.pathList
+			# paths += draft.pathList
 			draft.delete()
 
 	try:
