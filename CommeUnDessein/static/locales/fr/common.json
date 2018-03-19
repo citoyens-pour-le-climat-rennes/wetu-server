@@ -242,5 +242,14 @@
     "You voted up": "Vous avez voté pour",
     "You voted down": "Vous avez voté contre",
     "Comme un Dessein is over": "Comme un Dessein est désormais terminé !",
-    "Watch timelapse": "Regarder l'animation"
+    "Watch timelapse": "Regarder l'animation",
+    "Import image": "Importer une image",
+    "Image URL": "URL de l'image",
+    "Could not load the image": "Impossible de charger l'image",
+    "Trace": "Décalquer",
+    "Import image to trace": "Importer une image pour décalquer",
+    "The URL is invalid": "L'URL n'est pas valide.",
+    "Eraser": "Gommer",
+    "Undo": "Annuler",
+    "Redo": "Rétablir"
 }

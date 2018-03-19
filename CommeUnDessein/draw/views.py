@@ -71,6 +71,7 @@ def index(request, site=None, owner=None, cityName=None, x=0, y=0, useDebugFiles
 			city = City.objects.get(name=cityName)
 			addCityToResult(result, city)
 		except:
+			return redirect('https://commeundessein.co/')
 			print('City not found')
 
 	if pk:
