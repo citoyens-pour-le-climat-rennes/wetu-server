@@ -158,6 +158,7 @@
     "You successfully voted, the drawing will be rejected": "Votre vote a bien été pris en compte ! Le dessin sera rejeté dans {{duration}} si personne n'annule son vote...",
     "You successfully voted, the drawing will be validated": "Votre vote a bien été pris en compte ! Le dessin sera validé dans {{duration}} si personne n'annule son vote...",
     "You successfully voted but email not confirmed": "Votre vote a bien été enregistré, il sera pris en compte quand vous aurez validé votre compte par email.",
+    "You successfully voted": "Votre vote a bien été enregistré",
     "Create mode": "Créer un mode",
     "Modes": "Modes",
     "line": "ligne",
