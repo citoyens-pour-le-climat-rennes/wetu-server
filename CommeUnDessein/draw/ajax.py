@@ -2816,7 +2816,7 @@ def getNextValidatedDrawing(request, city=None):
 						for path in drawing.pathList:
 							paths.append(json.dumps({'data': json.dumps({'points': json.loads(path), 'planet': {'x': 0, 'y': 0}}), '_id': {'$oid': None} }))
 
-						return  json.dumps( {'state': 'success', 'pk': str(drawing.pk), 'items': paths } )
+						return  json.dumps( {'state': 'success', 'pk': str(drawing.pk), 'items': paths, 'svg': drawing.svg } )
 			except DoesNotExist:
 				pass
 		
