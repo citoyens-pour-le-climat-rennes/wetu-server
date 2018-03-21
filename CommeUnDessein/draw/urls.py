@@ -28,10 +28,10 @@ urlpatterns = [
     url(r'^privacy-policy\.html', views.privacyPolicy),
     url(r'^terms-of-service\.html', views.termsOfService),
     
-    url(r'^(?P<cityName>(?!admin)[\w-]+)/$', views.index, {'visit': True}, name='index'),
-    url(r'^(?P<cityName>(?!admin)[\w-]+)/drawing-(?P<pk>[\w]+)$', views.index, {'visit': True}, name='index'),
-    url(r'^debug/(?P<cityName>(?!admin)[\w-]+)/$', views.index, { 'useDebugFiles': True }, name='index'),
-    url(r'^debug/(?P<cityName>(?!admin)[\w-]+)/drawing-(?P<pk>[\w]+)$', views.index, { 'useDebugFiles': True }, name='index'),
+    url(r'^(?P<cityName>[\w-]+)/$', views.index, {'visit': True}, name='index'),
+    url(r'^(?P<cityName>[\w-]+)/drawing-(?P<pk>[\w]+)$', views.index, {'visit': True}, name='index'),
+    url(r'^debug/(?P<cityName>[\w-]+)/$', views.index, { 'useDebugFiles': True }, name='index'),
+    url(r'^debug/(?P<cityName>[\w-]+)/drawing-(?P<pk>[\w]+)$', views.index, { 'useDebugFiles': True }, name='index'),
 
     url(r'^debug-free$', views.index, {'drawingMode': 'free', 'useDebugFiles': True}, name='index'),
     url(r'^debug-pixel$', views.index, {'drawingMode': 'pixel', 'useDebugFiles': True}, name='index'),
@@ -65,6 +65,7 @@ urlpatterns = [
     # url(r'^rasterizer/#(?P<x>[\d.]+),(?P<y>[\d.]+)$', views.index),
     # url(r'^rasterizer/#(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)$', views.rasterizer, name='index'),
     # url(r'^([\w,.,-]+)$', views.index, name='index'),
-        # url(r'^(?P<sitename>([\w,.,-]+)).romanesc.co/', views.index, name='index'),
+    # url(r'^(?P<sitename>([\w,.,-]+)).romanesc.co/', views.index, name='index'),
+
     url("^socket\.io", include(socketio.sdjango.urls)),
 ]
