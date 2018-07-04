@@ -798,6 +798,7 @@ def loadSVG(request, city=None):
 		statusToLoad.append('emailNotConfirmed')
 		statusToLoad.append('notConfirmed')
 		statusToLoad.append('flagged')
+		statusToLoad.append('test')
 
 	# drawings = Drawing.objects(city=cityPk, status__in=statusToLoad).only('svg', 'status', 'pk', 'clientId', 'title', 'owner', 'bounds')
 	drawings = Drawing.objects(city=cityPk, status__in=statusToLoad).only('status', 'pk', 'clientId', 'title', 'owner', 'bounds', 'date')
