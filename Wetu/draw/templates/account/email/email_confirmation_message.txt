@@ -1,0 +1,7 @@
+{% load account %}{% user_display user as user_display %}{% load i18n %}{% autoescape off %}{% blocktrans with site_name=current_site.name site_domain=current_site.domain %}Bonjour,
+
+Vous pouvez confirmer l'adresse email du compte {{ user_display }} en allant sur {{ activate_url }}
+
+{% endblocktrans %}{% endautoescape %}
+{% blocktrans with site_name=current_site.name site_domain=current_site.domain %}{{ site_name }}
+{% endblocktrans %}

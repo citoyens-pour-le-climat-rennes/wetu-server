@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+{# --- allauth --- #}
+
+{# {% load i18n %} #}
+{# {% load account %} #}
+{# {% load socialaccount %} #}
+
+<html lang="en">
+  <head>
+
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>CommeUnDessein</title>
+
+    <!-- Nanoscroller CSS -->
+    <!-- <link href="{% static 'libs/nanoscroller.css' %}" rel="stylesheet"> -->
+    <!-- <link href="{% static 'libs/pace/themes/pace-theme-center-circle.css' %}" rel="stylesheet" /> -->
+
+    <!-- jQuery oembed CSS -->
+    <link href="{% static 'libs/jquery.oembed.css' %}" rel="stylesheet">
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'libs/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- <link href="{% static 'libs/slider.css' %}" rel="stylesheet"> -->
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+    <script>
+      window.rasterizerMode = true;
+    </script>
+
+  </head>
+
+  <body>
+
+    <div class="container-fluid">
+      <div class="row">
+
+        <div id="stage" class="main">
+
+          <div class="hidden media-separator"></div>
+          <div class="hidden text-separator"></div>
+
+          <canvas id="canvas" resize hidpi="off" data-pos-x="{{ x }}" data-pos-y="{{ y }}" data-points="{{ points }}" data-box="{{ box }}" data-site="{{ site }}" data-message=" {{ message }}" data-load-entire-area=" {{ loadEntireArea }} "></canvas>
+
+        </div>
+
+      </div>
+    </div>
+
+    <div id="templates">
+
+      <div class="hidden">
+
+        <div class="custom-div">
+          <!-- <div class="handle tl"></div>
+          <div class="handle tr"></div>
+          <div class="handle br"></div>
+          <div class="handle bl"></div> -->
+          <div class="mask"></div>
+        </div>
+
+        <div class="lock-content content" data-container="body"></div>
+
+
+      </div> <!-- /hidden -->
+
+    </div>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+    <!-- online for fast caching
+    <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+    -->
+
+    <!-- static for offine -->
+
+    <script src="//ajax.googleapis.com/ajax/libs/webfont/1.5.10/webfont.js"></script>
+    <script>WEB_SOCKET_SWF_LOCATION="{{ STATIC_URL }}flashsocket/WebSocketMain.swf"; window.room = "0";</script>
+    <script data-main="{% static 'comme-un-dessein-client/js/app' %}" src="{% static 'libs/require.js' %}"></script>
+
+    <!-- <script src="{% static 'libs/jquery-1.10.2.js' %}"></script>-->
+    <!-- <script src="{% static 'libs/jquery-ui.min.js' %}"></script>-->
+    <!-- <script src="{% static 'libs/bootstrap/js/bootstrap.min.js' %}"></script>-->
+    <!-- <script src="{% static 'libs/tinycolor.js' %}"></script>-->
+    <!-- <script src="{% static 'libs/paper/paper-full.js' %}"></script>-->
+    <!-- <script src="{% static 'libs/jquery.oembed.js' %}"></script>-->
+    <!-- <script src="{% static 'libs/coffee-script.js' %}"></script>-->
+
+    <!-- app scripts -->
+    <!-- <script id="pathSources" src="{% static 'coffee/path.coffee' %}"></script> -->
+
+    <!-- <script src="{% static 'js/facebook.js' %}"></script> -->
+    <!-- <script src="{% static 'js/utils.js' %}"></script>-->
+    <!-- <script src="{% static 'js/coordinateSystems.js' %}"></script>-->
+    <!-- <script src="{% static 'js/global.js' %}"></script>-->
+    <!-- <script src="{% static 'js/command.js' %}"></script> -->
+    <!-- <script src="{% static 'js/sound.js' %}"></script> -->
+    <!-- <script src="{% static 'js/editor.js' %}"></script> -->
+    <!-- <script src="{% static 'js/modal.js' %}"></script> -->
+   <!--  <script src="{% static 'js/item.js' %}"></script>-->
+    <!-- <script src="{% static 'js/path.js' %}"></script>-->
+    <!-- <script src="{% static 'js/div.js' %}"></script>-->
+    <!-- <script src="{% static 'js/lock.js' %}"></script>-->
+    <!-- <script src="{% static 'js/socket.js' %}"></script> -->
+    <!-- <script src="{% static 'js/ajax.js' %}"></script>-->
+    <!-- <script src="{% static 'js/options.js' %}"></script>-->
+    <!-- <script src="{% static 'js/tools.js' %}"></script> -->
+    <!-- <script src="{% static 'js/mainRasterizer.js' %}"></script>-->
+    <!-- <script src="{% static 'js/main.js' %}"></script>-->
+
+    <!-- <script src="{% static 'libs/live.js#js' %}"></script> -->
+
+  </body>
+</html>
+
+    <!--
+    <div class="tt-suggestion"><p style="white-space: normal;"><strong>A</strong>BeeZee</p></div><div class="tt-suggestion"><p style="white-space: normal;"><strong>A</strong>bel</p></div><div class="tt-suggestion"><p style="white-space: normal;"><strong>A</strong>bril F<strong>a</strong>tf<strong>a</strong>ce</p></div><div class="tt-suggestion"><p style="white-space: normal;"><strong>A</strong>clonic<strong>a</strong></p></div><div class="tt-suggestion"><p style="white-space: normal;"><strong>A</strong>cme</p></div>
+-->
