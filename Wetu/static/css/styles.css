@@ -20,18 +20,15 @@ body .popover.top > .arrow:after {
 }
 #RItems h4.panel-title {
   color: white;
-  background-color: #33383e;
+  background-color: #33383E;
   padding: 10px;
 }
 #RItems h4.panel-title a:hover {
   text-decoration: none;
 }
 #RItems ul.layers li.layer ul li {
-  display: -webkit-box;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-          flex-direction: row;
+  flex-direction: row;
   background-color: #464c53;
 }
 #RItems ul.layers li.layer ul li:nth-child(even) {
@@ -44,11 +41,9 @@ body .popover.top > .arrow:after {
   margin: 0px 4px;
 }
 #RItems ul.layers li.layer ul li .badge {
-  display: -webkit-box;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-          flex-direction: row;
+  flex-direction: row;
+  margin-right: 5px;
 }
 #RItems ul.layers li.layer ul li .badge-container {
   margin-left: auto;
@@ -57,8 +52,7 @@ body .popover.top > .arrow:after {
   margin-right: 0;
   height: 10px;
   padding: 0;
-  -webkit-box-ordinal-group: 6;
-          order: 5;
+  order: 5;
 }
 .btn.cd-no-radius {
   border-radius: 0;
@@ -80,47 +74,27 @@ ul.layers li ul.rPath-list li:hover {
   -animation: spin 1.25s infinite linear;
   -webkit-animation: spin 1.25s infinite linear;
 }
-@-webkit-keyframes spin {
-  from {
-    -webkit-transform: scale(1) rotate(0deg);
-            transform: scale(1) rotate(0deg);
-  }
-  to {
-    -webkit-transform: scale(1) rotate(360deg);
-            transform: scale(1) rotate(360deg);
-  }
-}
 @keyframes spin {
   from {
-    -webkit-transform: scale(1) rotate(0deg);
-            transform: scale(1) rotate(0deg);
+    transform: scale(1) rotate(0deg);
   }
   to {
-    -webkit-transform: scale(1) rotate(360deg);
-            transform: scale(1) rotate(360deg);
+    transform: scale(1) rotate(360deg);
   }
 }
 .modal,
 #modal-info {
-  display: -webkit-box;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-          flex-direction: column;
-  -webkit-box-pack: center;
-          justify-content: center;
-  -webkit-box-align: center;
-          align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   margin: 0;
 }
 .modal .modal-dialog,
 #modal-info .modal-dialog {
   margin: 0;
-  display: -webkit-box;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-          flex-direction: column;
+  flex-direction: column;
   min-height: auto;
   height: auto;
 }
@@ -153,7 +127,7 @@ select:-webkit-autofill {
 }
 .commeUnDessein-ui,
 .commeUnDessein-ui.open {
-  background-color: #33383e;
+  background-color: #33383E;
   font-size: 11px;
   color: #eeeeee;
 }
@@ -282,7 +256,7 @@ select:-webkit-autofill {
 }
 .commeUnDessein-ui .dropdown-menu,
 .commeUnDessein-ui.open .dropdown-menu {
-  background: #33383e;
+  background: #33383E;
 }
 .commeUnDessein-ui .dropdown-menu a,
 .commeUnDessein-ui.open .dropdown-menu a {
@@ -304,6 +278,7 @@ select:-webkit-autofill {
 }
 .layer .layer-header .badge {
   margin-top: 5px;
+  margin-right: 5px;
   margin-bottom: 5px;
   line-height: 1.3;
   font-size: 10px;
@@ -382,7 +357,7 @@ body.line #FavoriteTools ul.tool-list .tool-btn.btn-success {
   background-color: #4cae4c;
 }
 body.line #FavoriteTools ul.tool-list .tool-btn.btn-info {
-  background-color: #0079bf;
+  background-color: #0079BF;
 }
 body.line #drawingPanel .container .content .votes button span.glyphicon {
   display: none;
@@ -399,13 +374,15 @@ body.hand #drawingPanel .container .content .votes button img.hand {
 #FavoriteTools {
   -webkit-user-select: none;
   -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   -o-user-select: none;
   user-select: none;
   z-index: 1001;
   position: fixed;
   top: 0;
   width: 100%;
-  background-color: #33383e;
+  background-color: #33383E;
 }
 #FavoriteTools button.arrow {
   width: 20px;
@@ -413,7 +390,7 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   position: absolute;
   top: 0;
   min-height: 62px;
-  background-color: #33383e;
+  background-color: #33383E;
   border: none;
   opacity: 0.8;
   z-index: 2000;
@@ -435,8 +412,7 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   border-right: 10px solid white;
   top: 50%;
   left: 50%;
-  -webkit-transform: translateY(-50%) translateX(-50%);
-          transform: translateY(-50%) translateX(-50%);
+  transform: translateY(-50%) translateX(-50%);
 }
 #FavoriteTools button.arrow .arrow-right {
   border-top: 10px solid transparent;
@@ -444,12 +420,10 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   border-left: 10px solid white;
   top: 50%;
   right: 50%;
-  -webkit-transform: translateY(-50%) translateX(50%);
-          transform: translateY(-50%) translateX(50%);
+  transform: translateY(-50%) translateX(50%);
 }
 #FavoriteTools .tool-container {
-  -webkit-box-flex: 1;
-          flex: auto;
+  flex: auto;
 }
 #FavoriteTools h3.title {
   text-align: center;
@@ -457,7 +431,7 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   margin: 10px;
   line-height: 1;
   color: white;
-  font-family: 'Amatic SC', cursive;
+  font-family: 'Mali', cursive;
   font-size: 36px;
 }
 #FavoriteTools h3.title img {
@@ -480,7 +454,6 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   width: 100%;
   float: left;
   list-style-type: none;
-  display: -webkit-box;
   display: flex;
   flex-wrap: wrap;
   margin: 0;
@@ -514,12 +487,11 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   height: 30px;
   font-size: 25px;
   text-align: center;
-  -webkit-box-pack: center;
-          justify-content: center;
+  justify-content: center;
   line-height: 25px;
 }
 #FavoriteTools ul.tool-list .tool-btn.btn-info {
-  background-color: #0079bf;
+  background-color: #0079BF;
 }
 #FavoriteTools ul.tool-list .tool-btn:hover {
   background-color: #5bc0de;
@@ -565,8 +537,7 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   position: absolute;
   top: 62px;
   left: 50%;
-  -webkit-transform: translateX(-50%) scaleY(-1);
-          transform: translateX(-50%) scaleY(-1);
+  transform: translateX(-50%) scaleY(-1);
 }
 #CommeUnDessein_alerts.top.activated.show {
   bottom: auto;
@@ -578,11 +549,15 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   left: 0;
   right: 0;
   height: 50px;
-  background-color: #33383e;
+  background-color: #33383E;
   color: white;
   text-align: left;
   z-index: 2000;
+  -webkit-transition: left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear;
   -khtml-transition: left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear;
+  -moz-transition: left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear;
+  -ms-transition: left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear;
+  -o-transition: left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear;
   transition: left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear;
 }
 #CommeUnDessein_alerts .alert-controls {
@@ -629,6 +604,9 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   top: 50%;
   -webkit-transform: translateY(-50%);
   -khtml-transform: translateY(-50%);
+  -moz-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  -o-transform: translateY(-50%);
   transform: translateY(-50%);
   left: 50px;
   right: 40px;
@@ -657,8 +635,12 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   border: 0;
   opacity: 0.75;
   color: white;
-  background-color: #33383e;
+  background-color: #33383E;
+  -webkit-transition: opacity 0.25s linear;
   -khtml-transition: opacity 0.25s linear;
+  -moz-transition: opacity 0.25s linear;
+  -ms-transition: opacity 0.25s linear;
+  -o-transition: opacity 0.25s linear;
   transition: opacity 0.25s linear;
 }
 #CommeUnDessein_alerts .btn.show:hover,
@@ -672,7 +654,7 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   bottom: 0;
   top: 0;
   border-radius: 0;
-  background-color: #33383e;
+  background-color: #33383E;
   width: 38px;
 }
 #CommeUnDessein_alerts .btn-close .glyphicon:hover {
@@ -725,6 +707,8 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   overflow: hidden;
   -webkit-user-select: none;
   -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   -o-user-select: none;
   user-select: none;
 }
@@ -767,6 +751,8 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   cursor: url(../images/cursors/hand.png) 32 32, move;
   -webkit-user-select: text;
   -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
   -o-user-select: text;
   user-select: text;
 }
@@ -798,6 +784,9 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   overflow: hidden;
   -webkit-transform-origin: 0% 0% 0;
   -khtml-transform-origin: 0% 0% 0;
+  -moz-transform-origin: 0% 0% 0;
+  -ms-transform-origin: 0% 0% 0;
+  -o-transform-origin: 0% 0% 0;
   transform-origin: 0% 0% 0;
 }
 #stage.main .custom-div:hover {
@@ -862,6 +851,9 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   left: 50%;
   -webkit-transform: translate(-50%, -50%);
   -khtml-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  -o-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
 #stage.main .custom-div textarea {
@@ -877,8 +869,11 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   padding-left: 12px;
   padding-right: 12px;
   padding-top: 6px;
+  -webkit-background-clip: padding-box;
   -khtml-background-clip: padding-box;
+  -moz-background-clip: padding-box;
   -ms-background-clip: padding-box;
+  -o-background-clip: padding-box;
   background-clip: padding-box;
 }
 #stage.main .custom-div .content {
@@ -890,8 +885,11 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   border-style: solid;
   border-width: 0px;
   margin: 0;
+  -webkit-background-clip: padding-box;
   -khtml-background-clip: padding-box;
+  -moz-background-clip: padding-box;
   -ms-background-clip: padding-box;
+  -o-background-clip: padding-box;
   background-clip: padding-box;
   position: relative;
   float: left;
@@ -899,6 +897,9 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   left: 50%;
   -webkit-transform: translate(-50%, -50%);
   -khtml-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  -o-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
 #stage.main .custom-div .content.image {
@@ -942,8 +943,7 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   cursor: url(../images/cursors/hand.png) 32 32, move;
 }
 #user-profile {
-  -webkit-box-ordinal-group: 1002;
-          order: 1001;
+  order: 1001;
 }
 #user-profile .user-profile,
 #user-profile #user-login-group {
@@ -1004,18 +1004,19 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   clear: both;
 }
 #user-profile .commeUnDesseinin {
+  display: -webkit-flex;
   display: -moz-flex;
+  display: -ms-flexbox;
   display: -ms-flex;
-  display: -webkit-box;
   display: flex;
+  -webkit-justify-content: space-between;
   -moz-justify-content: space-between;
   -ms-justify-content: space-between;
-  -webkit-box-pack: justify;
-          justify-content: space-between;
+  justify-content: space-between;
+  -webkit-align-items: center;
   -moz-align-items: center;
   -ms-align-items: center;
-  -webkit-box-align: center;
-          align-items: center;
+  align-items: center;
   margin-top: 10px;
   margin-bottom: 10px;
   width: 100%;
@@ -1078,13 +1079,13 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   text-shadow: none;
 }
 .mCustomScrollbar.code .files.commeUnDessein-ui .jqtree-tree .jqtree-folder > .jqtree-element:first-child {
-  background-color: #24282d;
+  background-color: #24282D;
 }
 .mCustomScrollbar.code .files.commeUnDessein-ui .jqtree-tree .jqtree-folder > .jqtree-element:first-child:hover {
   background-color: #5cb85c;
 }
 .mCustomScrollbar.code .files.commeUnDessein-ui .jqtree-tree .jqtree-folder.jqtree-selected > .jqtree-element:first-child {
-  background-color: rgba(95, 72, 132, 0.5);
+  background-color: hsla(263, 29%, 40%, 0.5);
 }
 .mCustomScrollbar.code .files.commeUnDessein-ui .jqtree-tree .jqtree-toggler {
   background-image: url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlI+hKgFxoCgAOw==);
@@ -1110,15 +1111,11 @@ body.hand #drawingPanel .container .content .votes button img.hand {
 }
 .all-tools .search {
   width: 100%;
-  display: -webkit-box;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-          flex-direction: row;
+  flex-direction: row;
 }
 .all-tools .search input {
-  -webkit-box-flex: 1;
-          flex: 1;
+  flex: 1;
 }
 .all-tools .search button {
   margin-left: -1px;
@@ -1194,7 +1191,7 @@ li.tool-btn.selected .favorite-btn {
   margin-top: 3px;
   margin-bottom: 3px;
   cursor: pointer;
-  background-color: #24282d;
+  background-color: #24282D;
   background-repeat: no-repeat;
   background-position: 5px 10px;
   background-image: url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlI+hKgFxoCgAOw==);
@@ -1229,6 +1226,8 @@ li.tool-btn.selected .favorite-btn {
 .dat-gui {
   -webkit-user-select: none;
   -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   -o-user-select: none;
   user-select: none;
 }
@@ -1252,7 +1251,7 @@ li.tool-btn.selected .favorite-btn {
   position: relative;
   float: left;
   width: 100%;
-  background-color: #33383e;
+  background-color: #33383E;
   margin-right: 0;
 }
 .dat-gui .dg.main .dg .c input,
@@ -1261,8 +1260,8 @@ li.tool-btn.selected .favorite-btn {
 .dat-gui .dg.main .dg .c textarea {
   color: #eee;
   font-size: 11px;
-  text-shadow: 0 -1px 0 #111111;
-  background-color: #24282d;
+  text-shadow: 0 -1px 0 #111;
+  background-color: #24282D;
 }
 .dat-gui .dg.main select,
 .dat-gui .dg.main .btn {
@@ -1274,6 +1273,8 @@ li.tool-btn.selected .favorite-btn {
 .dat-gui .dg.main input[type=text] {
   -webkit-user-select: text;
   -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
   -o-user-select: text;
   user-select: text;
 }
@@ -1287,13 +1288,13 @@ li.tool-btn.selected .favorite-btn {
   display: none;
 }
 .dat-gui .dg.main .dg li {
-  background-color: #33383e;
+  background-color: #33383E;
 }
 .dat-gui .dg.main .dg li.title {
-  background-color: #24282d;
+  background-color: #24282D;
 }
 .dat-gui .dg.main .dg li .slider {
-  background-color: #24282d;
+  background-color: #24282D;
 }
 .dat-gui .dg.main #fontStyle,
 .dat-gui .dg.main #textAlign {
@@ -1302,7 +1303,7 @@ li.tool-btn.selected .favorite-btn {
 }
 .dat-gui .dg.main #fontStyle .btn,
 .dat-gui .dg.main #textAlign .btn {
-  background-color: #24282d;
+  background-color: #24282D;
   color: #fff;
   text-shadow: none;
 }
@@ -1367,27 +1368,19 @@ li.tool-btn.selected .favorite-btn {
   width: 244px;
 }
 .modal.fade .modal-dialog {
-  transition: -webkit-transform 0.1s ease-out;
   transition: transform 0.1s ease-out;
-  -webkit-transform: translate(0, 0);
-          transform: translate(0, 0);
+  transform: translate(0, 0);
 }
 .modal.fade .modal-dialog .in {
-  -webkit-transform: translate(0, 0);
-          transform: translate(0, 0);
+  transform: translate(0, 0);
 }
 .modal {
   overflow: hidden;
   z-index: -1;
-  display: -webkit-box;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-          flex-direction: column;
-  -webkit-box-pack: center;
-          justify-content: center;
-  -webkit-box-align: center;
-          align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 .modal.in {
   z-index: 100000;
@@ -1395,6 +1388,7 @@ li.tool-btn.selected .favorite-btn {
 .modal .modal-content {
   border-radius: 0;
   border: 0;
+  -webkit-box-shadow: none;
   box-shadow: none;
 }
 .modal .modal-content .modal-footer {
@@ -1424,43 +1418,31 @@ li.tool-btn.selected .favorite-btn {
   margin-top: 0;
 }
 .cd-flex {
-  display: -webkit-box;
   display: flex;
 }
 .cd-wrap {
   flex-wrap: wrap;
 }
 .cd-column {
-  display: -webkit-box;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-          flex-direction: column;
+  flex-direction: column;
 }
 .cd-row {
-  display: -webkit-box;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-          flex-direction: row;
+  flex-direction: row;
 }
 .cd-grow {
-  -webkit-box-flex: 1;
-          flex-grow: 1;
+  flex-grow: 1;
 }
 .cd-center {
-  -webkit-box-align: center;
-          align-items: center;
-  -webkit-box-pack: center;
-          justify-content: center;
+  align-items: center;
+  justify-content: center;
 }
 .cd-justify-content-center {
-  -webkit-box-pack: center;
-          justify-content: center;
+  justify-content: center;
 }
 .cd-end {
-  -webkit-box-pack: end;
-          justify-content: flex-end;
+  justify-content: flex-end;
 }
 .cd-button {
   cursor: pointer;
@@ -1482,13 +1464,14 @@ li.tool-btn.selected .favorite-btn {
   position: absolute;
   bottom: 0;
   right: 0;
-  display: -webkit-box;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-          flex-direction: row;
+  flex-direction: row;
   list-style: none;
+  -webkit-transition: bottom 0.25s linear;
   -khtml-transition: bottom 0.25s linear;
+  -moz-transition: bottom 0.25s linear;
+  -ms-transition: bottom 0.25s linear;
+  -o-transition: bottom 0.25s linear;
   transition: bottom 0.25s linear;
 }
 #submit-drawing-button.drawingPanel {
@@ -1505,16 +1488,22 @@ li.tool-btn.selected .favorite-btn {
   top: 62px;
   bottom: 0px;
   right: -350px;
-  background-color: #33383e;
+  background-color: #33383E;
   color: white;
   z-index: 999;
   min-width: 200px;
   width: 350px;
   max-height: 100%;
+  -webkit-transition: left 0.5s ease-out, bottom 0.25s linear;
   -khtml-transition: left 0.5s ease-out, bottom 0.25s linear;
+  -moz-transition: left 0.5s ease-out, bottom 0.25s linear;
+  -ms-transition: left 0.5s ease-out, bottom 0.25s linear;
+  -o-transition: left 0.5s ease-out, bottom 0.25s linear;
   transition: left 0.5s ease-out, bottom 0.25s linear;
   -webkit-user-select: none;
   -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   -o-user-select: none;
   user-select: none;
 }
@@ -1579,7 +1568,6 @@ li.tool-btn.selected .favorite-btn {
   padding: 5px;
 }
 #drawingPanel .container .content .cd-column-row {
-  min-height: -webkit-min-content;
   min-height: min-content;
   min-height: -moz-min-content;
   padding-bottom: 40px;
@@ -1592,7 +1580,7 @@ li.tool-btn.selected .favorite-btn {
   margin-top: -40px;
   padding-top: 10px;
   padding-right: 10px;
-  background-color: #33383e;
+  background-color: #33383E;
 }
 #drawingPanel.r-alert {
   bottom: 50px;
@@ -1605,13 +1593,9 @@ li.tool-btn.selected .favorite-btn {
   width: 10px;
   height: 100%;
   cursor: ew-resize;
-  display: -webkit-box;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-          flex-direction: column;
-  -webkit-box-pack: center;
-          justify-content: center;
+  flex-direction: column;
+  justify-content: center;
 }
 #drawingPanel .panel-handle button {
   width: 10px;
@@ -1631,11 +1615,8 @@ li.tool-btn.selected .favorite-btn {
 }
 #drawingPanel .header {
   min-height: 42px;
-  display: -webkit-box;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-          flex-direction: row;
+  flex-direction: row;
   background-color: #464c53;
 }
 #drawingPanel .header button {
@@ -1657,11 +1638,8 @@ li.tool-btn.selected .favorite-btn {
 }
 #drawingPanel .container {
   height: 100%;
-  display: -webkit-box;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-          flex-direction: column;
+  flex-direction: column;
   min-height: 100%;
   width: auto;
   margin-right: 0;
@@ -1670,18 +1648,13 @@ li.tool-btn.selected .favorite-btn {
 #drawingPanel .container .content {
   height: 100%;
   max-height: 100%;
-  -webkit-box-flex: 1;
-          flex-grow: 1;
-  display: -webkit-box;
+  flex-grow: 1;
   display: flex;
 }
 #drawingPanel .container .content .drawing-thumbnail {
-  display: -webkit-box;
   display: flex;
-  -webkit-box-pack: center;
-          justify-content: center;
-  -webkit-box-align: center;
-          align-items: center;
+  justify-content: center;
+  align-items: center;
   margin-bottom: 10px;
 }
 #drawingPanel .container .content .drawing-thumbnail img {
@@ -1740,7 +1713,7 @@ li.tool-btn.selected .favorite-btn {
   outline-style: dotted;
 }
 #drawingPanel .container .content .comments-container .comments .comment {
-  background-color: #33383e;
+  background-color: #33383E;
   margin: 5px;
   padding: 5px;
   margin-bottom: 0;
@@ -1758,7 +1731,6 @@ li.tool-btn.selected .favorite-btn {
   display: none;
 }
 #drawingPanel .container .content .comments-container .comments .comment .comment-header:hover .date {
-  display: -webkit-box;
   display: flex;
 }
 #drawingPanel .container .content .comments-container .comments .comment-buttons {
@@ -1782,7 +1754,7 @@ li.tool-btn.selected .favorite-btn {
   margin: 5px;
   padding: 5px;
   min-height: 100px;
-  background-color: #33383e;
+  background-color: #33383E;
 }
 #drawingPanel .container .content .comments-container .edit-buttons button {
   border: none;
@@ -1831,7 +1803,7 @@ li.tool-btn.selected .favorite-btn {
   min-width: 100px;
   background-color: #464c53;
   z-index: 1;
-  border: 1px solid #33383e;
+  border: 1px solid #33383E;
   margin-left: 10px;
 }
 #drawingPanel .container .content .votes .vote-buttons .cd-row .vote-list .vote-list-label {
@@ -1853,7 +1825,7 @@ li.tool-btn.selected .favorite-btn {
   margin-bottom: 0;
 }
 #drawingPanel .container .content .votes .vote-buttons .cd-row .vote-list li {
-  background-color: #33383e;
+  background-color: #33383E;
   margin-bottom: 5px;
   padding: 5px;
 }
@@ -1868,11 +1840,8 @@ li.tool-btn.selected .favorite-btn {
 }
 #drawingPanel .container .content .votes .vote-button {
   position: relative;
-  display: -webkit-box;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-          flex-direction: row;
+  flex-direction: row;
 }
 #drawingPanel .container .content .votes .vote-button .vote-list {
   display: none;
@@ -1880,7 +1849,7 @@ li.tool-btn.selected .favorite-btn {
   top: 0;
   left: 30px;
   padding: 10px;
-  background-color: #33383e;
+  background-color: #33383E;
   z-index: 1;
 }
 #drawingPanel .container .content .votes .vote-button:hover .vote-list {
@@ -1899,10 +1868,8 @@ li.tool-btn.selected .favorite-btn {
 }
 #drawingPanel .container .content .votes button {
   font-size: 12px;
-  -webkit-box-flex: 1;
-          flex-grow: 1;
-  -webkit-box-align: center;
-          align-items: center;
+  flex-grow: 1;
+  align-items: center;
   margin-left: 0px;
 }
 #drawingPanel .container .content .votes button img {
@@ -1924,16 +1891,11 @@ li.tool-btn.selected .favorite-btn {
   line-height: 2em;
 }
 #drawingPanel .container .loading-animation {
-  display: -webkit-box;
   display: flex;
-  -webkit-box-flex: 1;
-          flex-grow: 1;
+  flex-grow: 1;
   align-self: center;
-  -webkit-box-pack: center;
-          justify-content: center;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-          flex-direction: column;
+  justify-content: center;
+  flex-direction: column;
 }
 #drawingPanel .container .selected-drawings {
   width: 100%;
@@ -1952,7 +1914,7 @@ li.tool-btn.selected .favorite-btn {
   background-color: #464c53;
   padding: 10px;
   position: relative;
-  border-bottom: 2px solid #33383e;
+  border-bottom: 2px solid #33383E;
 }
 #drawingPanel .container .selected-drawings .drawing-list-container ul li .thumbnail {
   margin-bottom: 0px;
@@ -1984,13 +1946,9 @@ li.tool-btn.selected .favorite-btn {
   margin-bottom: 45px;
 }
 #drawingPanel .container .footer {
-  display: -webkit-box;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-          flex-direction: row;
-  -webkit-box-pack: end;
-          justify-content: flex-end;
+  flex-direction: row;
+  justify-content: flex-end;
 }
 #drawingPanel .container .footer button {
   margin: 1px;
@@ -2009,10 +1967,16 @@ li.tool-btn.selected .favorite-btn {
   display: none;
   padding: 5px;
   z-index: 999;
+  -webkit-transition: left 0.5s ease-out;
   -khtml-transition: left 0.5s ease-out;
+  -moz-transition: left 0.5s ease-out;
+  -ms-transition: left 0.5s ease-out;
+  -o-transition: left 0.5s ease-out;
   transition: left 0.5s ease-out;
   -webkit-user-select: none;
   -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   -o-user-select: none;
   user-select: none;
 }
@@ -2032,6 +1996,8 @@ li.tool-btn.selected .favorite-btn {
 #codeEditorBckp #codeEditorContent {
   -webkit-user-select: text;
   -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
   -o-user-select: text;
   user-select: text;
   width: 100%;
@@ -2049,6 +2015,8 @@ li.tool-btn.selected .favorite-btn {
 #codeEditorBckp .message-box .console-handle {
   -webkit-user-select: none;
   -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   -o-user-select: none;
   user-select: none;
   width: 100%;
@@ -2062,6 +2030,8 @@ li.tool-btn.selected .favorite-btn {
 #codeEditorBckp .message-box .content {
   -webkit-user-select: text;
   -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
   -o-user-select: text;
   user-select: text;
   background-color: #fafafa;
@@ -2082,6 +2052,8 @@ li.tool-btn.selected .favorite-btn {
 #codeEditorBckp .footer {
   -webkit-user-select: none;
   -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   -o-user-select: none;
   user-select: none;
   width: 100%;
@@ -2138,7 +2110,9 @@ li.tool-btn.selected .favorite-btn {
 }
 #screenshotModal .image img,
 .pinterest-modal .image img {
+  -webkit-box-shadow: rgba(0, 0, 0, 0.6) 1px 1px 1px 1px;
   -khtml-box-shadow: rgba(0, 0, 0, 0.6) 1px 1px 1px 1px;
+  -moz-box-shadow: rgba(0, 0, 0, 0.6) 1px 1px 1px 1px;
   -ms-box-shadow: rgba(0, 0, 0, 0.6) 1px 1px 1px 1px;
   -o-box-shadow: rgba(0, 0, 0, 0.6) 1px 1px 1px 1px;
   box-shadow: rgba(0, 0, 0, 0.6) 1px 1px 1px 1px;
@@ -2166,6 +2140,8 @@ li.tool-btn.selected .favorite-btn {
 }
 #stripeAnimationDropZone {
   border: 2px dashed #bbb;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
   border-radius: 5px;
   padding: 25px;
   text-align: center;
@@ -2182,15 +2158,10 @@ li.tool-btn.selected .favorite-btn {
 }
 #loadingBar {
   z-index: 1005;
-  display: -webkit-box;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-          flex-direction: row;
-  -webkit-box-align: center;
-          align-items: center;
-  -webkit-box-pack: center;
-          justify-content: center;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
   font-size: 20px;
   position: fixed;
   top: 0;
@@ -2221,13 +2192,9 @@ li.tool-btn.selected .favorite-btn {
 }
 body.allauth {
   margin-top: 100px;
-  display: -webkit-box;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-          flex-direction: row;
-  -webkit-box-pack: center;
-          justify-content: center;
+  flex-direction: row;
+  justify-content: center;
 }
 body.allauth > div {
   max-width: 500px;
@@ -2268,13 +2235,9 @@ body.allauth input:active {
   outline-color: #03A9F4;
 }
 body.allauth .container.allauth {
-  display: -webkit-box;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-          flex-direction: column;
-  -webkit-box-pack: center;
-          justify-content: center;
+  flex-direction: column;
+  justify-content: center;
 }
 body.allauth .menu ul {
   list-style: none;
@@ -2306,12 +2269,9 @@ body.allauth p input[type="email"] {
   width: 100%;
 }
 #aceDiff {
-  display: -webkit-box;
   display: flex;
   display: -webkit-flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-          flex-direction: row;
+  flex-direction: row;
   bottom: 0;
   top: 0;
   left: 0;
@@ -2332,14 +2292,12 @@ body.allauth p input[type="email"] {
   float: right;
 }
 #aceDiff > div {
-  -webkit-box-flex: 1;
-          flex-grow: 1;
+  flex-grow: 1;
   -webkit-flex-grow: 1;
   position: relative;
 }
 #aceDiff > div#acediff-gutter {
-  -webkit-box-flex: 0;
-          flex: 0 0 60px;
+  flex: 0 0 60px;
   -webkit-flex: 0 0 60px;
   border-left: 1px solid #999999;
   border-right: 1px solid #999999;
@@ -2406,21 +2364,14 @@ body.allauth p input[type="email"] {
   color: #c98100;
 }
 .cd-column-row {
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-          flex-direction: column;
-  display: -webkit-box;
+  flex-direction: column;
   display: flex;
 }
 .cd-column-row.cd-row {
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-          flex-direction: row;
+  flex-direction: row;
 }
 .cd-column-row.cd-column {
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-          flex-direction: column;
+  flex-direction: column;
 }
 @media (orientation: landscape) {
   .commeUnDessein-ui.open button.share-facebook .glyphicon {
@@ -2499,7 +2450,7 @@ body.allauth p input[type="email"] {
     position: absolute;
     top: 0;
     left: 0;
-    background-color: #33383e;
+    background-color: #33383E;
   }
   #drawingPanel .container .content .votes button img {
     margin-right: 2px;
@@ -2531,7 +2482,7 @@ body.allauth p input[type="email"] {
     top: 0;
     left: 0;
     height: 54px;
-    background-color: #33383e;
+    background-color: #33383E;
   }
   body.line #FavoriteTools ul.tool-list .tool-btn {
     padding: 6px;
@@ -2588,14 +2539,20 @@ body.allauth p input[type="email"] {
   z-index: 1000;
   display: block;
   padding: 5px;
-  background-color: #33383e;
+  background-color: #33383E;
   padding-right: 5px;
   list-style: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   -o-user-select: none;
   user-select: none;
+  -webkit-transition: left 0.5s ease-out, bottom 0.25s linear;
   -khtml-transition: left 0.5s ease-out, bottom 0.25s linear;
+  -moz-transition: left 0.5s ease-out, bottom 0.25s linear;
+  -ms-transition: left 0.5s ease-out, bottom 0.25s linear;
+  -o-transition: left 0.5s ease-out, bottom 0.25s linear;
   transition: left 0.5s ease-out, bottom 0.25s linear;
   /*
 	.option-list {
@@ -2686,8 +2643,7 @@ body.allauth p input[type="email"] {
 .sidebar .sidebar-handle {
   position: absolute;
   height: 50px;
-  -webkit-transform: translateY(-50%);
-          transform: translateY(-50%);
+  transform: translateY(-50%);
   top: 50%;
   right: 0;
   width: 20px;
@@ -2695,11 +2651,15 @@ body.allauth p input[type="email"] {
   padding-left: 5px;
   padding-right: 5px;
   color: white;
-  background: #33383e;
+  background: #33383E;
   border: none;
   border-radius: 0;
   z-index: 2001;
+  -webkit-transition: right 0.5s ease-out;
   -khtml-transition: right 0.5s ease-out;
+  -moz-transition: right 0.5s ease-out;
+  -ms-transition: right 0.5s ease-out;
+  -o-transition: right 0.5s ease-out;
   transition: right 0.5s ease-out;
 }
 .sidebar .sidebar-handle:focus {
@@ -2833,7 +2793,7 @@ body.allauth p input[type="email"] {
 }
 .sidebar .tt-dropdown-menu {
   color: #eeeeee;
-  background-color: #24282d;
+  background-color: #24282D;
   position: relative;
   top: 0;
   left: 0;
@@ -2888,6 +2848,8 @@ body.allauth p input[type="email"] {
   -webkit-touch-callout: text;
   -webkit-user-select: text;
   -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
   -o-user-select: text;
   user-select: text;
 }
@@ -2912,6 +2874,8 @@ body.allauth p input[type="email"] {
   -webkit-touch-callout: text;
   -webkit-user-select: text;
   -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
   -o-user-select: text;
   user-select: text;
 }
@@ -2945,7 +2909,7 @@ body.allauth p input[type="email"] {
   clear: both;
   width: 246px;
   border: 0;
-  background: #33383e;
+  background: #33383E;
   color: #eeeeee;
   font-size: 11px;
   font-style: normal;
@@ -2964,7 +2928,7 @@ body.allauth p input[type="email"] {
   height: 27px;
   line-height: 27px;
   list-style: none;
-  background-color: #24282d;
+  background-color: #24282D;
   padding-left: 5px;
 }
 .sidebar .panel .panel-heading .panel-title a {
@@ -2986,7 +2950,7 @@ body.allauth p input[type="email"] {
   border-top: none !important;
 }
 .sidebar #user-login-group {
-  background-color: #24282d;
+  background-color: #24282D;
 }
 .sidebar #user-login-group.open button {
   background-image: url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlI+hKgFxoCgAOw==);
@@ -3008,7 +2972,7 @@ body.allauth p input[type="email"] {
   height: 27px;
   line-height: 27px;
   list-style: none;
-  background-color: #24282d;
+  background-color: #24282D;
   padding-left: 5px;
   padding-left: 15px;
   background-repeat: no-repeat;
@@ -3016,7 +2980,7 @@ body.allauth p input[type="email"] {
   background-image: url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlGIWqMCbWAEAOw==);
 }
 .sidebar #user-login-group .dropdown-menu {
-  background-color: #24282d;
+  background-color: #24282D;
   width: 246px;
   border-radius: 0;
 }
@@ -3029,15 +2993,10 @@ body.allauth p input[type="email"] {
   background-color: #2fa1d6;
 }
 .sidebar .about-panel {
-  display: -webkit-box;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-          flex-direction: column;
-  -webkit-box-pack: center;
-          justify-content: center;
-  -webkit-box-align: center;
-          align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   padding-top: 15px;
 }
 .sidebar .about-panel img {
@@ -3089,9 +3048,13 @@ body.timeline-active #CommeUnDessein_alerts.activated .btn.show {
   left: 0;
   right: 0;
   height: 100px;
-  background-color: #33383e;
+  background-color: #33383E;
   z-index: 2001;
+  -webkit-transition: opacity 0.25s linear, left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear;
   -khtml-transition: opacity 0.25s linear, left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear;
+  -moz-transition: opacity 0.25s linear, left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear;
+  -ms-transition: opacity 0.25s linear, left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear;
+  -o-transition: opacity 0.25s linear, left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear;
   transition: opacity 0.25s linear, left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear;
 }
 #timeline.r-alert .btn.show {
@@ -3105,7 +3068,6 @@ body.timeline-active #CommeUnDessein_alerts.activated .btn.show {
   margin-left: 20px;
 }
 #timeline canvas {
-  display: -webkit-box;
   display: flex;
 }
 #timeline .btn.show {
@@ -3120,8 +3082,12 @@ body.timeline-active #CommeUnDessein_alerts.activated .btn.show {
   border: 0;
   opacity: 0.75;
   color: white;
-  background-color: #33383e;
+  background-color: #33383E;
+  -webkit-transition: opacity 0.25s linear, left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear;
   -khtml-transition: opacity 0.25s linear, left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear;
+  -moz-transition: opacity 0.25s linear, left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear;
+  -ms-transition: opacity 0.25s linear, left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear;
+  -o-transition: opacity 0.25s linear, left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear;
   transition: opacity 0.25s linear, left 0.5s ease-out, bottom 0.25s linear, top 0.25s linear;
 }
 #timeline .btn.show:hover,
@@ -3135,7 +3101,7 @@ body.timeline-active #CommeUnDessein_alerts.activated .btn.show {
   bottom: 0;
   top: 0;
   border-radius: 0;
-  background-color: #33383e;
+  background-color: #33383E;
   width: 26px;
   height: 26px;
   padding: 5px;
@@ -3165,10 +3131,9 @@ body.timeline-active #CommeUnDessein_alerts.activated .btn.show {
   color: #f5f5f5;
 }
 #timeline .btn-navigate {
-  display: -webkit-box;
   display: flex;
   border-radius: 0;
-  background-color: #33383e;
+  background-color: #33383E;
   width: 38px;
   color: #f5f5f5;
 }

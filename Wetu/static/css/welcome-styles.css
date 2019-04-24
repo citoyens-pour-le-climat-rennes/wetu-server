@@ -2,28 +2,16 @@
   -animation: spin 1.25s infinite linear;
   -webkit-animation: spin 1.25s infinite linear;
 }
-@-webkit-keyframes spin {
-  from {
-    -webkit-transform: scale(1) rotate(0deg);
-            transform: scale(1) rotate(0deg);
-  }
-  to {
-    -webkit-transform: scale(1) rotate(360deg);
-            transform: scale(1) rotate(360deg);
-  }
-}
 @keyframes spin {
   from {
-    -webkit-transform: scale(1) rotate(0deg);
-            transform: scale(1) rotate(0deg);
+    transform: scale(1) rotate(0deg);
   }
   to {
-    -webkit-transform: scale(1) rotate(360deg);
-            transform: scale(1) rotate(360deg);
+    transform: scale(1) rotate(360deg);
   }
 }
 body {
-  font-family: "Amatic SC";
+  font-family: 'Mali', cursive;
   font-size: 30px;
   position: absolute;
   top: 0;
@@ -32,15 +20,10 @@ body {
   right: 0;
   overflow: hidden;
   background-color: black;
-  display: -webkit-box;
   display: flex;
-  -webkit-box-pack: center;
-          justify-content: center;
-  -webkit-box-align: center;
-          align-items: center;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-          flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
   color: white;
 }
 .cd-container {
@@ -51,15 +34,10 @@ body {
   left: 0;
   right: 0;
   overflow: hidden;
-  display: -webkit-box;
   display: flex;
-  -webkit-box-pack: center;
-          justify-content: center;
-  -webkit-box-align: center;
-          align-items: center;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-          flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 ul.button-list {
   list-style-type: none;
@@ -70,7 +48,6 @@ ul.button-list li {
   width: 100%;
   background-color: black;
   border: 1px rgba(255, 255, 255, 0.5) solid;
-  display: -webkit-box;
   display: flex;
   padding: 0;
   margin-bottom: 10px;
@@ -98,15 +75,10 @@ ul.button-list li:hover a:hover {
 }
 .cd-form {
   overflow-y: auto;
-  display: -webkit-box;
   display: flex;
-  -webkit-box-pack: center;
-          justify-content: center;
-  -webkit-box-align: center;
-          align-items: center;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-          flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
   min-width: 300px;
 }
 .cd-form ul,
@@ -160,7 +132,7 @@ ul.button-list li:hover a:hover {
 }
 .cd-form #cd-submit {
   border: 1px rgba(255, 255, 255, 0.5) solid;
-  background-color: #000000;
+  background-color: black;
   margin-left: 10px;
 }
 .cd-form #cd-submit .glyphicon-refresh {
@@ -214,7 +186,7 @@ ul.button-list li:hover a:hover {
 .cd-form button,
 .cd-form ul > li,
 .cd-form input {
-  background-color: #000000;
+  background-color: black;
   border: 1px rgba(255, 255, 255, 0.5) solid;
   color: white;
 }
@@ -249,25 +221,22 @@ ul.button-list li:hover a:hover {
   display: none;
 }
 .form-signin.cd-show {
-  display: -webkit-box;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-          flex-direction: column;
+  flex-direction: column;
 }
 .form-signin input {
-  background-color: #000000;
+  background-color: black;
   border: 1px rgba(255, 255, 255, 0.5) solid;
 }
 .form-signin input[type=submit] {
-  background-color: #000000;
+  background-color: black;
   border: none;
 }
 form input {
   background-color: black;
 }
 form input[type=submit] {
-  background-color: #000000;
+  background-color: black;
   border: none;
 }
 .social-buttons li > a {
@@ -290,7 +259,7 @@ body.allauth > div input {
 }
 .allauth button {
   border: 1px rgba(255, 255, 255, 0.5) solid;
-  background-color: #000000;
+  background-color: black;
   border-radius: 0;
   font-size: 30px;
 }
@@ -328,28 +297,18 @@ body.allauth > div input {
   left: 0;
   right: 0;
   overflow: hidden;
-  display: -webkit-box;
   display: flex;
-  -webkit-box-pack: center;
-          justify-content: center;
-  -webkit-box-align: center;
-          align-items: center;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-          flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 .buttons .center {
   background-color: rgba(0, 0, 0, 0.7);
   padding: 20px;
-  display: -webkit-box;
   display: flex;
-  -webkit-box-pack: center;
-          justify-content: center;
-  -webkit-box-align: center;
-          align-items: center;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-          flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 .buttons .center h1 {
   padding: 20px;
@@ -362,7 +321,7 @@ body.allauth > div input {
   text-decoration: none;
   background-color: black;
   padding: 5px 10px;
-  font-family: 'Amatic SC';
+  font-family: 'Mali', cursive;
   font-size: 30px;
 }
 .buttons .center a:hover,
@@ -372,38 +331,26 @@ body.allauth > div input {
   text-decoration: none;
 }
 .cd-flex {
-  display: -webkit-box;
   display: flex;
 }
 .cd-column {
-  display: -webkit-box;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-          flex-direction: column;
+  flex-direction: column;
 }
 .cd-row {
-  display: -webkit-box;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-          flex-direction: row;
+  flex-direction: row;
 }
 .cd-grow {
-  -webkit-box-flex: 1;
-          flex-grow: 1;
+  flex-grow: 1;
 }
 .cd-center {
-  -webkit-box-align: center;
-          align-items: center;
-  -webkit-box-pack: center;
-          justify-content: center;
+  align-items: center;
+  justify-content: center;
 }
 .cd-justify-content-center {
-  -webkit-box-pack: center;
-          justify-content: center;
+  justify-content: center;
 }
 .cd-end {
-  -webkit-box-pack: end;
-          justify-content: flex-end;
+  justify-content: flex-end;
 }

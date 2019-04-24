@@ -87,6 +87,9 @@ class Drawing(Document):
     pathList = ListField(StringField())
     bounds = StringField()
 
+    left = IntField()
+    top = IntField()
+
     date = DateTimeField(default=datetime.datetime.now, required=True)
     votes = ListField(ReferenceField('Vote', reverse_delete_rule=PULL))
     comments = ListField(ReferenceField('Comment', reverse_delete_rule=PULL))

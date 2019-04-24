@@ -232,6 +232,7 @@
     "Please enter a message to comment": "Veuillez entrer un message pour commenter",
     "The discussion page is not created yet": "La page de discussion n'a pas encore été créée, veuillez réessayez un peu plus tard.",
     "Your email must be confirmed to report an abuse": "Votre email doit être confirmé pour signaler un abus.",
+    "Please confirm your email": "Veuillez confirmer votre adresse email pour effectuer cette action.",
     "You must submit your draft before cancelling a drawing": "Vous devez soumettre votre brouillon avant d'annuler un dessin",
     "Contact us at": "Pour toute question, remarque ou suggestion :",
     "You can discuss about drawings": "Venez discuter sur http://discussion.commeundessein.co/ pour créer une oeuvre collective !",
@@ -252,5 +253,10 @@
     "The URL is invalid": "L'URL n'est pas valide.",
     "Eraser": "Gommer",
     "Undo": "Annuler",
-    "Redo": "Rétablir"
+    "Colors": "Couleurs",
+    "Redo": "Rétablir",
+    "Load rejected drawings": "Charger les dessins rejetés",
+    "Display rejected drawings": "Afficher les dessins rejetés",
+    "Hide rejected drawings": "Cacher les dessins rejetés",
+    "Choose a tile": "Choisir une case"
 }

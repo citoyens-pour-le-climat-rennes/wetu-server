@@ -135,8 +135,21 @@ def unix_time(dt):
 def unix_time_millis(dt):
 	return unix_time(dt) * 1000.0
 
-def makeBox(tlX, tlY, brX, brY):
-	return { "type": "Polygon", "coordinates": [ [ [tlX, tlY], [brX, tlY], [brX, brY], [tlX, brY], [tlX, tlY] ] ] }
+def makeBox(left, top, right, bottom):
+	return { "type": "Polygon", "coordinates": [ [ [left, top], [right, top], [right, bottom], [left, bottom], [left, top] ] ] }
+
+def makeBoxFromBounds(bounds):
+	return makeBox(bounds['x'], bounds['y'], bounds['x'] + bounds['width'], bounds['y'] + bounds['height'])
+
+def makeBoxFromPoints(box):
+	if box is None:
+		return None
+	
+	points = box['points']
+	planetX = box['planet']['x']
+	planetY = box['planet']['y']
+
+	return makeBox(points[0][0], points[0][1], points[2][0], points[2][1])
 
 userID = 0
 isUpdatingRasters = False
@@ -447,88 +460,6 @@ def benchmarkLoad(request, areasToLoad):
 
 	return json.dumps({"message": "success"})
 
-# # @dajaxice_register
-# @checkDebug
-# def quick_load(request, box, boxes, zoom):
-
-# 	items = {}
-
-# 	left = box['left']
-# 	top = box['top']
-# 	right = box['right']
-# 	bottom = box['bottom']
-
-# 	if zoom > 0.04:
-# 		for b in boxes:
-# 			try:
-# 				area = Area.objects.get(x=b['x'], y=b['y'])
-# 			except:
-# 				continue
-
-# 			for item in area.items:
-# 				if hasattr(item, 'pk') and not items.has_key(item.pk):
-# 					items[item.pk] = item.to_json()
-# 	else:
-# 		areas = Area.objects(x__gte=left, x__lte=right, y__gte=top, y__lte=bottom)
-
-
-# 		for area in areas:
-# 			for item in area.items:
-# 				if hasattr(item, 'pk') and not items.has_key(item.pk):
-# 					items[item.pk] = item.to_json()
-
-# 	# load rasters
-# 	rasters = []
-
-# 	step = 1
-
-# 	if zoom > 0.2:
-# 		step = 1
-# 	elif zoom > 0.04:
-# 		step = 5
-# 	else:
-# 		step = 25
-
-# 	for x1 in range(left,right+step,step):
-# 		for y1 in range(top,bottom+step,step):
-
-# 			x5 = floorToMultiple(x1, 5)
-# 			y5 = floorToMultiple(y1, 5)
-
-# 			x25 = floorToMultiple(x1, 25)
-# 			y25 = floorToMultiple(y1, 25)
-
-# 			if zoom > 0.2:
-# 				position = { 'x': x1, 'y': y1 }
-# 				rasterPath = 'media/rasters/zoom100/' + str(x25) + ',' + str(y25) + '/' + str(x5) + ',' + str(y5) + '/'
-# 			elif zoom > 0.04:
-# 				position = { 'x': x5, 'y': y5 }
-# 				rasterPath = 'media/rasters/zoom20/' + str(x25) + ',' + str(y25) + '/'
-# 			else:
-# 				position = { 'x': x25, 'y': y25 }
-# 				rasterPath = 'media/rasters/zoom4/'
-
-# 			rasterName = rasterPath + str(position['x']) + "," + str(position['y']) + ".png"
-
-# 			if os.path.isfile(os.getcwd() + '/' + rasterName):
-# 				rasters.append( { 'url': rasterName, 'position': position } )
-
-# 	global userID
-# 	user = request.user.username
-# 	if not user:
-# 		user = userID
-# 	userID += 1
-
-# 	# global dummyArea
-# 	# if not dummyArea:
-# 	# 	try:
-# 	# 		dummyArea = Area.objects.get(x=-180000.5, y=-900000.5)
-# 	# 	except Area.DoesNotExist:
-# 	# 		dummyArea = Area(x=-180000.5, y=-900000.5)
-# 	# 	dummyArea.save()
-
-# 	return json.dumps( { 'items': items.values(), 'rasters': rasters, 'zoom': zoom, 'user': user } )
-
 # @dajaxice_register
 @checkDebug
 def createCity(request, name, public=None):
@@ -698,67 +629,6 @@ def getAllItems(models, city, checkAddItemFunction, itemDates=None, owner=None, 
 
 	return items
 
-# @dajaxice_register
-@checkDebug
-def load(request, rectangle, areasToLoad, qZoom, city=None):
-
-	start = time.time()
-
-	(cityPk, cityFinished) = getCity(request, city)
-	if not cityPk:
-		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
-
-	models = ['Path', 'Div', 'Box', 'AreaToUpdate', 'Drawing']
-	items = getItems(models, areasToLoad, qZoom, cityPk, checkAddItem, None, request.user.username)
-
-	# load rasters
-	rasters = []
-
-	step = qZoom
-
-	left = int(rectangle['left'])
-	top = int(rectangle['top'])
-	right = int(rectangle['right'])
-	bottom = int(rectangle['bottom'])
-
-	for x1 in range(left,right+step,step):
-		for y1 in range(top,bottom+step,step):
-
-			x5 = floorToMultiple(x1, 5)
-			y5 = floorToMultiple(y1, 5)
-
-			x25 = floorToMultiple(x1, 25)
-			y25 = floorToMultiple(y1, 25)
-
-			if qZoom < 5:
-				position = { 'x': x1, 'y': y1 }
-				rasterPath = 'media/rasters/' + cityPk + '/zoom100/' + str(x25) + ',' + str(y25) + '/' + str(x5) + ',' + str(y5) + '/'
-			elif qZoom < 25:
-				position = { 'x': x5, 'y': y5 }
-				rasterPath = 'media/rasters/' + cityPk + '/zoom20/' + str(x25) + ',' + str(y25) + '/'
-			else:
-				position = { 'x': x25, 'y': y25 }
-				rasterPath = 'media/rasters/' + cityPk + '/zoom4/'
-
-			rasterName = rasterPath + str(position['x']) + "," + str(position['y']) + ".png"
-
-			filePath = os.getcwd() + '/' + rasterName
-			if os.path.isfile(filePath):
-				# rasters.append( { 'url': rasterName, 'position': position, 'lastUpdate': time.ctime(os.path.getmtime(filePath)) } )
-				rasters.append( { 'url': rasterName, 'position': position } )
-
-	end = time.time()
-	print "Time elapsed: " + str(end - start)
-
-	global userID
-	user = request.user.username
-	if not user:
-		user = userID
-	userID += 1
-
-	# return json.dumps( { 'paths': paths, 'boxes': boxes, 'divs': divs, 'user': user, 'rasters': rasters, 'areasToUpdate': areas, 'zoom': zoom } )
-	return json.dumps( { 'items': items.values(), 'user': user, 'rasters': rasters, 'qZoom': qZoom } )
-
 @checkDebug
 def loadAll(request, city=None):
 
@@ -883,6 +753,16 @@ def loadBounds(request, city=None):
 	# return json.dumps( { 'paths': paths, 'boxes': boxes, 'divs': divs, 'user': user, 'rasters': rasters, 'areasToUpdate': areas, 'zoom': zoom } )
 	return json.dumps( { 'items': items, 'user': request.user.username } )
 
+def emailIsConfirmed(request, userProfile=None):
+	if not userProfile:
+		userProfile = UserProfile.objects.get(username=request.user.username)
+	if not userProfile.emailConfirmed:
+		emailConfirmed = EmailAddress.objects.filter(user=request.user, verified=True).exists()
+		userProfile.emailConfirmed = emailConfirmed
+		userProfile.save()
+		return emailConfirmed
+	return userProfile.emailConfirmed
+
 @checkDebug
 def loadAllSVG(request, city=None):
 
@@ -1001,236 +881,6 @@ def getAreas(bounds):
 			areas[x][y] = True
 	return areas
 
-# # add areas with item
-# def addAreas(bounds, item):
-# 	print "<<<"
-# 	print "add areas of item: " + str(item.pk)
-
-# 	areas = getAreas(bounds)
-
-# 	areasToAdd = []
-# 	for x, column in areas.iteritems():
-# 		for y in column:
-# 			area = Area.objects(x=x, y=y).modify(upsert=True, new=True, push__items=item)
-# 			print 'area: ' + str(x) + ', ' + str(y) + ': ' + str(area.pk)
-# 			# Area.objects(x=a['x'], y=a['y']).update_one(push__paths=p, upsert=True) # good but how to get id?
-# 			# try:
-# 			# 	area = Area.objects.get(x=x, y=y)
-# 			# except Area.DoesNotExist:
-# 			# 	area = Area(x=x, y=y)
-# 			# area.items.append(item)
-# 			# area.save()
-# 			areasToAdd.append(area)
-# 			# item.areas.append(area)
-
-# 	# item.save()
-# 	document = type(item)
-# 	print "update areas to item.areas"
-# 	document.objects(pk=item.pk).update_one(push_all__areas=areasToAdd)
-# 	print "end addAreas"
-# 	print ">>>"
-
-# 	# check that DB is ok
-# 	try:
-# 		i = document.objects.get(pk=item.pk)
-# 	except document.DoesNotExist:
-# 		print 'item was deleted before add check.'
-# 		return
-
-# 	for a in areasToAdd:
-# 		try:
-# 			aa = Area.objects.get(pk=a.pk)
-# 		except Area.DoesNotExist:
-# 			print 'Area.DoesNotExist'
-# 			import pdb; pdb.set_trace()
-# 		if aa not in i.areas:
-# 			print 'aa not in items.areas'
-# 			import pdb; pdb.set_trace()
-
-# 	for x, column in areas.iteritems():
-# 		for y in column:
-# 			try:
-# 				aa = Area.objects.get(x=x, y=y)
-# 			except Area.DoesNotExist:
-# 				print 'Area.DoesNotExist'
-# 				import pdb; pdb.set_trace()
-# 			if i not in aa.items:
-# 				print 'Area not updated!'
-# 				import pdb; pdb.set_trace()
-# 			if aa not in i.areas:
-# 				print 'aa not in items.areas'
-# 				import pdb; pdb.set_trace()
-# 	return
-
-# # update areas with item
-# # areas: the list of areas which now intersect with item
-# def updateAreas(bounds, item):
-# 	print "<<<"
-# 	print "update areas of item: " + str(item.pk)
-# 	areas = getAreas(bounds)
-
-# 	document = type(item)
-
-# 	areasToRemove = []
-# 	areasToRemovePks = []
-
-# 	# remove areas which do not intersect with item anymore
-# 	for area in item.areas:
-# 		if areas.has_key(area.x) and areas[area.x].has_key(area.y): 	# if the area still intersects: do not remove it
-# 			del areas[area.x][area.y]
-# 		else: 															# otherwise: remove it
-# 			areasToRemove.append(area)
-# 			if not hasattr(area, 'pk'):
-# 				print 'WARNING: area in item.areas was deleted'
-# 				continue
-# 			areasToRemovePks.append(area.pk)
-# 			# print 'remove item: ' + str(area.x) + ', ' + str(area.y) + ': ' + str(area.pk) + ' from area.items...'
-# 			# try:
-# 			# 	area.items.remove(item)
-# 			# except ValueError:
-# 			# 	print 'WARNING: item is not in area.items'
-# 			# 	continue
-# 			# print 'removed'
-# 			# if len(area.items)==0:
-# 			# 	print 'delete area: ' + str(area.pk)
-# 			# 	area.delete()
-# 			# 	print 'deleted'
-# 			# else:
-# 			# 	print 'save area: ' + str(area.pk)
-# 			# 	area.save()
-# 			# 	print 'saved'
-# 			# Area.objects(pk=area.pk).update_one(pull__items=item)
-
-# 	Area.objects(pk__in=areasToRemovePks).update(pull__items=item)
-# 	Area.objects(pk__in=areasToRemovePks, items__size=0).delete()
-
-# 	print "remove old areas from item.areas..."
-# 	document.objects(pk=item.pk).update_one(pull_all__areas=areasToRemove)
-# 	print "...removed old areas from item.areas"
-
-# 	areasToAdd = []
-# 	# for all areas which now intersect with item: create or update them, and
-# 	for x, column in areas.iteritems():
-# 		for y in column:
-# 			area = Area.objects(x=x, y=y).modify(upsert=True, new=True, push__items=item)
-# 			print 'add item: ' + str(item.pk) + ' to area.items: ' + str(area.x) + ', ' + str(area.y) + ': ' + str(area.pk)
-# 			areasToAdd.append(area)
-# 			# try:
-# 			# 	area = Area.objects.get(x=x, y=y)
-# 			# except Area.DoesNotExist:
-# 			# 	area = Area(x=x, y=y)
-# 			# area.items.append(item)
-# 			# area.save()
-# 			# item.areas.append(area)
-
-# 	print 'add areas in item.areas...'
-# 	document.objects(pk=item.pk).update_one(push_all__areas=areasToAdd)
-# 	print '...areas added'
-
-# 	print "end updateAreas"
-# 	print ">>>"
-
-# 	# check that DB is ok
-# 	# item.save()
-
-# 	try:
-# 		i = document.objects.get(pk=item.pk)
-# 	except document.DoesNotExist:
-# 		print 'item was deleted before update check.'
-# 		return
-
-# 	for x, column in areas.iteritems():
-# 		for y in column:
-# 			try:
-# 				a = Area.objects.get(x=x, y=y)
-# 			except Area.DoesNotExist:
-# 				print 'Area.DoesNotExist'
-# 				import pdb; pdb.set_trace()
-# 			if a not in i.areas:
-# 				print 'area not in items.areas'
-# 				import pdb; pdb.set_trace()
-# 			if i not in a.items:
-# 				print 'item not in area.items'
-# 				import pdb; pdb.set_trace()
-
-# 	for a in areasToRemove:
-# 		try:
-# 			aa = Area.objects.get(pk=a.pk)
-# 		except Area.DoesNotExist:
-# 			if a in i.areas:
-# 				print 'area not deleted from item.areas'
-# 				import pdb; pdb.set_trace()
-# 			continue
-# 		if i in aa.items:
-# 			print 'item not deleted from area.items'
-# 			import pdb; pdb.set_trace()
-# 		if len(aa.items)==0:
-# 			print 'area not deleted'
-# 			import pdb; pdb.set_trace()
-# 	return
-
-# # update areas with item
-# def deleteAreas(item):
-
-# 	print "<<<"
-# 	print "delete areas of item: " + str(item.pk)
-
-# 	areaPks = []
-# 	for a in item.areas:
-# 		if hasattr(a, 'pk'):
-# 			areaPks.append(a.pk)
-
-# 	print 'remove areas: ' + str(areaPks)
-# 	Area.objects(pk__in=areaPks).update(pull__items=item)
-
-# 	print 'delete empty areas...'
-# 	Area.objects(pk__in=areaPks, items__size=0).delete()
-
-# 	# for area in item.areas:
-# 	# 	# a = Area.objects.get(pk=area.pk) # should not be necessary
-# 	# 	# risk of having error with area.items
-# 	# 	if not hasattr(area, 'items'):
-# 	# 		print 'WARNING: area in item.areas was deleted'
-# 	# 		continue
-# 	# 	try:
-# 	# 		print 'remove item: ' + str(item.pk) + ' from area: ' + str(area.pk) + ' ...'
-# 	# 		area.items.remove(item)
-# 	# 	except ValueError:
-# 	# 		print 'WARNING: item is not in area.items'
-# 	# 		continue
-# 	# 	if len(area.items)==0:
-# 	# 		print 'delete area ' + str(area.pk) + '...'
-# 	# 		area.delete()
-# 	# 		print '...area deleted'
-# 	# 	else:
-# 	# 		print 'save area ' + str(area.pk) + '...'
-# 	# 		area.save()
-# 	# 		print '...area saved'
-
-# 	print "end deleteAreas"
-# 	print ">>>"
-
-# 	# check that DB is ok
-# 	document = type(item)
-
-# 	try:
-# 		i = document.objects.get(pk=item.pk)
-# 	except document.DoesNotExist:
-# 		print 'item was deleted before delete check.'
-# 		return
-# 	for a in i.areas:
-# 		try:
-# 			if not hasattr(a, 'pk'):
-# 				continue
-# 			aa = Area.objects.get(pk=a.pk)
-# 		except Area.DoesNotExist:
-# 			continue
-# 		if i in aa.items:
-# 			print 'item not deleted from area.items'
-# 			import pdb; pdb.set_trace()
-
-# 	return
-
 def boxContainsPoint(boxX, boxY, boxWidth, boxHeight, pointX, pointY):
 	return pointX > boxX and pointX < boxX + boxWidth and pointY > boxY and pointY < boxY + boxHeight
 
@@ -1239,421 +889,6 @@ def boxContainsPoints(boxX, boxY, boxWidth, boxHeight, points):
 		if not boxContainsPoint(boxX, boxY, boxWidth, boxHeight, point[0], point[1]):
 			return False
 	return True
-
-# @dajaxice_register
-@checkDebug
-def savePath(request, clientId, points, object_type, box, date, data=None, city=None):
-# def savePath(request, points, pID, planet, object_type, data=None, rasterData=None, rasterPosition=None, areasNotRasterized=None):
-
-	if not request.user.is_authenticated():
-		return json.dumps( { 'state': 'not_logged_in', 'message': 'The user does not exist.' } )
-
-	(city, cityFinished) = getCity(request, city)
-	if not city:
-		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.' } )
-
-	if not boxContainsPoints(-2, -1.5, 4, 3, points):
-		return json.dumps( { 'state': 'error', 'message': 'The path is not in the drawing area.' } )
-
-	boxPoints = box['points']
-	planetX = box['planet']['x']
-	planetY = box['planet']['y']
-
-	lockedAreas = Box.objects(city=city, planetX=planetX, planetY=planetY, box__geo_intersects={"type": "LineString", "coordinates": points }) # , owner__ne=request.user.username )
-	lock = None
-	for area in lockedAreas:
-		if area.owner == request.user.username:
-			lock = str(area.pk)
-		else:
-			return json.dumps( {'state': 'error', 'message': 'Your path intersects with a locked area which you do not own'} )
-
-	try:
-		tool = Tool.objects.get(name=object_type, accepted=True)
-	except Tool.DoesNotExist:
-		global defaultPathTools
-		if not object_type in defaultPathTools:
-			return json.dumps( { 'state': 'error', 'message': 'The path "' + object_type + '" does not exist.' } )
-
-	boxGeometry = makeBox(boxPoints[0][0], boxPoints[0][1], boxPoints[2][0], boxPoints[2][1])
-	
-	p = Path(clientId=clientId, city=city, planetX=planetX, planetY=planetY, box=boxGeometry, points=points, owner=request.user.username, object_type=object_type, data=data, date=datetime.datetime.fromtimestamp(date/1000.0), lock=lock )
-	p.save()
-
-	addAreaToUpdate( boxPoints, planetX, planetY, city )
-
-	# addAreas(bounds, p)
-
-	# rasterResult = updateRastersJson(rasterData, rasterPosition, areasNotRasterized)
-
-	# return json.dumps( {'state': rasterResult['state'], 'pID': pID, 'pk': str(p.pk), 'message': rasterResult['message'] if 'message' in rasterResult else '' } )
-	return json.dumps( {'state': 'success', 'pk': str(p.pk), 'owner': request.user.username } )
-
-
-# Create or  update drawing :
-# drawing = Drawing.objects(owner=request.user.username, status='draft').modify(upsert=True, new=True, set__owner=request.user.username)
-
-# @dajaxice_register
-@checkDebug
-def updatePath(request, pk, points=None, box=None, data=None, date=None):
-
-	try:
-		p = Path.objects.get(pk=pk)
-	except Path.DoesNotExist:
-		return json.dumps({'state': 'error', 'message': 'Update impossible: element does not exist for this user'})
-
-	if not userAllowed(request, p.owner):
-		return json.dumps({'state': 'error', 'message': 'Not owner of path'})
-
-	if p.drawing:
-		return json.dumps({'state': 'error', 'message': 'Path is in drawing'})
-
-	if box and not points or points and not box:
-		return json.dumps( { 'state': 'error', 'message': 'Modifying points without box or box without points' } )
-
-	if points and box:
-
-		boxPoints = box['points']
-		planetX = box['planet']['x']
-		planetY = box['planet']['y']
-
-		lockedAreas = Box.objects(city=p.city, planetX=planetX, planetY=planetY, box__geo_intersects={"type": "LineString", "coordinates": points }) #, owner__ne=request.user.username )
-
-		p.lock = None
-		# p.owner = None
-
-		for area in lockedAreas:
-			if userAllowed(request, area.owner):
-				p.lock = str(area.pk)
-				p.owner = area.owner
-			else:
-				return json.dumps( {'state': 'error', 'message': 'Your path intersects with a locked area which you do not own'} )
-
-		addAreaToUpdate( p.box['coordinates'][0], p.planetX, p.planetY, p.city )
-
-		p.box = [boxPoints]
-		p.planetX = planetX
-		p.planetY = planetY
-		p.points = points
-
-		addAreaToUpdate( boxPoints, planetX, planetY, p.city )
-	if data:
-		p.data = data
-	if date:
-		p.date = datetime.datetime.fromtimestamp(date/1000.0)
-	p.lastUpdate = datetime.datetime.now()
-	# updateAreas(bounds, p)
-
-	p.save()
-
-	return json.dumps( {'state': 'success'} )
-
-# @dajaxice_register
-@checkDebug
-def deletePath(request, pk):
-
-	try:
-		p = Path.objects.get(pk=pk)
-	except Path.DoesNotExist:
-		return json.dumps({'state': 'error', 'message': 'Delete impossible: element does not exist for this user'})
-
-	if not userAllowed(request, p.owner):
-		return json.dumps({'state': 'error', 'message': 'Not owner of path'})
-
-	if p.drawing:
-		return json.dumps({'state': 'error', 'message': 'Path is in drawing'})
-
-	if p.lock and not userAllowed(request, p.owner):
-		return json.dumps({'state': 'error', 'message': 'Not owner of path'})
-
-	addAreaToUpdate( p.box['coordinates'][0], p.planetX, p.planetY, p.city )
-
-	p.delete()
-
-	return json.dumps( { 'state': 'success', 'pk': pk } )
-
-# @dajaxice_register
-@checkDebug
-def saveBox(request, clientId, box, object_type, data=None, siteData=None, siteName=None, city=None):
-	if not request.user.is_authenticated():
-		return json.dumps({'state': 'not_logged_in'})
-
-	(city, cityFinished) = getCity(request, city)
-	if not city:
-		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.' } )
-
-	points = box['points']
-	planetX = box['planet']['x']
-	planetY = box['planet']['y']
-
-	# check if the box intersects with another one
-	geometry = makeBox(points[0][0], points[0][1], points[2][0], points[2][1])
-	lockedAreas = Box.objects(city=city, planetX=planetX, planetY=planetY, box__geo_intersects=geometry, owner__ne=request.user.username )
-	if lockedAreas.count()>0:
-		return json.dumps( {'state': 'error', 'message': 'This area intersects with another locked area'} )
-
-	# todo: warning: website is not defined in Box model...
-	try:
-		data = json.dumps( { 'loadEntireArea': loadEntireArea } )
-		b = Box(clientId=clientId, city=city, planetX=planetX, planetY=planetY, box=[points], owner=request.user.username, object_type=object_type, siteName=siteName, data=data)
-		b.save()
-		addAreaToUpdate( points, planetX, planetY, city )
-	except ValidationError:
-		return json.dumps({'state': 'error', 'message': 'invalid_url'})
-
-	# addAreas(bounds, b)
-
-	if name and len(name)>0 and siteData:
-		site = Site(box=b, name=name, data=siteData)
-		site.save()
-
-	# pathsToLock = Path.objects(planetX=planetX, planetY=planetY, box__geo_within=geometry)
-	# for path in pathsToLock:
-	# 	path.locked = True
-	# 	path.save()
-
-	Path.objects(city=city, planetX=planetX, planetY=planetY, points__geo_within=geometry).update(set__lock=str(b.pk), set__owner=request.user.username)
-	Div.objects(city=city, planetX=planetX, planetY=planetY, box__geo_within=geometry).update(set__lock=str(b.pk), set__owner=request.user.username)
-
-	return json.dumps( {'state': 'success', 'object_type':object_type, 'owner': request.user.username, 'pk':str(b.pk), 'box':box } )
-
-# @dajaxice_register
-@checkDebug
-def updateBox(request, pk, box=None, data=None, name=None, updateType=None, modulePk=None):
-	if not request.user.is_authenticated():
-		return json.dumps({'state': 'not_logged_in'})
-
-	try:
-		b = Box.objects.get(pk=pk, owner=request.user.username)
-	except Box.DoesNotExist:
-		return json.dumps({'state': 'error', 'message': 'Element does not exist for this user'})
-
-	if box:
-
-		points = box['points']
-		planetX = box['planet']['x']
-		planetY = box['planet']['y']
-
-		geometry = makeBox(points[0][0], points[0][1], points[2][0], points[2][1])
-
-		# check if new box intersects with another one
-		lockedAreas = Box.objects(city=b.city, planetX=planetX, planetY=planetY, box__geo_intersects=geometry, owner__ne=request.user.username )
-		if lockedAreas.count()>0:
-			return json.dumps( {'state': 'error', 'message': 'This area intersects with a locked area'} )
-
-
-	# if box and updateType=='position':
-	# 	newPoints = box['points']
-	# 	# retrieve the old paths and divs to unlock them if they are not in the new box:
-	# 	oldPoints = b.box['coordinates'][0]
-
-	# 	planetX = b.planetX
-	# 	planetY = b.planetY
-
-	# 	geometry = makeBox(oldPoints[0][0], oldPoints[0][1], oldPoints[2][0], oldPoints[2][1])
-
-	# 	paths = Path.objects(planetX=planetX, planetY=planetY, points__geo_within=geometry)
-
-	# 	oldCenterX = points[0][0] + points[2][0]
-	# 	oldCenterY = points[0][1] + points[2][1]
-	# 	newCenterX = newPoints[0][0] + newPoints[2][0]
-	# 	newCenterY = newPoints[0][1] + newPoints[2][1]
-
-	# 	deltaX = newCenterX - oldCenterX
-	# 	deltaY = newCenterY - oldCenterY
-
-	# 	for path in paths:
-	# 		for point in path.points['coordinates']:
-	# 			point[0] = point[0] + deltaX
-	# 			point[1] = point[1] + deltaY
-	# 		path.save()
-
-	# 	divs = Div.objects(planetX=planetX, planetY=planetY, box__geo_within=geometry)
-
-	# 	import pdb; pdb.set_trace()
-
-	# 	for div in divs:
-	# 		for geometry in div.box:
-	# 			points = geometry['coordinates'][0]
-	# 			for i in range(0, 4):
-	# 				points[i][0] = points[i][0] + deltaX
-	# 				points[i][1] = points[i][1] + deltaY
-	# 		div.save()
-
-	# update the box:
-	if box:
-		addAreaToUpdate( b.box['coordinates'][0], b.planetX, b.planetY, b.city )
-		b.box = [points]
-		b.planetX = planetX
-		b.planetY = planetY
-		addAreaToUpdate( points, planetX, planetY, b.city )
-	if data:
-		b.data = data
-	if modulePk:
-		try:
-			module = Module.objects.get(pk=modulePk)
-		except Module.DoesNotExist:
-			return json.dumps({'state': 'error', 'message': 'The module does not exist.'})
-		b.module = module
-		# module.lock = b
-		# module.save()
-	b.lastUpdate = datetime.datetime.now()
-
-	try:
-		b.save()
-	except ValidationError:
-		return json.dumps({'state': 'error', 'message': 'The URL is invalid.'})
-
-	# if box:
-	# 	# retrieve the new paths and divs to lock them if they were not in the old box:
-	# 	points = box['points']
-	# 	planetX = box['planet']['x']
-	# 	planetY = box['planet']['y']
-	# 	geometry = makeBox(points[0][0], points[0][1], points[2][0], points[2][1])
-
-	# 	newPaths = Path.objects(planetX=b.planetX, planetY=b.planetY, points__geo_within=geometry)
-	# 	newDivs = Div.objects(planetX=b.planetX, planetY=b.planetY, box__geo_within=geometry)
-
-	# 	# update old and new paths and divs
-	# 	newPaths.update(set__lock=str(b.pk), set__owner=request.user.username)
-	# 	newDivs.update(set__lock=str(b.pk), set__owner=request.user.username)
-
-	# 	oldPaths.filter(pk__nin=newPaths.scalar("id")).update(set__lock=None, set__owner=None)
-	# 	oldDivs.filter(pk__nin=newDivs.scalar("id")).update(set__lock=None, set__owner=None)
-
-	# 	# for oldPath in oldPaths:
-	# 	# 	if oldPath not in newPaths:
-	# 	# 		oldPath.locked = False
-	# 	# 		oldPath.save()
-
-	# 	# for oldDiv in oldDivs:
-	# 	# 	if oldDiv not in newDivs:
-	# 	# 		oldDiv.locked = False
-	# 	# 		oldDiv.save()
-
-	return json.dumps( {'state': 'success' } )
-
-# @dajaxice_register
-@checkDebug
-def deleteBox(request, pk):
-	if not request.user.is_authenticated():
-		return json.dumps({'state': 'not_logged_in'})
-
-	try:
-		b = Box.objects.get(pk=pk, owner=request.user.username)
-	except Box.DoesNotExist:
-		return json.dumps({'state': 'error', 'message': 'Element does not exist for this user'})
-
-	points = b.box['coordinates'][0]
-	planetX = b.planetX
-	planetY = b.planetY
-	oldGeometry = makeBox(points[0][0], points[0][1], points[2][0], points[2][1])
-
-	Path.objects(city=b.city, planetX=planetX, planetY=planetY, points__geo_within=oldGeometry).update(set__lock=None)
-	Div.objects(city=b.city, planetX=planetX, planetY=planetY, box__geo_within=oldGeometry).update(set__lock=None)
-
-	if not userAllowed(request, b.owner):
-		return json.dumps({'state': 'error', 'message': 'Not owner of div'})
-
-	# deleteAreas(b)
-	addAreaToUpdate( points, planetX, planetY, b.city )
-	b.delete()
-
-	return json.dumps( { 'state': 'success', 'pk': pk } )
-
-# @dajaxice_register
-@checkDebug
-def saveDiv(request, clientId, box, object_type, date=None, data=None, lock=None, city=None):
-
-	points = box['points']
-	planetX = box['planet']['x']
-	planetY = box['planet']['y']
-
-	(city, cityFinished) = getCity(request, city)
-	if not city:
-		return json.dumps( { 'status': 'error', 'message': 'The city does not exist.' } )
-
-	lockedAreas = Box.objects(city=city, planetX=planetX, planetY=planetY, box__geo_intersects=makeBox(points[0][0], points[0][1], points[2][0], points[2][1]) ) # , owner__ne=request.user.username )
-	lock = None
-	for area in lockedAreas:
-		if userAllowed(request, area.owner):
-			lock = str(area.pk)
-		else:
-			return json.dumps( {'state': 'error', 'message': 'Your div intersects with a locked area which you do not own'} )
-
-	# if lockedAreas.count()>0:
-	# 	return json.dumps( {'state': 'error', 'message': 'Your div intersects with a locked area'} )
-
-	d = Div(clientId=clientId, city=city, planetX=planetX, planetY=planetY, box=[points], owner=request.user.username, object_type=object_type, data=data, lock=lock, date=datetime.datetime.fromtimestamp(date/1000.0))
-	# addAreaToUpdate( points, planetX, planetY )
-	d.save()
-
-	return json.dumps( {'state': 'success', 'object_type':object_type, 'owner': request.user.username, 'pk':str(d.pk), 'box': box } )
-
-# @dajaxice_register
-@checkDebug
-def updateDiv(request, pk, object_type=None, box=None, date=None, data=None, lock=None):
-
-	try:
-		d = Div.objects.get(pk=pk)
-	except Div.DoesNotExist:
-		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
-
-	if d.lock and not userAllowed(request, d.owner):
-		return json.dumps({'state': 'error', 'message': 'Not owner of div'})
-
-	if box:
-		points = box['points']
-		planetX = box['planet']['x']
-		planetY = box['planet']['y']
-
-		lockedAreas = Box.objects(city=d.city, planetX=planetX, planetY=planetY, box__geo_intersects=makeBox(points[0][0], points[0][1], points[2][0], points[2][1]) ) # , owner__ne=request.user.username )
-		d.lock = None
-		d.owner = None
-		for area in lockedAreas:
-			if userAllowed(request, area.owner):
-				# try:
-				# 	lock = Box.objects(planetX=planetX, planetY=planetY, point__geo_within_box=makeBox(points[0][0], points[0][1], points[2][0], points[2][1]) )
-				# except Box.DoesNotExist:
-				# 	return json.dumps( {'state': 'error', 'message': 'Your div intersects with a locked area that you own.'} )
-				d.lock = str(area.pk)
-				d.owner = area.owner
-			else:
-				return json.dumps( {'state': 'error', 'message': 'Your div intersects with a locked area which you do not own'} )
-
-		# addAreaToUpdate( d.box['coordinates'][0], d.planetX, d.planetY )
-		d.box = [points]
-		d.planetX = planetX
-		d.planetY = planetY
-		# addAreaToUpdate( d.box[0], d.planetX, d.planetY )
-	if date:
-		d.date = datetime.datetime.fromtimestamp(date/1000.0)
-	if data:
-		d.data = data
-	d.lastUpdate = datetime.datetime.now()
-
-	d.save()
-
-	return json.dumps( {'state': 'success' } )
-
-# @dajaxice_register
-@checkDebug
-def deleteDiv(request, pk):
-
-	try:
-		d = Div.objects.get(pk=pk)
-	except Div.DoesNotExist:
-		return json.dumps({'state': 'error', 'message': 'Element does not exist for this user.'})
-
-	if d.lock and not userAllowed(request, d.owner):
-		return json.dumps({'state': 'error', 'message': 'You are not the owner of this div.'})
-
-	# addAreaToUpdate( d.box['coordinates'][0], d.planetX, d.planetY )
-
-	d.delete()
-
-
-	return json.dumps( { 'state': 'success', 'pk': pk } )
-
 
 # --- Drawings --- #
 
@@ -1774,6 +1009,9 @@ def submitDrawing(request, pk, clientId, svg, date, bounds, title=None, descript
 	if userProfile.banned:
 		return json.dumps({'state': 'error', 'message': 'User is banned.'})
 
+	if not emailIsConfirmed(request, userProfile):
+		return json.dumps({'state': 'error', 'message': 'Please confirm your email'})
+
 	d = getDrawing(pk, clientId)
 
 	if d is None:
@@ -1792,7 +1030,10 @@ def submitDrawing(request, pk, clientId, svg, date, bounds, title=None, descript
 	d.status = 'pending'
 	d.title = title
 	d.description = description
-	d.bounds = bounds
+
+	d.bounds = json.dumps(bounds)
+	d.left = int(floor(bounds['x'] / 1000))
+	d.top = int(floor(bounds['y'] / 1000))
 	
 	# send_mail('[Comme un dessein] submitDrawing pending', u'submitDrawing pending ' + str(d.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 
@@ -1817,7 +1058,7 @@ def submitDrawing(request, pk, clientId, svg, date, bounds, title=None, descript
 	output.write(imageData)
 	output.close()
 
-	updateRasters(imageData, json.loads(bounds))
+	updateRasters(imageData, bounds)
 
 	svgFile = open('Wetu/static/drawings/'+pk+'.svg', 'wb')
 	svgFile.write(svg)
@@ -1981,6 +1222,9 @@ def reportAbuse(request, pk):
 	except UserProfile.DoesNotExist:
 		return json.dumps({"status": "error", "message": "The user does not exists."})
 
+	if not emailIsConfirmed(request, userProfile):
+		return json.dumps({'state': 'error', 'message': 'Please confirm your email'})
+
 	if not userProfile.emailConfirmed:
 		return json.dumps({"status": "error", "message": "Your email must be confirmed to report an abuse."})
 
@@ -1992,6 +1236,7 @@ def reportAbuse(request, pk):
 	d.status = 'flagged'
 	# send_mail('[Comme un dessein] reportAbuse', u'reportAbuse flagged ' + str(d.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 	d.save()
+	removeDrawingFromRasters(d)
 	
 	emailOfDrawingOwner = ''
 	try:
@@ -2014,7 +1259,14 @@ def cancelAbuse(request, pk):
 
 	send_mail('[Comme un dessein] validateDrawing', u'validateDrawing pending ' + pk, 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 
-	updateDrawingState(pk, True)
+	try:
+		drawing = Drawing.objects.get(pk=pk)
+	except Drawing.DoesNotExist:
+		return json.dumps( {'state': 'error', 'message': 'Could not find the drawing.'} )
+
+	updateDrawingState(None, drawing, True)
+	
+	updateRastersFromDrawing(drawing)
 
 	return json.dumps( {'state': 'success'} )
 
@@ -2229,7 +1481,7 @@ def getDrawing(pk=None, clientId=None):
 
 # @dajaxice_register
 @checkDebug
-def addPathToDrawing(request, points, pk=None, clientId=None):
+def addPathToDrawing(request, points, data, bounds, pk=None, clientId=None):
 	# return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus modifier de dessin."})
 	
 	if not request.user.is_authenticated():
@@ -2253,14 +1505,18 @@ def addPathToDrawing(request, points, pk=None, clientId=None):
 	except City.DoesNotExist:
 		pass
 
-	d.pathList.append(json.dumps(points))
+	d.pathList.append(json.dumps({ 'points': points, 'data': data }))
+	
+	d.bounds = json.dumps(bounds)
+	d.left = int(floor(bounds['x'] / 1000))
+	d.top = int(floor(bounds['y'] / 1000))
 
 	d.save()
 
 	return json.dumps( {'state': 'success' } )
 
 @checkDebug
-def addPathsToDrawing(request, pointLists, pk=None, clientId=None):
+def addPathsToDrawing(request, pointLists, bounds, pk=None, clientId=None):
 	# return json.dumps({'state': 'info', 'message': "L'installation Comme un Dessein est terminée, vous ne pouvez plus modifier de dessin."})
 
 	if not request.user.is_authenticated():
@@ -2287,15 +1543,19 @@ def addPathsToDrawing(request, pointLists, pk=None, clientId=None):
 	if d.status != 'draft':
 		return json.dumps({'state': 'error', 'message': 'The drawing is not a draft, it cannot be modified anymore.'})
 
-	for points in pointLists:
-		d.pathList.append(json.dumps(points))
+	for p in pointLists:
+		d.pathList.append(json.dumps({ 'points': p['points'], 'data': p['data'] }))
+
+	d.bounds = json.dumps(bounds)
+	d.left = int(floor(bounds['x'] / 1000))
+	d.top = int(floor(bounds['y'] / 1000))
 
 	d.save()
 
 	return json.dumps( {'state': 'success' } )
 
 @checkDebug
-def setPathsToDrawing(request, pointLists, pk=None, clientId=None):
+def setPathsToDrawing(request, pointLists, bounds, pk=None, clientId=None):
 	
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
@@ -2323,8 +1583,17 @@ def setPathsToDrawing(request, pointLists, pk=None, clientId=None):
 
 	d.pathList = []
 
-	for points in pointLists:
-		d.pathList.append(json.dumps(points))
+	for p in pointLists:
+		d.pathList.append(json.dumps({ 'points': p['points'], 'data': p['data'] }))
+
+	if bounds:
+		d.bounds = json.dumps(bounds)
+		d.left = int(floor(bounds['x'] / 1000))
+		d.top = int(floor(bounds['y'] / 1000))
+	else:
+		d.bounds = None
+		d.left = None
+		d.top = None
 
 	d.save()
 
@@ -2340,7 +1609,7 @@ def updateDrawings(request):
 		drawing.pathList = []
 		for path in drawing.paths:
 			data = json.loads(path.data)
-			points = json.dumps(data['points'])
+			points = json.dumps({ 'points': data['points'], 'data': data['data'] })
 			drawing.pathList.append(points)
 		drawing.save()
 	return json.dumps( {'state': 'success' } )
@@ -2437,6 +1706,7 @@ def cancelDrawing(request, pk):
 	d.status = 'draft'
 	# send_mail('[Comme un dessein] cancelDrawing', u'cancelDrawing draft ' + str(d.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 	d.svg = None
+	d.title = None
 	
 	try:
 		drafts = Drawing.objects(city=d.city, status=['draft'], owner=request.user.username)
@@ -2447,6 +1717,8 @@ def cancelDrawing(request, pk):
 		d.pathList += draft.pathList
 
 	d.save()
+
+	removeDrawingFromRasters(d)
 
 	drawingChanged.send(sender=None, type='cancel', drawingId=d.clientId, pk=str(d.pk))
 
@@ -2464,6 +1736,8 @@ def deleteDrawings(request, drawingsToDelete, confirm=None):
 	
 	for drawing in drawings:
 		drawing.delete()
+
+		removeDrawingFromRasters(drawing)
 
 		drawingChanged.send(sender=None, type='delete', drawingId=drawing.clientId, pk=str(drawing.pk))
 
@@ -2576,6 +1850,8 @@ def updateDrawingState(drawingPk=None, drawing=None, unflag=False):
 	elif isDrawingRejected(nNegativeVotes):
 		drawing.status = 'rejected'
 		drawing.save()
+		removeDrawingFromRasters(drawing)
+		updateRastersFromDrawing(drawing, 'inactive')
 	elif drawing.status == 'flagged' and unflag: 	# not accepted nor rejected: it was pending
 		drawing.status = 'pending'
 		drawing.save()
@@ -2585,7 +1861,7 @@ def updateDrawingState(drawingPk=None, drawing=None, unflag=False):
 	# drawingValidated.send(sender=None, drawingId=drawing.clientId, status=drawing.status)
 	drawingChanged.send(sender=None, type='status', drawingId=drawing.clientId, status=drawing.status, pk=str(drawing.pk))
 
-	return
+	return drawing
 
 def isDrawingStatusValidated(drawing):
 	return drawing.status == 'drawing' or drawing.status == 'drawn'
@@ -2608,6 +1884,9 @@ def vote(request, pk, date, positive):
 
 	if user.banned:
 		return json.dumps({'state': 'error', 'message': 'User is banned.'})
+
+	if not emailIsConfirmed(request, user):
+		return json.dumps({'state': 'error', 'message': 'Please confirm your email'})
 
 	drawing = None
 	try:
@@ -2654,9 +1933,8 @@ def vote(request, pk, date, positive):
 		except DoesNotExist:
 			pass
 
-
-	emailConfirmed = EmailAddress.objects.filter(user=request.user, verified=True).exists()
-	user.emailConfirmed = emailConfirmed
+	# emailConfirmed = EmailAddress.objects.filter(user=request.user, verified=True).exists()
+	# user.emailConfirmed = emailConfirmed
 
 	vote = Vote(author=user, drawing=drawing, positive=positive, date=datetime.datetime.fromtimestamp(date/1000.0))
 	vote.save()
@@ -2729,6 +2007,9 @@ def addComment(request, drawingPk, comment, date):
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
 
+	if not emailIsConfirmed(request):
+		return json.dumps({'state': 'error', 'message': 'Please confirm your email'})
+
 	drawing = None
 	try:
 		drawing = Drawing.objects.get(pk=drawingPk)
@@ -2783,6 +2064,9 @@ def modifyComment(request, commentPk, comment):
 	if user.banned:
 		return json.dumps({'state': 'error', 'message': 'User is banned.'})
 
+	if not emailIsConfirmed(request, user):
+		return json.dumps({'state': 'error', 'message': 'Please confirm your email'})
+
 	c = None
 	try:
 		c = Comment.objects.get(pk=commentPk)
@@ -2809,6 +2093,9 @@ def deleteComment(request, commentPk):
 	
 	if user.banned:
 		return json.dumps({'state': 'error', 'message': 'User is banned.'})
+
+	if not emailIsConfirmed(request, user):
+		return json.dumps({'state': 'error', 'message': 'Please confirm your email'})
 
 	comment = None
 	try:
@@ -2873,7 +2160,8 @@ def getNextValidatedDrawing(request, city=None):
 						# for path in drawing.paths:
 						# 	paths.append(path.to_json())
 						for path in drawing.pathList:
-							paths.append(json.dumps({'data': json.dumps({'points': json.loads(path), 'planet': {'x': 0, 'y': 0}}), '_id': {'$oid': None} }))
+							pJSON = json.loads(path)
+							paths.append(json.dumps({'data': json.dumps({'points': pJSON['points'], 'data': pJSON['data'], 'planet': {'x': 0, 'y': 0}}), '_id': {'$oid': None} }))
 
 						return  json.dumps( {'state': 'success', 'pk': str(drawing.pk), 'items': paths, 'svg': drawing.svg } )
 			except DoesNotExist:
@@ -2902,7 +2190,8 @@ def getNextTestDrawing(request, city=None):
 			# for path in drawing.paths:
 			# 	paths.append(path.to_json())
 			for path in drawing.pathList:
-				paths.append(json.dumps({'data': json.dumps({'points': json.loads(path), 'planet': {'x': 0, 'y': 0}}), '_id': {'$oid': None} }))
+				pJSON = json.loads(path)
+				paths.append(json.dumps({'data': json.dumps({'points': pJSON['points'], 'data': pJSON['data'], 'planet': {'x': 0, 'y': 0}}), '_id': {'$oid': None} }))
 
 			return  json.dumps( {'state': 'success', 'pk': str(drawing.pk), 'items': paths } )
 		
@@ -2989,99 +2278,6 @@ def setDrawingToCity(request, pk, city):
 
 	return json.dumps( {'state': 'success' } )
 
-# --- rasters --- #
-
-def addAreaToUpdate(points, planetX, planetY, city):
-
-	# merge all overlapping areas into one (and delete them)
-	print '<<<'
-	print 'start merging all regions overlapping with the new area to update: '
-	print 'points: ' + str(points)
-
-	overlappingAreas = AreaToUpdate.objects(city=city, planetX=planetX, planetY=planetY, box__geo_intersects=[points])
-
-	xMin = points[0][0]
-	xMax = points[2][0]
-	yMin = points[0][1]
-	yMax = points[2][1]
-
-	while len(overlappingAreas)>0:
-
-		for overlappingArea in overlappingAreas:
-
-			cbox = overlappingArea.box['coordinates'][0]
-			cleft = cbox[0][0]
-			ctop = cbox[0][1]
-			cright = cbox[2][0]
-			cbottom = cbox[2][1]
-
-			# # if the areas just share an edge: continue
-			# # check if intersection has a positive area
-			# ileft = max(left, cleft)
-			# itop = max(top, ctop)
-			# iright = min(right, cright)
-			# ibottom = min(bottom, cbottom)
-
-			# if (iright-ileft) <= 0 or (ibottom-itop) <= 0 or (iright-ileft) * (ibottom-itop) <= 0.001:
-			# 	continue
-
-			print '!!! OVERLAPPING !!!'
-
-			if not xMin or cleft < xMin:
-				xMin = cleft
-			if not xMax or cright > xMax:
-				xMax = cright
-			if not yMin or ctop < yMin:
-				yMin = ctop
-			if not yMax or cbottom > yMax:
-				yMax = cbottom
-
-
-			print 'start deleting areas of overlapping area: ' + str(overlappingArea.pk)
-			print 'start deleting overlapping area: ' + str(overlappingArea.pk) + '...'
-			try:
-				overlappingArea.delete()
-			except Area.DoesNotExist:
-				print "Impossible to delete area: " + str(overlappingArea.pk) + ", skipping area merging"
-				xMin = points[0][0]
-				xMax = points[2][0]
-				yMin = points[0][1]
-				yMax = points[2][1]
-				break
-			print '...finished deleting overlapping area: ' + str(overlappingArea.pk)
-
-		points = [ [xMin, yMin], [xMax, yMin], [xMax, yMax], [xMin, yMax], [xMin, yMin] ]
-		overlappingAreas = AreaToUpdate.objects(city=city, planetX=planetX, planetY=planetY, box__geo_intersects=[points])
-
-	areaToUpdate = AreaToUpdate(city=city, planetX=planetX, planetY=planetY, box=[points])
-	areaToUpdate.save()
-
-	return
-
-# Get the position in project coordinate system of *point* on *planet*
-# This is the opposite of projectToPlanetJson
-def posOnPlanetToProject(xp, yp, planetX, planetY):
-	scale = 1000.0
-	x = planetX*360.0+xp
-	y = planetY*180.0+yp
-	x *= scale
-	y *= scale
-	return (x,y)
-
-# @dajaxice_register
-@checkDebug
-def batchUpdateRasters(request, args):
-	results = []
-	for arg in args:
-		results.append(updateRastersJson(arg['data'], arg['position'], arg['areasNotRasterized'], arg['areaToDeletePk']))
-	return json.dumps(results)
-
-# # @dajaxice_register
-# @checkDebug
-# def updateRasters(request, data=None, position=None, areasNotRasterized=None, areaToDeletePk=None):
-# 	result = updateRastersJson(data, position, areasNotRasterized, areaToDeletePk)
-# 	return json.dumps(result)
-
 def floorToMultiple(x, m):
 	return int(floor(x/float(m))*m)
 
@@ -3097,15 +2293,132 @@ def intersectRectangles(l1, t1, r1, b1, l2, t2, r2, b2):
 	return (l, t, r, b)
 
 @checkDebug
+def pasteImage2onImage1(image1, image2, box1, box2, scale = 1):
+
+	union = intersectRectangles(box1[0], box1[1], box1[2], box1[3], box2[0], box2[1], box2[2], box2[3])
+
+	subImage2 = image2.crop(( int( ( union[0] - box2[0] ) / scale ) , int( ( union[1] - box2[1] ) / scale) , int( ( union[2] -  box2[0] ) / scale), int( ( union[3] -  box2[1] ) / scale) ))
+	
+	image1.paste(subImage2, ( int( ( union[0] - box1[0] ) / scale ) , int( (union[1] - box1[1] ) / scale) ))
+
+	return image1
+
+@checkDebug
+def blendImages(image1, image2, box1, box2, scale = 1, overwrite = False):
+	if overwrite:
+		return pasteImage2onImage1(image1, image2, box1, box2, scale)
+
+	union = intersectRectangles(box1[0], box1[1], box1[2], box1[3], box2[0], box2[1], box2[2], box2[3])
+
+	subImage1 = image1.crop(( int( ( union[0] - box1[0] ) / scale ) , int( ( union[1] - box1[1] ) / scale) , int( ( union[2] -  box1[0] ) / scale), int( ( union[3] -  box1[1] ) / scale) ))
+	subImage2 = image2.crop(( int( ( union[0] - box2[0] ) / scale ) , int( ( union[1] - box2[1] ) / scale) , int( ( union[2] -  box2[0] ) / scale), int( ( union[3] -  box2[1] ) / scale) ))
+
+	alpha_composite = Image.alpha_composite(subImage1, subImage2)
+	
+	image1.paste(alpha_composite, ( int( ( union[0] - box1[0] ) / scale ) , int( (union[1] - box1[1] ) / scale) ))
+
+	return alpha_composite
+
+@checkDebug
+def getDrawingBounds(drawing):
+	drawingBounds = json.loads(drawing.bounds)
+	return [ drawingBounds['x'], drawingBounds['y'], drawingBounds['x'] + drawingBounds['width'], drawingBounds['y'] + drawingBounds['height'] ]
+
+@checkDebug
+def boundsOverlap(b1, b2):
+	ileft = max(b1[0], b2[0])
+	itop = max(b1[1], b2[1])
+	iright = min(b1[2], b2[2])
+	ibottom = min(b1[3], b2[3])
+
+	if (iright-ileft) <= 0 or (ibottom-itop) <= 0 or (iright-ileft) * (ibottom-itop) <= 0.001:
+		return False
+
+	return True
+
+@checkDebug
+def removeDrawingFromRasters(drawing):
+	
+	drawingBounds = getDrawingBounds(drawing)
+
+	imageX = drawingBounds[0]
+	imageY = drawingBounds[1]
+	imageWidth = int(drawingBounds[2] - drawingBounds[0])
+	imageHeight = int(drawingBounds[3] - drawingBounds[1])
+
+	scaleFactor = 4
+
+	pixelRatio = pow(scaleFactor, 3)
+
+	l = int(floor(imageX / pixelRatio) * pixelRatio)
+	t = int(floor(imageY / pixelRatio) * pixelRatio)
+	r = int(ceil( (imageX + imageWidth) / pixelRatio) * pixelRatio)
+	b = int(ceil( (imageY + imageHeight) / pixelRatio) * pixelRatio)
+
+	imageWidth = r - l
+	imageHeight = b - t
+	
+	newImage = Image.new("RGBA", (imageWidth, imageHeight), (255, 255, 255, 0))
+
+	imageX = l
+	imageY = t
+
+	# geometry = makeBox(l, t, r, b)
+
+	xRange = range(int(floor(l / 1000)) - 1, int(floor(r / 1000)) + 1)
+	yRange = range(int(floor(t / 1000)) - 1, int(floor(b / 1000)) + 1)
+
+	overlappingDrawings = Drawing.objects(city=drawing.city, planetX=drawing.planetX, planetY=drawing.planetY, status__in=['pending', 'drawing', 'drawn'], left__in=xRange, top__in=yRange)
+	
+	drawingBounds[0] = l
+	drawingBounds[1] = t
+	drawingBounds[2] = r
+	drawingBounds[3] = b
+
+	for d in overlappingDrawings:
+
+		dBounds = getDrawingBounds(d)
+
+		if boundsOverlap(drawingBounds, dBounds):
+
+			imageName = 'Wetu/static/drawings/' + str(d.pk) + '.png'
+			try:
+				dImage = Image.open(imageName)
+
+				blendImages(newImage, dImage, drawingBounds, dBounds)
+
+			except IOError:
+				pass
+
+	updateRastersFromImage(newImage, { 'x': imageX, 'y': imageY, 'width': imageWidth, 'height': imageHeight }, True)
+
+	return
+
+@checkDebug
 def updateRasters(imageData, bounds):
-	print "updateRasters"
 
 	try:
 		image = Image.open(StringIO.StringIO(imageData))				# Pillow version
 	except IOError:
 		return { 'state': 'error', 'message': 'impossible to read image.'}
 
-	# with Image(file=cStringIO.StringIO(imageData.decode('base64'))) as image: 		# Wand version
+	return updateRastersFromImage(image, bounds)
+
+
+@checkDebug
+def updateRastersFromDrawing(drawing, rasterType = 'active'):
+
+	imageName = open('Wetu/static/drawings/'+str(drawing.pk)+'.png', 'wb')
+
+	try:
+		image = Image.open(imageName)
+	except IOError:
+		return { 'state': 'error', 'message': 'impossible to read the drawing image.'}
+
+	return updateRastersFromImage(image, json.loads(drawing.bounds), False, rasterType)
+
+@checkDebug
+def updateRastersFromImage(image, bounds, overwrite = False, rasterType = 'active'):
 
 	# find top, left, bottom and right positions of the area in the quantized space
 
@@ -3115,6 +2428,22 @@ def updateRasters(imageData, bounds):
 	imageHeight = int(image.size[1])
 
 	scaleFactor = 4
+
+	pixelRatio = pow(scaleFactor, 3)
+
+	l = int(floor(imageX / pixelRatio) * pixelRatio)
+	t = int(floor(imageY / pixelRatio) * pixelRatio)
+	r = int(ceil( (imageX + imageWidth) / pixelRatio) * pixelRatio)
+	b = int(ceil( (imageY + imageHeight) / pixelRatio) * pixelRatio)
+
+	imageWidth = r - l
+	imageHeight = b - t
+	
+	bigImage = Image.new("RGBA", (imageWidth, imageHeight))
+	bigImage.paste(image, ( imageX - l, imageY - t ) )
+
+	imageX = l
+	imageY = t
 
 	for n in range(0, 4):
 
@@ -3129,7 +2458,7 @@ def updateRasters(imageData, bounds):
 		for xi in range(l, r):
 			for yi in range(t, b):
 
-				rasterName = 'Wetu/static/rasters/zoom' + str(n) + '/' + str(xi) + ',' + str(yi) + '.png'
+				rasterName = 'Wetu/static/rasters/' + rasterType + '/zoom' + str(n) + '/' + str(xi) + ',' + str(yi) + '.png'
 				try:
 					# raster = Image(filename=rasterName)  		# Wand version
 					raster = Image.open(rasterName)				# Pillow version
@@ -3140,754 +2469,18 @@ def updateRasters(imageData, bounds):
 				x = xi * nPixelsPerTile
 				y = yi * nPixelsPerTile
 
-				union = intersectRectangles(x, y, x + nPixelsPerTile, y + nPixelsPerTile, imageX, imageY, imageX + imageWidth, imageY + imageHeight)
-
-				print("pi: " + str(xi) + ", " + str(yi))
-				print("p: " + str(x) + ", " + str(y))
-				print("nPixelsPerTile: " + str(nPixelsPerTile) )
-				print("union: " + str(union[0]) + ", " + str(union[1]) + ", " + str(union[2]) + ", " + str(union[3]))
-
-				subImage = image.crop(( int( ( union[0] - imageX ) / scale ) , int( ( union[1] - imageY ) / scale) , int( ( union[2] - imageX ) / scale), int( ( union[1] - imageY ) / scale) ))
-
-				# TODO: get rid of the pixel approximation which can lead to strong offset in the final picture !
-				raster.paste(subImage, ( int( ( union[0] - x ) / scale ) , int( (union[1] - y ) / scale) ))
+				blendImages(raster, bigImage, [x, y, x + nPixelsPerTile, y + nPixelsPerTile], [imageX, imageY, imageX + imageWidth, imageY + imageHeight], scale, overwrite)
+				
 				raster.save(rasterName)
 				raster.close()
 
-		image = image.resize((max(0, image.size[0]/scaleFactor), max(0, image.size[1]/scaleFactor)), Image.LANCZOS)
+		if n < 3:
+			bigImage = bigImage.resize((max(0, bigImage.size[0]/scaleFactor), max(0, bigImage.size[1]/scaleFactor)), Image.LANCZOS)
 
+	bigImage.close()
 	image.close()
 
 	return { 'state': 'success' }
-
-
-# # @dajaxice_register
-@checkDebug
-def updateRastersJson(data=None, position=None):
-	print "updateRastersJson"
-
-	# for line in traceback.format_stack():
-	# 	print line.strip()
-
-	# global isUpdatingRasters
-
-	# if isUpdatingRasters:
-	# 	print 'Error: isUpdatingRasters!'
-	# 	import pdb; pdb.set_trace()
-
-	# isUpdatingRasters = True
-
-	# if areaToDeletePk:
-	# 	try:
-	# 		areaToDelete = AreaToUpdate.objects.get(pk=areaToDeletePk)
-	# 	except AreaToUpdate.DoesNotExist:
-	# 		return json.dumps({'state': 'log', 'message': 'Delete impossible: area does not exist'})
-	# 	print '<<<'
-	# 	print "1. attempt to delete areas from area to delete " + str(areaToDelete.pk) + "..."
-	# 	# deleteAreas(areaToDelete)
-	# 	print "2. attempt to delete areas to delete " + str(areaToDelete.pk) + "..."
-	# 	areaToDelete.delete()
-
-	# 	try:
-	# 		a = AreaToUpdate.objects.get(pk=areaToDeletePk)
-	# 		print 'WHAT?'
-	# 		import pdb; pdb.set_trace()
-	# 	except AreaToUpdate.DoesNotExist:
-	# 		print 'ok'
-	# 	print '3. finished deleting area to delete'
-	# 	print '>>>'
-
-	# areasDeleted = []
-	# areasToUpdate = []
-
-	# if areasNotRasterized:
-	# 	for area in areasNotRasterized:
-
-	# 		points = area['points']
-	# 		planetX = area['planet']['x']
-	# 		planetY = area['planet']['y']
-
-	# 		# merge all overlapping areas into one (and delete them)
-	# 		print '<<<'
-	# 		print 'start merging all regions overlapping with the new area to update: '
-	# 		print 'points: ' + str(points)
-	# 		overlappingAreas = AreaToUpdate.objects(planetX=planetX, planetY=planetY, box__geo_intersects=[points])
-	# 		left = xMin = points[0][0]
-	# 		right = xMax = points[2][0]
-	# 		top = yMin = points[0][1]
-	# 		bottom = yMax = points[2][1]
-	# 		for overlappingArea in overlappingAreas:
-
-	# 			cbox = overlappingArea.box['coordinates'][0]
-	# 			cleft = cbox[0][0]
-	# 			ctop = cbox[0][1]
-	# 			cright = cbox[2][0]
-	# 			cbottom = cbox[2][1]
-
-	# 			# if the areas just share an edge: continue
-	# 			# check if intersection has a positive area
-	# 			ileft = max(left, cleft)
-	# 			itop = max(top, ctop)
-	# 			iright = min(right, cright)
-	# 			ibottom = min(bottom, cbottom)
-
-	# 			if (iright-ileft) <= 0 or (ibottom-itop) <= 0 or (iright-ileft) * (ibottom-itop) <= 0.001:
-	# 				continue
-
-	# 			print '!!! OVERLAPPING !!!'
-	# 			print '!!! OVERLAPPING !!!'
-	# 			print '!!! OVERLAPPING !!!'
-
-	# 			if not xMin or cleft < xMin:
-	# 				xMin = cleft
-	# 			if not xMax or cright > xMax:
-	# 				xMax = cright
-	# 			if not yMin or ctop < yMin:
-	# 				yMin = ctop
-	# 			if not yMax or cbottom > yMax:
-	# 				yMax = cbottom
-
-	# 			areasDeleted.append(str(overlappingArea.pk))
-	# 			print 'start deleting areas of overlapping area: ' + str(overlappingArea.pk)
-	# 			# deleteAreas(overlappingArea)
-	# 			print 'start deleting overlapping area: ' + str(overlappingArea.pk) + '...'
-	# 			try:
-	# 				overlappingArea.delete()
-	# 			except Area.DoesNotExist:
-	# 				print "Impossible to delete area: " + str(overlappingArea.pk) + ", skipping area merging"
-	# 				xMin = points[0][0]
-	# 				xMax = points[2][0]
-	# 				yMin = points[0][1]
-	# 				yMax = points[2][1]
-	# 				break
-	# 			print '...finished deleting overlapping area: ' + str(overlappingArea.pk)
-
-	# 		print 'creating new area to update...'
-	# 		areaToUpdate = AreaToUpdate(planetX=planetX, planetY=planetY, box=[[ [xMin, yMin], [xMax, yMin], [xMax, yMax], [xMin, yMax], [xMin, yMin] ]])
-	# 		areaToUpdate.save()
-	# 		# print '...created new area to update'
-
-	# 		# topLeft = posOnPlanetToProject(xMin, yMin, planetX, planetY)
-	# 		# bottomRight = posOnPlanetToProject(xMax, yMax, planetX, planetY)
-	# 		# print "planet"
-	# 		# print planetX
-	# 		# print planetY
-	# 		# print "rectangle"
-	# 		# print xMin
-	# 		# print yMin
-	# 		# print xMax
-	# 		# print yMax
-	# 		# print "rectangle in project coordinates"
-	# 		# print topLeft
-	# 		# print bottomRight
-	# 		# bounds = {'x': topLeft[0], 'y': topLeft[1], 'width': bottomRight[0]-topLeft[0], 'height': bottomRight[1]-topLeft[1]}
-
-	# 		# print 'adding new area to area to update...'
-	# 		# addAreas(bounds, areaToUpdate)
-	# 		# print '...added new area to area to update'
-
-	# 		areasToUpdate.append( areaToUpdate.to_json() )
-	# 		print '>>>'
-
-	# if (not data) or (data == "data:,"):
-	# 	return { 'state': 'success', 'areasToUpdate': areasToUpdate, 'areasDeleted': areasDeleted }
-
-	imageData = re.search(r'base64,(.*)', data).group(1)
-
-	try:
-		image = Image.open(StringIO.StringIO(imageData.decode('base64')))				# Pillow version
-	except IOError:
-		return { 'state': 'error', 'message': 'impossible to read image.'}
-
-	# with Image(file=cStringIO.StringIO(imageData.decode('base64'))) as image: 		# Wand version
-
-	# # find top, left, bottom and right positions of the area in the quantized space
-
-	start = time.time()
-
-	x = int(position['x'])
-	y = int(position['y'])
-	width = int(image.size[0])
-	height = int(image.size[1])
-
-	l = floorToMultiple(x, 1000)
-	t = floorToMultiple(y, 1000)
-	r = floorToMultiple(x+width, 1000)+1000
-	b = floorToMultiple(y+height, 1000)+1000
-
-	imageOnGrid25x = floorToMultiple(x, 25)
-	imageOnGrid25y = floorToMultiple(y, 25)
-	imageOnGrid25width = ceilToMultiple(x+width, 25)-imageOnGrid25x
-	imageOnGrid25height = ceilToMultiple(y+height, 25)-imageOnGrid25y
-
-	# debug
-
-	# image.save('media/rasters/image.png')
-
-	# print '-----'
-	# print '-----'
-	# print '-----'
-	# print '-----'
-	# print '-----'
-	# print '-----'
-	# print '-----'
-	# print '-----'
-	# print 'original rect'
-	# print x
-	# print y
-	# print width
-	# print height
-	# print 'rounded rect'
-	# print l
-	# print t
-	# print r
-	# print b
-
-	# print 'image size:'
-	# print image.size[0]
-	# print image.size[1]
-
-	# print 'big image:'
-	# print imageOnGrid25x
-	# print imageOnGrid25y
-	# print imageOnGrid25width
-	# print imageOnGrid25height
-
-	# try:
-	imageOnGrid25 = Image.new("RGBA", (1000, 1000))
-
-	for xi in range(l,r,1000):
-		for yi in range(t,b,1000):
-
-			x1 = int(xi/1000)
-			y1 = int(yi/1000)
-
-			x5 = floorToMultiple(x1, 5)
-			y5 = floorToMultiple(y1, 5)
-
-			x25 = floorToMultiple(x1, 25)
-			y25 = floorToMultiple(y1, 25)
-
-			rasterPath = 'media/rasters/zoom100/' + str(x25) + ',' + str(y25) + '/' + str(x5) + ',' + str(y5) + '/'
-
-			try:
-				os.makedirs(rasterPath)
-			except OSError as exception:
-				if exception.errno != errno.EEXIST:
-					raise
-
-			rasterName = rasterPath + str(x1) + "," + str(y1) + ".png"
-
-			try:
-				# raster = Image(filename=rasterName)  		# Wand version
-				raster = Image.open(rasterName)				# Pillow version
-			except IOError:
-				# raster = Image(width=1000, height=1000) 	# Wand version
-				raster = Image.new("RGBA", (1000, 1000)) 	# Pillow version
-
-			left = max(xi,x)
-			right = min(xi+1000,x+width)
-			top = max(yi,y)
-			bottom = min(yi+1000,y+height)
-
-			# print '-----'
-			# print '-----'
-			# print 'raster pos:'
-			# print xi
-			# print yi
-
-			# print 'rectangle cutted:'
-			# print left
-			# print top
-			# print right
-			# print bottom
-
-			# print 'width, height:'
-			# print right-left
-			# print bottom-top
-
-			# print 'sub image rect:'
-			# print left-x
-			# print top-y
-			# print right-x
-			# print bottom-y
-
-			# import pdb; pdb.set_trace()
-			subImage = image.crop((left-x, top-y, right-x, bottom-y))
-
-			# subImage = image.clone().crop(left=subImageLeft,top=subImageTop,width=subImageWidth,height=subImageHeight) # unefficient: clone the whole image instead of the sub image
-
-			# print 'posInRaster:'
-			# print left-xi
-			# print top-yi
-
-			# print 'sub image size:'
-			# print subImage.size[0]
-			# print subImage.size[1]
-
-			# import pdb; pdb.set_trace()
-
-			# raster.composite(image=subImage, left=posInRasterX, top=posInRasterY) 	# problem: we want to totally replace current raster with new one
-			# raster100.composite_channel(channel='all_channels', image=subImage, operator='replace', left=posInRasterX, top=posInRasterY) 		# Wand version
-			raster.paste(subImage, (left-xi, top-yi))
-			raster.save(rasterName)
-
-			left = max(xi,imageOnGrid25x)
-			right = min(xi+1000,imageOnGrid25x+imageOnGrid25width)
-			top = max(yi,imageOnGrid25y)
-			bottom = min(yi+1000,imageOnGrid25y+imageOnGrid25height)
-
-			# subImage.save('media/rasters/subimage_' + str(x1) + ',' + str(y1) + '.png')
-			# print 'sub imageOnGrid25 in global coordinates:'
-			# print left
-			# print top
-			# print right
-			# print bottom
-			# print 'in raster100 coordinates:'
-			# print left-xi
-			# print top-yi
-			# print 'in imageOnGrid25 coordinates:'
-			# print left-imageOnGrid25x
-			# print top-imageOnGrid25y
-
-			subRaster = raster.crop((left-xi, top-yi, right-xi, bottom-yi))
-			imageOnGrid25.paste(subRaster, (left-imageOnGrid25x, top-imageOnGrid25y))
-
-	# print '-----'
-	# print '-----'
-	# print '-----'
-	# print '-----'
-	# print 'raster20:'
-
-	l = floorToMultiple(x, 5000)
-	t = floorToMultiple(y, 5000)
-	r = floorToMultiple(x+width, 5000)+5000
-	b = floorToMultiple(y+height, 5000)+5000
-
-	for xi in range(l,r,5000):
-		for yi in range(t,b,5000):
-
-			x1 = int(xi/1000)
-			y1 = int(yi/1000)
-
-			x5 = floorToMultiple(x1, 5)
-			y5 = floorToMultiple(y1, 5)
-
-			x25 = floorToMultiple(x1, 25)
-			y25 = floorToMultiple(y1, 25)
-
-			rasterPath = 'media/rasters/zoom20/' + str(x25) + ',' + str(y25) + '/'
-
-			try:
-				os.makedirs(rasterPath)
-			except OSError as exception:
-				if exception.errno != errno.EEXIST:
-					raise
-
-			rasterName = rasterPath + str(x5) + "," + str(y5) + ".png"
-
-			try:
-				raster = Image.open(rasterName)
-			except IOError:
-				raster = Image.new("RGBA", (1000, 1000))
-
-			left = max(xi,imageOnGrid25x)
-			right = min(xi+5000,imageOnGrid25x+imageOnGrid25width)
-			top = max(yi,imageOnGrid25y)
-			bottom = min(yi+5000,imageOnGrid25y+imageOnGrid25height)
-
-			# print '-----'
-			# print '-----'
-			# print 'raster pos:'
-			# print xi
-			# print yi
-			# print 'sub imageOnGrid25 in global coordinates:'
-			# print left
-			# print top
-			# print right
-			# print bottom
-			# print 'in raster20 coordinates:'
-			# print (left-xi)/5
-			# print (top-yi)/5
-			# print 'in imageOnGrid25 coordinates:'
-			# print left-imageOnGrid25x
-			# print top-imageOnGrid25y
-
-			subImage = imageOnGrid25.crop((left-imageOnGrid25x, top-imageOnGrid25y, right-imageOnGrid25x, bottom-imageOnGrid25y))
-			subImageSmall = subImage.resize((subImage.size[0]/5, subImage.size[1]/5), Image.LANCZOS)
-			raster.paste(subImageSmall, ((left-xi)/5, (top-yi)/5))
-			raster.save(rasterName)
-
-	# print '-----'
-	# print '-----'
-	# print '-----'
-	# print '-----'
-	# print 'raster4:'
-
-	l = floorToMultiple(x, 25000)
-	t = floorToMultiple(y, 25000)
-	r = floorToMultiple(x+width, 25000)+25000
-	b = floorToMultiple(y+height, 25000)+25000
-
-	for xi in range(l,r,25000):
-		for yi in range(t,b,25000):
-
-			x1 = int(xi/1000)
-			y1 = int(yi/1000)
-
-			x25 = floorToMultiple(x1, 25)
-			y25 = floorToMultiple(y1, 25)
-
-			rasterPath = 'media/rasters/zoom4/'
-
-			try:
-				os.makedirs(rasterPath)
-			except OSError as exception:
-				if exception.errno != errno.EEXIST:
-					raise
-
-			rasterName = rasterPath + str(x25) + "," + str(y25) + ".png"
-
-			try:
-				raster = Image.open(rasterName)
-			except IOError:
-				raster = Image.new("RGBA", (1000, 1000))
-
-			left = max(xi,imageOnGrid25x)
-			right = min(xi+25000,imageOnGrid25x+imageOnGrid25width)
-			top = max(yi,imageOnGrid25y)
-			bottom = min(yi+25000,imageOnGrid25y+imageOnGrid25height)
-
-			# print '-----'
-			# print '-----'
-			# print 'raster pos:'
-			# print xi
-			# print yi
-			# print 'sub imageOnGrid25 in global coordinates:'
-			# print left
-			# print top
-			# print right
-			# print bottom
-			# print 'in raster4 coordinates:'
-			# print (left-xi)/25
-			# print (top-yi)/25
-			# print 'in imageOnGrid25 coordinates:'
-			# print left-imageOnGrid25x
-			# print top-imageOnGrid25y
-
-			subImage = imageOnGrid25.crop((left-imageOnGrid25x, top-imageOnGrid25y, right-imageOnGrid25x, bottom-imageOnGrid25y))
-			subImageSmall = subImage.resize((subImage.size[0]/25, subImage.size[1]/25), Image.LANCZOS)
-			raster.paste(subImageSmall, ((left-xi)/25, (top-yi)/25))
-			raster.save(rasterName)
-
-	# except:
-	# 	import pdb; pdb.set_trace()
-	# 	return { 'state': 'error', 'message': 'Failed to open, create or save an image.' }
-
-	# another solution, slower since open and close many images
-
-	# for xi in range(l,r,1000):
-	# 	for yi in range(t,b,1000):
-
-	# 		xm = int(xi/1000)
-	# 		ym = int(yi/1000)
-
-	# 		x5 = floorToMultiple(xm, 5)
-	# 		y5 = floorToMultiple(ym, 5)
-
-	# 		x25 = floorToMultiple(xm, 25)
-	# 		y25 = floorToMultiple(ym, 25)
-
-	# 		rasterPath100 = 'media/rasters/zoom100/' + str(x25) + ',' + str(y25) + '/' + str(x5) + ',' + str(y5) + '/'
-	# 		rasterPath20 = 'media/rasters/zoom20/' + str(x25) + ',' + str(y25) + '/'
-	# 		rasterPath4 = 'media/rasters/zoom4/'
-
-	# 		try:
-	# 			os.makedirs(rasterPath100)
-	# 		except OSError as exception:
-	# 			if exception.errno != errno.EEXIST:
-	# 				raise
-
-	# 		try:
-	# 			os.makedirs(rasterPath20)
-	# 		except OSError as exception:
-	# 			if exception.errno != errno.EEXIST:
-	# 				raise
-
-	# 		try:
-	# 			os.makedirs(rasterPath4)
-	# 		except OSError as exception:
-	# 			if exception.errno != errno.EEXIST:
-	# 				raise
-
-	# 		rasterName100 = rasterPath100 + str(xm) + "," + str(ym) + ".png"
-	# 		rasterName20 = rasterPath20 + str(x5) + "," + str(y5) + ".png"
-	# 		rasterName4 = rasterPath4 + str(x25) + "," + str(y25) + ".png"
-
-	# 		try:
-	# 			# raster100 = Image(filename=rasterName100)  		# Wand version
-	# 			raster100 = Image.open(rasterName100)				# Pillow version
-	# 		except IOError:
-	# 			try:
-	# 				# raster100 = Image(width=1000, height=1000) 	# Wand version
-	# 				raster100 = Image.new("RGBA", (1000, 1000)) 	# Pillow version
-	# 			except:
-	# 				return { 'state': 'error', 'message': 'Failed to create the image.' }
-
-	# 		try:
-	# 			raster20 = Image.open(rasterName20)
-	# 		except IOError:
-	# 			try:
-	# 				raster20 = Image.new("RGBA", (1000, 1000))
-	# 			except:
-	# 				return { 'state': 'error', 'message': 'Failed to create the image.' }
-
-	# 		try:
-	# 			raster4 = Image.open(rasterName4)
-	# 		except IOError:
-	# 			try:
-	# 				raster4 = Image.new("RGBA", (1000, 1000))
-	# 			except:
-	# 				return { 'state': 'error', 'message': 'Failed to create the image.' }
-
-	# 		left = max(xi,x)
-	# 		right = min(xi+1000,x+width)
-	# 		top = max(yi,y)
-	# 		bottom = min(yi+1000,y+height)
-
-	# 		print '-----'
-	# 		print '-----'
-	# 		print '-----'
-	# 		print '-----'
-	# 		print '-----'
-	# 		print '-----'
-	# 		print 'raster pos:'
-	# 		print xi
-	# 		print yi
-
-	# 		print 'rectangle:'
-	# 		print x
-	# 		print y
-	# 		print width
-	# 		print height
-
-	# 		print 'rectangle cutted:'
-	# 		print left
-	# 		print top
-	# 		print right
-	# 		print bottom
-	# 		print 'width, height:'
-	# 		print right-left
-	# 		print bottom-top
-
-	# 		subImageLeft = left-x
-	# 		subImageTop = top-y
-	# 		subImageRight = right-x
-	# 		subImageBottom = bottom-y
-	# 		subImageWidth = subImageRight-subImageLeft
-	# 		subImageHeight = subImageBottom-subImageTop
-
-	# 		print 'sub image rect:'
-	# 		print subImageLeft
-	# 		print subImageTop
-	# 		print subImageRight
-	# 		print subImageBottom
-	# 		print 'width, height:'
-	# 		print subImageWidth
-	# 		print subImageHeight
-
-	# 		print 'image size:'
-	# 		print image.size[0]
-	# 		print image.size[1]
-
-	# 		print 'raster size:'
-	# 		print raster100.size[0]
-	# 		print raster100.size[1]
-
-	# 		# import pdb; pdb.set_trace()
-	# 		subImage = image.crop((subImageLeft, subImageTop, subImageWidth, subImageHeight))
-
-	# 		# subImage = image.clone().crop(left=subImageLeft,top=subImageTop,width=subImageWidth,height=subImageHeight) # unefficient: clone the whole image instead of the sub image
-	# 		posInRasterX = left-xi
-	# 		posInRasterY = top-yi
-
-	# 		print 'posInRaster:'
-	# 		print posInRasterX
-	# 		print posInRasterY
-
-	# 		# import pdb; pdb.set_trace()
-
-	# 		# raster.composite(image=subImage, left=posInRasterX, top=posInRasterY) 	# problem: we want to totally replace current raster with new one
-	# 		# raster100.composite_channel(channel='all_channels', image=subImage, operator='replace', left=posInRasterX, top=posInRasterY) 		# Wand version
-	# 		raster100.paste(subImage, (posInRasterX, posInRasterY))
-	# 		raster100.save(rasterName100)
-
-	# 		raster100cropX = floorToMultiple(posInRasterX, 5)
-	# 		raster100cropY = floorToMultiple(posInRasterY, 5)
-	# 		raster100cropWidth = ceilToMultiple(posInRasterX+subImageWidth, 5)-raster100cropX
-	# 		raster100cropHeight = ceilToMultiple(posInRasterY+subImageHeight, 5)-raster100cropY
-
-	# 		print 'raster100crop:'
-	# 		print raster100cropX
-	# 		print raster100cropY
-	# 		print raster100cropWidth
-	# 		print raster100cropHeight
-	# 		raster100crop = raster100.crop((raster100cropX, raster100cropY, raster100cropWidth, raster100cropHeight))
-	# 		raster100crop.resize((raster100cropWidth/5, raster100cropHeight/5), Image.LANCZOS)
-
-	# 		print 'raster100crop final size:'
-	# 		print raster100cropWidth/5
-	# 		print raster100cropHeight/5
-
-	# 		print 'xm & ym:'
-	# 		print xm
-	# 		print ym
-	# 		print 'x5 & y5:'
-	# 		print x5
-	# 		print y5
-	# 		print '(xm-x5)*1000:'
-	# 		print (xm-x5)*1000
-	# 		print (ym-y5)*1000
-
-	# 		posInRasterX = ((xm-x5)*1000+raster100cropX)/5
-	# 		posInRasterY = ((ym-y5)*1000+raster100cropY)/5
-	# 		print 'posInRaster:'
-	# 		print posInRasterX
-	# 		print posInRasterY
-	# 		raster20.paste(raster100crop, (posInRasterX, posInRasterY))
-	# 		raster20.save(rasterName20)
-
-	# 		raster20cropX = floorToMultiple(posInRasterX,5)
-	# 		raster20cropY = floorToMultiple(posInRasterY,5)
-	# 		raster20cropWidth = ceilToMultiple(posInRasterX+raster100cropWidth/5, 5)-raster20cropX
-	# 		raster20cropHeight = ceilToMultiple(posInRasterY+raster100cropHeight/5, 5)-raster20cropY
-
-	# 		print 'x25 & y25:'
-	# 		print x25
-	# 		print y25
-	# 		print 'raster20crop:'
-	# 		print raster20cropX
-	# 		print raster20cropY
-	# 		print raster20cropWidth
-	# 		print raster20cropHeight
-	# 		raster20crop = raster20.crop((raster20cropX, raster20cropY, raster20cropWidth, raster20cropHeight))
-	# 		raster20crop.resize((raster20cropWidth/5, raster20cropHeight/5), Image.LANCZOS)
-
-	# 		posInRasterX = ((x5-x25)*1000/5+raster20cropX)/5
-	# 		posInRasterY = ((y5-y25)*1000/5+raster20cropY)/5
-	# 		print 'posInRaster:'
-	# 		print posInRasterX
-	# 		print posInRasterY
-	# 		raster4.paste(raster20crop, (posInRasterX, posInRasterY))
-	# 		raster20.save(rasterName4)
-
-	# 		# Wand version
-	# 		# with image[subImageLeft:subImageRight, subImageTop:subImageBottom] as subImage:
-
-	# 		# subImage.resize(filter='triangle', width=subImage.width/5, height=subImage.height/5)
-	# 		# raster20.composite_channel(channel='all_channels', image=subImage, operator='replace', left=posInRasterX, top=posInRasterY)
-	# 		# raster20.save(filename=rasterName)
-
-	# 		# posInRasterX = int((left-x25*1000)/25)
-	# 		# posInRasterY = int((top-y25*1000)/25)
-	# 		# subImage.resize(filter='triangle', width=subImage.width/5, height=subImage.height/5)
-	# 		# raster4.composite_channel(channel='all_channels', image=subImage, operator='replace', left=posInRasterX, top=posInRasterY)
-	# 		# raster4.save(filename=rasterName)
-
-
-	# 		raster100.close()
-	# 		raster20.close()
-	# 		raster4.close()
-
-	image.close()
-
-	end = time.time()
-
-	print "Time elapsed: " + str(end - start)
-	# isUpdatingRasters = False
-
-	return { 'state': 'success' }
-
-# # @dajaxice_register
-# @checkDebug
-# def loadRasters(request, areasToLoad):
-
-# 	images = []
-# 	start = time.time()
-# 	for area in areasToLoad:
-
-# 		x = area['x']
-# 		y = area['y']
-
-# 		rasterPath = 'media/rasters/' + str(floor(x/10)*10) + ',' + str(floor(y/10)*10) + '/'
-# 		rasterName = rasterPath + str(x) + "," + str(y) + ".png"
-
-# 		with open(rasterName, 'rb') as inputFile:
-# 			imageData = inputfile.read().encode('base64')
-# 			inputfile.close()
-# 			images.append(imageData)
-
-# 	end = time.time()
-# 	print "Time elapsed: " + str(end - start)
-
-# 	return json.dumps( { 'images': images } )
-
-# # @dajaxice_register
-# @checkDebug
-# def getAreasToUpdate(request):
-# 	areas = AreaToUpdate.objects()
-# 	return areas.to_json()
-
-# @checkDebug
-# def getPathsToUpdate(request, city):
-
-# 	(cityPk, cityFinished) = getCity(request, city)
-# 	if not cityPk:
-# 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
-
-
-# 	paths = Paths.objects(city=city, needUpdate=True)
-
-# 	items = []
-# 	for path in paths:
-# 		if path.drawing is not None:
-# 			items.append( { 'path': path.to_json(), 'status': path.drawing.status })
-
-# 	return json.dumps( { 'paths': items } )
-
-# # @dajaxice_register
-# @checkDebug
-# def deleteAreaToUpdate(request, pk):
-# 	try:
-# 		area = AreaToUpdate.objects.get(pk=pk)
-# 	except AreaToUpdate.DoesNotExist:
-# 		return json.dumps( { 'state': 'error', 'message': 'area does not exist.' } )
-# 	area.delete()
-# 	return
-
-# # @dajaxice_register
-# @checkDebug
-# def updateAreasToUpdate(request, pk, newAreas):
-
-# 	try:
-# 		areaToUpdate = AreaToUpdate.objects.get(pk=pk)
-# 	except AreaToUpdate.DoesNotExist:
-# 		return json.dumps({'state': 'log', 'message': 'Delete impossible: area does not exist'})
-
-# 	areaToUpdate.delete()
-
-# 	areasToUpdate = []
-# 	for area in newAreas:
-# 		points = area['points']
-# 		planetX = area['planet']['x']
-# 		planetY = area['planet']['y']
-
-# 		areaToUpdate = AreaToUpdate(planetX=planetX, planetY=planetY, box=[points])
-# 		areaToUpdate.save()
-
-# 		areasToUpdate.append( areasToUpdate.to_json() )
-
-# 	return json.dumps( { 'state': 'success', 'areasToUpdate': areasToUpdate } )
 
 # --- images --- #
 
@@ -3919,390 +2512,3 @@ def saveImage(request, image):
 	# return json.dumps( { 'image': imageData, 'url': imageName } )
 
 	return json.dumps( { 'url': imageName } )
-
-# --- modules --- #
-
-
-'''
-# requires github3 to work
-# from github3 import authorize
-
-def createCommitAndPush(repoName, source, localRepository, commitDescription):
-
-	sourcePath = 'modules/' + repoName + '/main.coffee'
-	moduleFile = open(sourcePath, 'wb')
-	moduleFile.write(source.encode('utf-8'))
-	moduleFile.close()
-
-	origin = localRepository.remote(name='origin')
-	localRepository.index.add(['main.coffee'])
-	localRepository.index.commit(commitDescription)
-	origin.fetch()
-	origin.push()
-
-	return
-
-def addModule(user, name, source, compiledSource, description, type=None, commitDescription=None, iconURL=None, category=None):
-
-	if 'Wetu module' not in description:
-		description = 'Wetu module - ' + description
-
-	try:
-		githubRepository = commeUnDesseinOrg.create_repo(name, description=description, auto_init=True)
-	except Exception as githubException:
-		errorMessage = 'unknown error'
-		if 'errors' in githubException.data and len(githubException.data['errors'])>=1 and 'message' in githubException.data['errors'][0]:
-			errorMessage = githubException.data['errors'][0]['message']
-		return json.dumps( { 'state': 'error', 'message': 'An error occured while creating the github repository: ' + errorMessage })
-
-	repoName = githubRepository.name
-
-	# lock = None
-	# if lockPk:
-	# 	try:
-	# 		lock = Box.objects.get(pk=lockPk)
-	# 	except:
-	# 		return json.dumps( { 'state': 'error', 'message': 'The lock could not be found.'})
-
-	try:
-		module = Module(owner=user, name=name, repoName=repoName, description=description, source=source, compiledSource=compiledSource, iconURL=iconURL, local=True, category=category, githubURL=githubRepository.html_url, moduleType=type)
-		module.save()
-	except Exception as e:
-		return json.dumps( { 'state': 'error', 'message': 'An error occured while creating the module.'})
-
-	localRepository = Repo.clone_from(githubRepository.clone_url, 'modules/' + repoName, branch='master')
-
-	createCommitAndPush(repoName, source, localRepository, commitDescription or "initial commit")
-
-	return json.dumps( { 'state': 'success', 'message': 'Request for adding ' + name + ' successfully sent.', 'githubURL': githubRepository.html_url, 'modulePk': str(module.pk) } )
-
-def updateModule(user, module, name, repoName, source, compiledSource, commitDescription, githubURL=None, iconURL=None, category=None):
-	if module.local:
-		# update (commit) local repo
-
-		localRepository = Repo('modules/' + repoName)
-		createCommitAndPush(repoName, source, localRepository, commitDescription)
-
-		if iconURL:
-			module.iconURL = iconURL
-		if category:
-			module.category = category
-
-		module.save()
-		githubURL = module.githubURL
-	else:
-		# push request
-
-		githubRepository = github.get_repo(githubURL)
-		fork = commeUnDesseinOrg.create_fork(githubRepository)
-
-		localRepository = Repo.clone_from(fork.clone_url, 'modules/' + repoName, branch='master')
-		createCommitAndPush(repoName, source, localRepository, commitDescription)
-
-		fork.create_pull('Pull request created by ' + str(user), description, 'master', 'master')
-		githubURL = fork.html_url
-
-	return json.dumps( { 'state': 'success', 'message': 'Request for updating ' + name + ' successfully sent.', 'githubURL': githubURL, 'modulePk': str(module.pk) } )
-
-# @dajaxice_register
-@checkDebug
-def addOrUpdateModule(request, name, source, compiledSource, type=None, description=None, commitDescription=None, githubURL=None, iconURL=None, category=None):
-	try:
-		module = Module.objects.get(name=name)
-		result = updateModule(request.user.username, module, name, module.repoName, source, compiledSource, commitDescription, githubURL, iconURL, category)
-	except Module.DoesNotExist:
-		result = addModule(request.user.username, name, source, compiledSource, type, description, commitDescription, iconURL, category)
-
-	return result
-
-'''
-
-# # @dajaxice_register
-# @checkDebug
-# def addModule(request, name, className, source, compiledSource, isTool, description, iconURL=None):
-
-# 	try:
-# 		module = Module(owner=request.user.username, name=name, className=className, source=source, compiledSource=compiledSource, iconURL=iconURL, isTool=isTool)
-# 	except OperationError:
-# 		return json.dumps( { 'state': 'error', 'message': 'A module with the name ' + name + ' or the className ' + className + ' already exists.' } )
-
-# 	githubRepository = commeUnDesseinOrg.create_repo(name, description=description, auto_init=True)
-
-# 	localRepository = Repo.clone_from(path_to='modules/' + name, url=githubRepository.clone_url, branch='master')
-# 	origin = localRepository.remote(name='origin')
-
-# 	moduleName = name + '.coffee'
-# 	sourcePath = 'modules/' + moduleName
-# 	moduleFile = open(sourcePath, 'wb')
-# 	moduleFile.write(source)
-# 	moduleFile.close()
-
-# 	localRepository.index.add([moduleName])
-# 	localRepository.index.commit("initial commit")
-# 	origin.fetch()
-# 	origin.push()
-
-# 	module.githubURL = githubRepository.clone_url
-# 	module.save()
-
-# 	return json.dumps( { 'state': 'success', 'message': 'Request for adding ' + name + ' successfully sent.', 'cloneURL': githubRepository.clone_url } )
-
-# # @dajaxice_register
-# @checkDebug
-# def updateModule(request, name, source):
-# 	try:
-# 		module = Module.objects.get(name=name)
-# 	except Module.DoesNotExist:
-# 		return json.dumps( { 'state': 'error', 'message': 'The module with the name ' + name + ' does not exist.' } )
-
-# 	sourcePath = name + '.coffee'
-# 	output = open(sourcePath, 'wb')
-# 	output.write(source)
-# 	output.close()
-
-# 	localRepository = Repo.init('modules/' + name)
-# 	origin = localRepository.remote(name='origin')
-# 	localRepository.index.add([sourcePath])
-# 	localRepository.index.commit(commitDescription)
-# 	origin.fetch()
-# 	origin.push()
-
-# 	return json.dumps( { 'state': 'success', 'message': 'Request for updating ' + name + ' successfully sent.' } )
-
-# @dajaxice_register
-@checkDebug
-def getModules(request):
-	modules = Module.objects(accepted=True).only('name', 'iconURL', 'githubURL', 'category', 'pk')
-	return json.dumps( { 'state': 'success', 'modules': modules.to_json() } )
-
-# @dajaxice_register
-@checkDebug
-def getModuleList(request):
-	modules = Module.objects().only('name', 'iconURL', 'githubURL', 'thumbnailURL', 'description', 'owner', 'accepted', 'category', 'lastUpdate', 'pk')
-	return json.dumps( { 'state': 'success', 'modules': modules.to_json() } )
-
-# @dajaxice_register
-@checkDebug
-def getModuleSource(request, name=None, pk=None, accepted=None):
-	if name:
-		try:
-			module = Module.objects.get(name=name)
-		except Module.DoesNotExist:
-			return json.dumps( { 'state': 'error', 'type': 'DoesNotExist', 'message': 'Module ' + name + ' does not exist.' } )
-	elif pk:
-		try:
-			module = Module.objects.get(pk=pk)
-		except Module.DoesNotExist:
-			return json.dumps( { 'state': 'error', 'type': 'DoesNotExist', 'message': 'Module ' + pk + ' does not exist.' } )
-	else:
-		return json.dumps( { 'state': 'error', 'message': 'Module name and pk are null.' } )
-
-	if accepted is not None:
-		if accepted and not module.accepted:
-			return json.dumps( { 'state': 'error', 'message': 'Module ' + module.name + ' is not accepted.' } )
-		elif not accepted and module.accepted:
-			return json.dumps( { 'state': 'error', 'message': 'Module ' + module.name + ' is accepted.' } )
-
-	return json.dumps( { 'state': 'success', 'module': module.to_json() } )
-
-# @dajaxice_register
-@checkDebug
-def getWaitingModules(request):
-	if not isAdmin(request.user):
-		return json.dumps( { 'state': 'error', 'message': 'You must be administrator to get the waiting modules.' } )
-
-	latestModules = []
-
-	acceptedModules = Module.objects(accepted=True)
-	acceptedModulesNames = acceptedModules.scalar('repoName', 'name', 'lastUpdate')
-	namesToLastUpdate = {}
-	for module in acceptedModulesNames:
-		namesToLastUpdate[module[0]] = { 'name': module[1], 'lastUpdate': module[2] }
-
-	# search on github for repositories with 'commeUnDessein module' in the description
-	repos = github.legacy_search_repos('commeUnDessein module')
-	for githubRepository in repos:
-		if githubRepository.name in namesToLastUpdate:
-			if githubRepository.updated_at <= namesToLastUpdate[githubRepository.name]['lastUpdate']:
-				continue
-			name = namesToLastUpdate[githubRepository.name]['name']
-		else:
-			name = githubRepository.name
-		try:
-			source = base64.b64decode(githubRepository.get_file_contents('main.coffee').content)
-		except:
-			source = 'Impossible to open main.coffee'
-
-		latestModules.append( {'name': name, 'repoName': githubRepository.name, 'source': source, 'owner': githubRepository.owner.url, 'githubURL': githubRepository.html_url } )
-
-	# for module in modules:
-	# 	githubRepository = commeUnDesseinOrg.get_repo(module.name)
-
-	# 	if githubRepository.updated_at > module.lastUpdate:
-
-	# 	# localRepository = Repo.clone_from(path_to='modules/', url=githubRepository.clone_url, branch='master')
-	# 	# origin = localRepository.remote(name='origin')
-
-	# 		modulePath = 'modules/' + module.name
-	# 		localRepository = Repo.init(modulePath)
-
-	# 		origin = localRepository.remote(name='origin')
-	# 		origin.fetch()
-	# 		origin.pull()
-
-	# 		moduleFile = open(modulePath + '/' + module.name, 'rb')
-	# 		module.source = moduleFile.read()
-	# 		inputfile.close()
-
-			# module.source = compileModule(modulePath)
-
-
-	return json.dumps( { 'state': 'success', 'modules': latestModules } )
-
-# @dajaxice_register
-@checkDebug
-def acceptModule(request, name, repoName, source, compiledSource, description=None, owner=None, githubURL=None, iconURL=None):
-	if not isAdmin(request.user):
-		return json.dumps( { 'state': 'error', 'message': 'You must be administrator to get the waiting modules.' } )
-
-	try:
-		module = Module.objects.get(name=name)
-		module.lastUpdate = datetime.datetime.now()
-		module.source = source
-		module.compiledSource = compiledSource
-		module.accepted = True
-		module.save()
-	except Module.DoesNotExist:
-		if not owner:
-			return json.dumps( { 'state': 'error', 'message': 'Module does not exist and owner was not provided.' } )
-		module = Module(owner=owner, name=name, repoName=repoName, description=description, source=source, compiledSource=compiledSource, githubURL=githubURL, iconURL=iconURL, accepted=True)
-		module.save()
-
-	return json.dumps( { 'state': 'success', 'message': 'The module ' + module.name + ' was accepted.' } )
-
-# @dajaxice_register
-@checkDebug
-def deleteModule(request, name=None, pk=None, repoName=None):
-
-	try:
-		module = Module.objects.get(name=name)
-		githubRepository = commeUnDesseinOrg.get_repo(repoName or module.repoName)
-		githubRepository.delete()
-		module.delete()
-	except Module.DoesNotExist:
-		if pk:
-			try:
-				module = Module.objects.get(pk=pk)
-				module.delete()
-			except Module.DoesNotExist:
-				return json.dumps( { 'state': 'Warning', 'message': 'Module ' + name + ' does not exist.' } )
-		githubRepository = commeUnDesseinOrg.get_repo(repoName or name)
-		githubRepository.delete()
-
-	return json.dumps( { 'state': 'success', 'message': 'Module deleted.' } )
-
-
-# --- tools --- #
-
-# @dajaxice_register
-@checkDebug
-def addTool(request, name, className, source, compiledSource, isTool):
-
-	try:
-		tool = Tool(owner=request.user.username, name=name, className=className, source=source, compiledSource=compiledSource, isTool=isTool)
-	except OperationError:
-		return json.dumps( { 'state': 'error', 'message': 'A tool with the name ' + name + ' or the className ' + className + ' already exists.' } )
-	tool.save()
-	return json.dumps( { 'state': 'success', 'message': 'Request for adding ' + name + ' successfully sent.' } )
-
-# @dajaxice_register
-@checkDebug
-def updateTool(request, name, className, source, compiledSource):
-
-	try:
-		tool = Tool.objects.get(name=name)
-	except Tool.DoesNotExist:
-		return json.dumps( { 'state': 'error', 'message': 'The tool with the name ' + name + ' does not exist.' } )
-
-	tool.nRequests += 1
-	tool.save()
-	newName = name + str(tool.nRequests)
-	newClassName = className + str(tool.nRequests)
-	newTool = Tool(owner=request.user.username, name=newName, originalName=name, originalClassName=className, className=newClassName, source=source, compiledSource=compiledSource, isTool=tool.isTool)
-	newTool.save()
-
-	return json.dumps( { 'state': 'success', 'message': 'Request for updating ' + name + ' successfully sent.' } )
-
-# @dajaxice_register
-@checkDebug
-def getTools(request):
-	tools = Tool.objects(accepted=True)
-	return json.dumps( { 'state': 'success', 'tools': tools.to_json() } )
-
-# --- admin --- #
-
-@checkDebug
-def getEmail(request, username):
-	if not isAdmin(request.user):
-		return json.dumps( { 'state': 'error', 'message': 'You must be administrator to get a user email.' } )
-
-	try:
-		user = User.objects.get(username=username)
-	except User.DoesNotExist:
-		return json.dumps( { 'state': 'error', 'message': 'User not found' } )
-
-	return json.dumps( { 'state': 'success', 'email': user.email } )
-
-@checkDebug
-def confirmEmail(request, username):
-	if not isAdmin(request.user):
-		return json.dumps( { 'state': 'error', 'message': 'You must be administrator to get a user email.' } )
-
-	try:
-		on_email_confirmed(sender=None, request=request, email_address=username)
-	except e:
-		return json.dumps( { 'state': 'error', 'message': e } )
-
-	return json.dumps( { 'state': 'success' } )
-
-# @dajaxice_register
-@checkDebug
-def getWaitingTools(request):
-	if not isAdmin(request.user):
-		return json.dumps( { 'state': 'error', 'message': 'You must be administrator to get the waiting tools.' } )
-	tools = Tool.objects(accepted=False)
-	return json.dumps( { 'state': 'success', 'tools': tools.to_json() } )
-
-# @dajaxice_register
-@checkDebug
-def acceptTool(request, name):
-	if not isAdmin(request.user):
-		return json.dumps( { 'state': 'error', 'message': 'You must be administrator to accept tools.' } )
-	try:
-		tool = Tool.objects.get(name=name)
-	except Tool.DoesNotExist:
-		return json.dumps( { 'state': 'success', 'message': 'New tool does not exist.' } )
-	if tool.originalName:
-		try:
-			originalTool = Tool.objects.get(name=tool.originalName)
-		except Tool.DoesNotExist:
-			return json.dumps( { 'state': 'success', 'message': 'Original tool does not exist.' } )
-		originalTool.source = tool.source
-		originalTool.compiledSource = tool.compiledSource
-		originalTool.save()
-		tool.delete()
-	else:
-		tool.accepted = True
-		tool.save()
-	return json.dumps( { 'state': 'success' } )
-
-# --- loadSite --- #
-
-# @dajaxice_register
-@checkDebug
-def loadSite(request, siteName):
-	try:
-		site = Site.objects.get(name=siteName)
-	except:
-		return { 'state': 'error', 'message': 'Site ' + siteName + ' does not exist.' }
-	return { 'state': 'success', 'box': site.box.to_json(), 'site': site.to_json() }
