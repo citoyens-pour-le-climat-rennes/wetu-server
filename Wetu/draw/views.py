@@ -10,7 +10,7 @@ from allauth.account.views import SignupView
 from allauth.account.forms import LoginForm
 
 from draw import ajax
-from ajax import getPositiveVoteThreshold, getNegativeVoteThreshold, getVoteMinDuration
+from ajax import getPositiveVoteThreshold, getNegativeVoteThreshold, getVoteMinDuration, makeBoundsFromBox
 from math import floor
 from django.views.decorators.csrf import csrf_exempt
 from models import *
@@ -24,13 +24,15 @@ import json
 def addCityToResult(result, city):
 	result['city'] = city.name
 	result['cityFinished'] = city.finished
+	result['cityEventDate'] = str(city.eventDate)
+	result['cityEventLocation'] = city.eventLocation
 	result['cityMessage'] = city.message
 	result['cityStrokeWidth'] = city.strokeWidth
 	result['cityWidth'] = city.width
 	result['cityHeight'] = city.height
 	return
 
-def index(request, site=None, owner=None, cityName=None, x=0, y=0, useDebugFiles=False, drawingMode=None, visit=False, pk=None):
+def index(request, site=None, owner=None, cityName=None, x=0, y=0, useDebugFiles=False, drawingMode=None, visit=False, pk=None, tilePk=None):
 
 	# if not visit and not request.user.is_authenticated():
 	# 	return render_to_response(	"welcome.html", {}, RequestContext(request) )
@@ -66,6 +68,7 @@ def index(request, site=None, owner=None, cityName=None, x=0, y=0, useDebugFiles
 	result['drawingMode'] = drawingMode
 	result['useDebugFiles'] = useDebugFiles
 	
+	city = None
 	if cityName:
 		try:
 			city = City.objects.get(name=cityName)
@@ -85,19 +88,35 @@ def index(request, site=None, owner=None, cityName=None, x=0, y=0, useDebugFiles
 			try:
 				city = City.objects.get(pk=drawing.city)
 				addCityToResult(result, city)
-			except:
+				bounds = makeBoundsFromBox(city, drawing.box)
+				result['bounds'] = json.dumps(bounds)
+			except City.DoesNotExist:
 				print('City not found')
 			
 		except:
 			print('Drawing not found')
+	elif tilePk:
+		result['tilePk'] = tilePk
+		try:
+			tile = Tile.objects.get(pk=tilePk)
+			try:
+				city = City.objects.get(pk=tile.city)
+				addCityToResult(result, city)
+				bounds = makeBoundsFromBox(city, tile.box)
+				result['bounds'] = json.dumps(bounds)
+			except City.DoesNotExist:
+				print('City not found')
+			
+		except:
+			print('Tile not found')
 	else:
 		result['drawingImageURL'] = 'http://commeundessein.co/static/images/Wetu1200x630.png'
 		result['drawingTitle'] = 'Comme un Dessein'
 		result['drawingDescription'] = u'Comme un Dessein est un dispositif qui invite les citoyens à composer une œuvre collective et utopique, à l’aide d’une interface web connectée à un traceur vertical.'
 
-	result['positiveVoteThreshold'] = getPositiveVoteThreshold()
-	result['negativeVoteThreshold'] = getNegativeVoteThreshold()
-	result['voteMinDuration'] = getVoteMinDuration()
+	result['positiveVoteThreshold'] = getPositiveVoteThreshold(city)
+	result['negativeVoteThreshold'] = getNegativeVoteThreshold(city)
+	result['voteMinDuration'] = getVoteMinDuration(city)
 
 	response = render_to_response(	"index.html", result, RequestContext(request) )
 	return response

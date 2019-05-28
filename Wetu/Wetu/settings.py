@@ -14,6 +14,7 @@ from django.conf import global_settings
 import sys
 import os
 import json
+import datetime
 from mongoengine import *
 connect('Wetu')
 
@@ -198,7 +199,7 @@ STATICFILES_DIRS = (
 # Example: "/var/www/example.com/media/"
 # MEDIA_ROOT = os.path.join(PROJECT_DIR, 'media')
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(PROJECT_DIR, 'media')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.

@@ -1345,6 +1345,10 @@ li.tool-btn {
 		// background-color: @hover-purple;
 	}
 
+	&.dark {
+		background-color: #1f2226;
+	}
+
 	img {
 		width: 25px;
 		height: 25px;
@@ -1997,6 +2001,7 @@ li.tool-btn {
 				}
 			}
 			.comments-container {
+				.vendor(user-select, text);
 				& > .comment-header {
 					padding: 10px;
 				}
@@ -2899,6 +2904,7 @@ body.allauth {
 		h3.title {
 			width: 68px;
 			font-size: 16px;
+    		padding-top: 12px;
 		}
 		.mode-button {
 			.text {
@@ -3786,4 +3792,32 @@ body.timeline-active {
     		pointer-events: none;
     	}
     }
+}
+
+.display-block {
+	display: block;
+}
+
+.submit-photo {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.tile-info {
+	font-size: 13px;
+    .vendor(user-select, text);
+	.info {
+		margin-bottom: 5px;
+	}
+	.vote-stat {
+		padding: 5px;
+    	border-top: 1px #565656 solid;
+	}
+	.vote-stat-title {
+		font-weight: 700;
+	}
+	.tile-thumbnail {
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
 }

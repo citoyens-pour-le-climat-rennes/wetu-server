@@ -171,7 +171,7 @@ $(document).ready () ->
 						username += Math.random().toFixed(2).substring(2)
 					usernameJ.val(username)
 					setState('AcceptEmails')
-					labelJ.text("Vous devez accepter de recevoir des emails de Comme un Dessein pour continuer")
+					labelJ.html('<p>Vous devez accepter de recevoir des emails et l\'utilisation de cookies pour continuer</p><a href="">Conditions d\'utilisation</a>')
 					deferredFocus(primaryButtonJ.focus())
 				else
 					titleJ.text('Se connecter')

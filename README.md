@@ -1,6 +1,6 @@
-# --- CommeUnDessein --- #
+# --- Wetu --- #
 
-CommeUnDessein is a collaborative app.
+Wetu is a collaborative app.
 
 # development
 
@@ -127,12 +127,21 @@ Update IDs:
 
 https://console.developers.google.com/
 
+## Create drawings directory
+
+Create the directory comme-un-dessein-server/CommeUnDessein/CommeUnDessein/static/drawings/
+where the images (.png and .svg) will be saved, otherwise the server won't find the path and throw an error.
+
 ## Note to fix websocket
 
 A bug in gevent can be fixed by reinstalling gevent version 1.1b4
 
 sudo pip uninstall gevent
 sudo pip install gevent==1.1b4
+
+## Run locally
+
+Use `python run.py` to make websocket working.
 
 ## Running in production
 

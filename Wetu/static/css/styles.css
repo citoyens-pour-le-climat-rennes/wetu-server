@@ -1140,6 +1140,9 @@ li.tool-btn {
   cursor: pointer;
   padding: 6px;
 }
+li.tool-btn.dark {
+  background-color: #1f2226;
+}
 li.tool-btn img {
   width: 25px;
   height: 25px;
@@ -1697,6 +1700,12 @@ li.tool-btn.selected .favorite-btn {
   margin-bottom: 10px;
 }
 #drawingPanel .container .content .comments-container {
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  -o-user-select: text;
+  user-select: text;
   background-color: #464c53;
 }
 #drawingPanel .container .content .comments-container > .comment-header {
@@ -2390,6 +2399,7 @@ body.allauth p input[type="email"] {
   #FavoriteTools h3.title {
     width: 68px;
     font-size: 16px;
+    padding-top: 12px;
   }
   #FavoriteTools .mode-button .text {
     display: none;
@@ -3166,4 +3176,34 @@ body.timeline-active #CommeUnDessein_alerts.activated .btn.show {
 #timeline.active .btn.show {
   opacity: 0;
   pointer-events: none;
+}
+.display-block {
+  display: block;
+}
+.submit-photo {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.tile-info {
+  font-size: 13px;
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  -o-user-select: text;
+  user-select: text;
+}
+.tile-info .info {
+  margin-bottom: 5px;
+}
+.tile-info .vote-stat {
+  padding: 5px;
+  border-top: 1px #565656 solid;
+}
+.tile-info .vote-stat-title {
+  font-weight: 700;
+}
+.tile-info .tile-thumbnail {
+  margin-top: 10px;
+  margin-bottom: 10px;
 }

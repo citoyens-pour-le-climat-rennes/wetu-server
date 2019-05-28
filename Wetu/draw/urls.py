@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from draw import views
 import socketio.sdjango
 
@@ -20,6 +20,8 @@ urlpatterns = [
     url(r'^index\.html', views.index, name='index'),
     url(r'^drawing-(?P<pk>[\w]+)$', views.index, {'visit': True}, name='index'),
     url(r'^debug/drawing-(?P<pk>[\w]+)$', views.index, {'visit': True, 'useDebugFiles': True}, name='index'),
+    url(r'^tile-(?P<tilePk>[\w]+)$', views.index, {'visit': True}, name='index'),
+    url(r'^debug/tile-(?P<tilePk>[\w]+)$', views.index, {'visit': True, 'useDebugFiles': True}, name='index'),
     url(r'^connexion/$', views.connection, name='connection'),
     url(r'^connexions/$', views.connections, name='connections'),
     url(r'^visite', views.index, {'visit': True}, name='index'),
@@ -30,8 +32,10 @@ urlpatterns = [
     
     url(r'^(?P<cityName>(?!admin)[\w-]+)/$', views.index, {'visit': True}, name='index'),
     url(r'^(?P<cityName>(?!admin)[\w-]+)/drawing-(?P<pk>[\w]+)$', views.index, {'visit': True}, name='index'),
+    url(r'^(?P<cityName>(?!admin)[\w-]+)/tile-(?P<tilePk>[\w]+)$', views.index, {'visit': True}, name='index'),
     url(r'^debug/(?P<cityName>(?!admin)[\w-]+)/$', views.index, { 'useDebugFiles': True }, name='index'),
     url(r'^debug/(?P<cityName>(?!admin)[\w-]+)/drawing-(?P<pk>[\w]+)$', views.index, { 'useDebugFiles': True }, name='index'),
+    url(r'^debug/(?P<cityName>(?!admin)[\w-]+)/tile-(?P<tilePk>[\w]+)$', views.index, { 'useDebugFiles': True }, name='index'),
 
     url(r'^debug-free$', views.index, {'drawingMode': 'free', 'useDebugFiles': True}, name='index'),
     url(r'^debug-pixel$', views.index, {'drawingMode': 'pixel', 'useDebugFiles': True}, name='index'),

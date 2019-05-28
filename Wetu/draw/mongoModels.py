@@ -15,6 +15,7 @@ from mongoengine import *
 class Vote(Document):
     author = ReferenceField('UserProfile', required=True)   #, reverse_delete_rule=CASCADE) # see register_delete_rule after UserProfile
     drawing = ReferenceField('Drawing')                     #, reverse_delete_rule=CASCADE) # see register_delete_rule after Drawing
+    tile = ReferenceField('Tile')                           #, reverse_delete_rule=CASCADE) # see register_delete_rule after Tile
     positive = BooleanField(default=True)
     date = DateTimeField(default=datetime.datetime.now, required=True)
     emailConfirmed = BooleanField(default=False)
@@ -26,6 +27,7 @@ class Vote(Document):
 class Comment(Document):
     author = ReferenceField('UserProfile', required=True)   #, reverse_delete_rule=CASCADE) # see register_delete_rule after UserProfile
     drawing = ReferenceField('Drawing')                     #, reverse_delete_rule=CASCADE) # see register_delete_rule after Drawing
+    tile = ReferenceField('Tile')                           #, reverse_delete_rule=CASCADE) # see register_delete_rule after Tile
     date = DateTimeField(default=datetime.datetime.now, required=True)
     emailConfirmed = BooleanField(default=False)
     text = StringField(required=True)
@@ -33,6 +35,29 @@ class Comment(Document):
     meta = {
         'indexes': [ "#author", "emailConfirmed" ]
     }
+
+class Tile(Document):
+    clientId = StringField(required=True, unique=True)
+    author = ReferenceField('UserProfile', required=True)
+    owner = StringField(required=True)
+    city = StringField(required=True)
+    status = StringField(default='pending', required=True)
+    photoURL = StringField()
+    number = IntField(required=True)
+    x = IntField(required=True)
+    y = IntField(required=True)
+    box = PolygonField()
+    dueDate = DateTimeField()
+    placementDate = DateTimeField()
+    votes = ListField(ReferenceField('Vote', reverse_delete_rule=PULL))
+    comments = ListField(ReferenceField('Comment', reverse_delete_rule=PULL))
+
+    meta = {
+        'indexes': [ "city", [ ("box", "2dsphere") ], "#author" ]
+    }
+
+Tile.register_delete_rule(Vote, 'tile', CASCADE)
+Tile.register_delete_rule(Comment, 'tile', CASCADE)
 
 @receiver(user_signed_up, dispatch_uid="_allauth.user_signed_up")
 def createUserProfile(sender, user, **kwargs):
@@ -49,6 +74,8 @@ class UserProfile(Document):
     votes = ListField(ReferenceField('Vote', reverse_delete_rule=PULL))
     comments = ListField(ReferenceField('Comment', reverse_delete_rule=PULL))
     banned = BooleanField(default=False)
+    nFalseReport = IntField(default=0)
+    nAbuses = IntField(default=0)
 
     def profile_image_url(self):
 
@@ -71,6 +98,7 @@ class UserProfile(Document):
 
 UserProfile.register_delete_rule(Vote, 'author', CASCADE)
 UserProfile.register_delete_rule(Comment, 'author', CASCADE)
+UserProfile.register_delete_rule(Tile, 'author', CASCADE)
 
 class Drawing(Document):
     clientId = StringField(required=True, unique=True)
@@ -81,14 +109,16 @@ class Drawing(Document):
     box = PolygonField()
     rType = StringField(default='Drawing')
     owner = StringField(required=True)
+    abuseReporter = StringField()
     status = StringField(default='draft', required=True)
     paths = ListField(ReferenceField('Path'))
     svg = StringField()
     pathList = ListField(StringField())
-    bounds = StringField()
 
-    left = IntField()
-    top = IntField()
+    # bounds = StringField()
+
+    # left = IntField()
+    # top = IntField()
 
     date = DateTimeField(default=datetime.datetime.now, required=True)
     votes = ListField(ReferenceField('Vote', reverse_delete_rule=PULL))
@@ -102,12 +132,7 @@ class Drawing(Document):
     # lastUpdate = DateTimeField(default=datetime.datetime.now)
     
     meta = {
-        'indexes': [
-            "city",
-            "owner",
-            "status",
-            [ ("planetX", 1), ("planetY", 1), ("box", "2dsphere") ]
-        ]
+        'indexes': [ "city", [ ("box", "2dsphere") ], "#owner", "status" ]
     }
 
 Drawing.register_delete_rule(Vote, 'drawing', CASCADE)
@@ -294,10 +319,20 @@ class City(Document):
     width = DecimalField(default=4000)
     height = DecimalField(default=3000)
     finished = BooleanField(default=False)
+    eventLocation = StringField()
+    eventDate = DateTimeField(default=datetime.datetime.now)
+    
+    positiveVoteThreshold = IntField(default=10)
+    negativeVoteThreshold = IntField(default=3)
+    positiveVoteThresholdTile = IntField(default=5)
+    negativeVoteThresholdTile = IntField(default=3)
+    voteValidationDelay = IntField(default=60)             # once the drawing gets positiveVoteThreshold votes, the duration before the drawing gets validated (the drawing is not immediately validated in case the user wants to cancel its vote)
+    voteMinDuration = IntField(default=3600)               # the minimum duration the vote will last (to make sure a good moderation happens)
 
     meta = {
         'indexes': [ "owner", "public", "name" ]
     }
+
 
 # class Area(Document):
 #     x = DecimalField()

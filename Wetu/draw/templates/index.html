@@ -53,7 +53,7 @@
 
     <meta property="fb:app_id"          content="263330707483013" /> 
     <meta property="og:type"            content="article" /> 
-    <meta property="og:url"             content="https://commeundessein.co/drawings.html#{{drawingPk}}" /> 
+    <meta property="og:url"             content="https://commeundessein.co/{{city}}/drawing-{{drawingPk}}" /> 
     <meta property="og:title"           content="{{drawingTitle}}" /> 
     <meta property="og:description"     content="{{drawingDescription}}" /> 
     <meta property="og:image"           content="{{drawingImageURL}}" />
@@ -486,7 +486,7 @@
           <div class="hidden text-separator"></div>
 
           <!-- <canvas id="background-canvas" resize hidpi="off"></canvas> -->
-          <canvas id="canvas" resize hidpi="off" data-pos-x="{{ x }}" data-pos-y="{{ y }}" data-points="{{ points }}" data-box="{{ box }}" data-site="{{ site }}" data-message="{{ message }}" data-load-entire-area="{{ loadEntireArea }}" data-city="{{ city }}" data-city-finished="{{ cityFinished }}" data-city-message="{{ cityMessage }}" data-city-stroke-width="{{ cityStrokeWidth }}" data-city-width="{{ cityWidth }}" data-city-height="{{ cityHeight }}" data-owner="{{ owner }}" data-is-admin="{{ userIsAdmin }}"  data-github-login="{{ githubLogin }}" data-username="{{ request.user.username }}" data-is-authenticated="{{ request.user.is_authenticated }}" data-drawing-mode="{{ drawingMode }}" data-positiveVoteThreshold="{{ positiveVoteThreshold }}" data-negativeVoteThreshold="{{ negativeVoteThreshold }}" data-voteMinDuration="{{ voteMinDuration }}"></canvas>
+          <canvas id="canvas" resize hidpi="off" data-pos-x="{{ x }}" data-pos-y="{{ y }}" data-points="{{ points }}" data-box="{{ box }}" data-site="{{ site }}" data-message="{{ message }}" data-load-entire-area="{{ loadEntireArea }}" data-city="{{ city }}" data-city-event-date="{{ cityEventDate }}" data-city-event-date="{{ cityEventLocation }}" data-city-finished="{{ cityFinished }}" data-city-message="{{ cityMessage }}" data-city-stroke-width="{{ cityStrokeWidth }}" data-city-width="{{ cityWidth }}" data-city-height="{{ cityHeight }}" data-owner="{{ owner }}" data-is-admin="{{ userIsAdmin }}" data-drawing-pk="{{ drawingPk }}" data-tile-pk="{{ tilePk }}" data-bounds="{{ bounds }}" data-github-login="{{ githubLogin }}" data-username="{{ request.user.username }}" data-is-authenticated="{{ request.user.is_authenticated }}" data-drawing-mode="{{ drawingMode }}" data-positiveVoteThreshold="{{ positiveVoteThreshold }}" data-negativeVoteThreshold="{{ negativeVoteThreshold }}" data-voteMinDuration="{{ voteMinDuration }}"></canvas>
           <div id="rasters"></div>
 
           <div id="html-view">
@@ -579,6 +579,7 @@
 
 
                     <div class="cd-column">
+
                       <div class="thumbnail drawing-thumbnail">
                       </div>
 
@@ -587,6 +588,7 @@
                         <span data-i18n="by">by</span>
                         <span class="author"></span>
                       </div>
+
                     </div>
 
 <!--                     <div class="cd-column read">
@@ -597,6 +599,27 @@
 
                     <form class="create cd-column cd-grow" autocomplete="off">
 
+                      <div class="cd-column tile-info">
+                        
+                        <div class="info">
+                          <div class="vote-stat"><span class="vote-stat-title" data-i18n='Tile Author'>Tile Author</span> : <span class="author"></span></div>
+                          <div class="vote-stat"><span class="vote-stat-title" data-i18n='Number'>Number</span> : <span class="number"></span></div>
+                          <div class="vote-stat"><span class="vote-stat-title" data-i18n='Position'>Position</span> : <span class="position"></span></div>
+                          <div class="vote-stat"><span class="vote-stat-title" data-i18n='Status'>Status</span> : <span class="status"></span></div>
+                          <div class="vote-stat"><span class="vote-stat-title" data-i18n='This tile must be achieved before the'>This tile must be achieved before the</span> : <span class="display-block due-date"></span></div>
+                          <div class="vote-stat"><span class="vote-stat-title" data-i18n='This tile must be placed the'>This tile must be placed the</span> : <span class="display-block placement-date"></span></div>
+                        </div>
+
+                        <button class="btn btn-primary original-color print-tile" type="button"><span class="glyphicon glyphicon-print"></span><span data-i18n='Print tile'>Print tile</span></button>
+
+                        <input type="file" id="fileInput" multiple accept="image/*" style="display:none">
+
+                        <button class="btn btn-success original-color submit-photo" type="button"><span class="glyphicon glyphicon-ok"></span><span data-i18n='Submit photo'>Submit photo</span></button>
+                        
+                        <div class="thumbnail tile-thumbnail">
+                        </div>
+                        
+                      </div>
 
                       <div class="form-group title-group">
                         <label class="hidden" for="drawing-title" data-i18n="Title">Title</label>
@@ -709,6 +732,8 @@
 
                         <button class="cd-grow btn btn-danger original-color report-abuse" type="button" data-toggle="popover" data-trigger="hover" data-i18n="[data-content]Report abuse" data-content="Report abuse" data-placement="top" data-container="#popovers"><span class="glyphicon glyphicon-flag"></span><span  class='text'></span></button>
 
+                        <button class="cd-grow btn btn-success original-color cancel-report" type="button" data-toggle="popover" data-trigger="hover" data-i18n="[data-content]Cancel report" data-content="Cancel report" data-placement="top" data-container="#popovers"><span class="glyphicon glyphicon-flag"></span><span  class='text'></span></button>
+
                         <button class="cd-grow btn btn-warning original-color copy-link" type="button" data-toggle="popover" data-trigger="hover" data-i18n="[data-content]Copy drawing link to clipboard" data-content="Copy drawing link to clipboard" data-placement="top" data-container="#popovers"><span class="glyphicon glyphicon-link"></span><span  class='text'></span></button>
 
 
@@ -756,6 +781,12 @@
 
                 <div class="selected-drawings cd-column mCustomScrollbar">
                   <div class="drawing-list-container cd-column cd-grow scroll">
+                      
+                      <!-- <div class="tiles-info">
+                        <div class="thumbnail drawing-thumbnail"></div>
+                        <h4 class="cd-grow cd-center title"></h4>
+                      </div> -->
+
                       <ul class="commeUnDessein-ui drawing-list">
                       </ul>
                   </div>
