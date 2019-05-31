@@ -754,6 +754,7 @@ body.hand {
 		background-color: @sidebar-background-color;
 
 		.vendor(transition, opacity 0.25s linear);
+		// .vendor(transition, ~"opacity 0.25s linear, margin-top 0.25s linear");
 
 		&:hover, &:active, &:focus {
 			outline: none;
@@ -800,6 +801,7 @@ body.hand {
 	&.activated {
 		&.show {
 			bottom: 0px;
+
 
 			.btn.show {
 				opacity: 0;
@@ -1881,6 +1883,7 @@ li.tool-btn {
 
 	&.r-alert {
 		bottom: 50px;
+		padding-bottom: 50px;
 	}
 	&.r-alert-top {
 		top: 113px;
@@ -2967,7 +2970,7 @@ body.allauth {
 
 	body.alert-activated {
 		#submit-drawing-button {
-			bottom: 15px;
+			bottom: 35px;
 			&.r-alert {
 				bottom: 50px;
 			}
@@ -2978,6 +2981,7 @@ body.allauth {
 		.show-btn-container {
 			.btn {
 				width: 100%;
+				margin-left: 0px;
 			}
 		}
 	}
@@ -3131,6 +3135,7 @@ body.allauth {
 
 	&.r-alert {
 		bottom: 50px;
+		padding-bottom: 50px;
 	}
 
 	&.r-hidden {

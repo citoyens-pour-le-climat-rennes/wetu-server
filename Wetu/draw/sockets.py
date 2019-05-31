@@ -37,18 +37,18 @@ chatNamespace = None
 
 # @receiver(drawingValidated)
 # def on_drawing_validated(sender, **kwargs):
-#     if kwargs is not None and 'drawingId' in kwargs and 'status' in kwargs:
-#         print "drawing change: " + str(kwargs['drawingId']) + ", " + str(kwargs['status'])
-#         # chatNamespace.emit_to_room(chatNamespace.room, 'drawing change', {'type': 'status', 'drawingId': kwargs['drawingId'], 'status': kwargs['status']})
-#         chatNamespace.broadcast_event('drawing change', {'type': 'status', 'drawingId': kwargs['drawingId'], 'status': kwargs['status']})
+#     if kwargs is not None and 'clientId' in kwargs and 'status' in kwargs:
+#         print "drawing change: " + str(kwargs['clientId']) + ", " + str(kwargs['status'])
+#         # chatNamespace.emit_to_room(chatNamespace.room, 'drawing change', {'type': 'status', 'clientId': kwargs['clientId'], 'status': kwargs['status']})
+#         chatNamespace.broadcast_event('drawing change', {'type': 'status', 'clientId': kwargs['clientId'], 'status': kwargs['status']})
 
 
 @receiver(drawingChanged)
 def on_drawing_changed(sender, **kwargs):
-    if kwargs is not None and 'drawingId' in kwargs and 'type' in kwargs:
-        print "drawing change: " + str(kwargs['type']) + ", " + str(kwargs['drawingId'])
-        # chatNamespace.emit_to_room(chatNamespace.room, 'drawing change', {'type': 'status', 'drawingId': kwargs['drawingId'], 'status': kwargs['status']})
-        args = { 'type': kwargs['type'], 'drawingId': kwargs['drawingId'] }
+    if kwargs is not None and 'clientId' in kwargs and 'type' in kwargs:
+        print "drawing change: " + str(kwargs['type']) + ", " + str(kwargs['clientId'])
+        # chatNamespace.emit_to_room(chatNamespace.room, 'drawing change', {'type': 'status', 'clientId': kwargs['clientId'], 'status': kwargs['status']})
+        args = { 'type': kwargs['type'], 'clientId': kwargs['clientId'] }
         if 'status' in kwargs:
             args['status'] = kwargs['status']
         if 'city' in kwargs:
@@ -69,6 +69,10 @@ def on_drawing_changed(sender, **kwargs):
             args['author'] = kwargs['author']
         if 'itemType' in kwargs:
             args['itemType'] = kwargs['itemType']
+        if 'photoURL' in kwargs:
+            args['photoURL'] = kwargs['photoURL']
+        if 'bounds' in kwargs:
+            args['bounds'] = kwargs['bounds']
         chatNamespace.broadcast_event('drawing change', args)
 
 @namespace('/chat')

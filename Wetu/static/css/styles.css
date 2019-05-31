@@ -1587,6 +1587,7 @@ li.tool-btn.selected .favorite-btn {
 }
 #drawingPanel.r-alert {
   bottom: 50px;
+  padding-bottom: 50px;
 }
 #drawingPanel.r-alert-top {
   top: 113px;
@@ -2441,13 +2442,14 @@ body.allauth p input[type="email"] {
     height: 15px;
   }
   body.alert-activated #submit-drawing-button {
-    bottom: 15px;
+    bottom: 35px;
   }
   body.alert-activated #submit-drawing-button.r-alert {
     bottom: 50px;
   }
   #CommeUnDessein_alerts .show-btn-container .btn {
     width: 100%;
+    margin-left: 0px;
   }
 }
 @media (max-width: 630px) {
@@ -2640,6 +2642,7 @@ body.allauth p input[type="email"] {
 }
 .sidebar.r-alert {
   bottom: 50px;
+  padding-bottom: 50px;
 }
 .sidebar.r-hidden {
   left: -265px;
