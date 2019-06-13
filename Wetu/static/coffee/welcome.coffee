@@ -35,27 +35,27 @@ surveyActions = {
 	5: loadLoginForm
 }
 
-stateObject = {
-	sectionIndex: sectionIndex
-}
+# stateObject = {
+# 	sectionIndex: sectionIndex
+# }
 
-window.onpopstate = (event) ->
-	console.log("location: " + document.location + ", state: " + JSON.stringify(event.state));
-	sectionIndex = event.state.sectionIndex
-	surveyActivateSection(false)
-	return
+# window.onpopstate = (event) ->
+# 	console.log("location: " + document.location + ", state: " + JSON.stringify(event.state));
+# 	sectionIndex = event.state.sectionIndex
+# 	surveyActivateSection(false)
+# 	return
 
 surveyActivateSection = (pushState=true)->
-	$('.section').hide()
+	# $('.cd-section').hide()
 	sectionNumber = sectionIndex+1
-	$('.section-' + sectionNumber).removeClass('hidden').show()
+	# $('.cd-section-' + sectionNumber).removeClass('hidden').show()
 	$('.cd-footer .progression').text(if sectionNumber <= nQuestions then sectionNumber + ' / ' + nQuestions else 'Terminé')
 	$('.cd-footer .bar').css( width: Math.min(sliderSize, sectionNumber * sliderSize / nQuestions) )
 	$('.cd-validate').hide()
 
-	if pushState
-		stateObject.sectionIndex = sectionIndex
-		history.pushState(stateObject, "page " + sectionNumber)
+	# if pushState
+	# 	stateObject.sectionIndex = sectionIndex
+	# 	history.pushState(stateObject, "page " + sectionNumber)
 	return
 
 surveyNext = ()->
@@ -72,7 +72,32 @@ surveyPrevious = ()->
 	surveyActivateSection()
 	return
 
+fullPage = null
+
 $(document).ready () ->
+
+
+	red = '#F44336'
+	blue = '#448AFF'
+	green = '#8BC34A'
+	yellow = '#FFC107'
+	brown = '#795548'
+	black = '#000000'
+	colors = [green, yellow, blue, red, green, brown, black]
+
+	fullPage = new fullpage('#fullpage', {
+		sectionsColor: colors, 			# ['#f2f2f2', '#4BBFC3', '#7BAABE', 'whitesmoke', '#000'],
+		anchors: ['introduction', 'participer', 'participations'],
+		loopHorizontal: false,
+		dragAndMove: true,
+		navigation: true,
+		navigationPosition: 'right',
+		navigationTooltips: ['introduction', 'participer', 'participations'],
+		slidesNavigation: true
+	})
+
+	# fullpage_api.setAllowScrolling(false)
+
 	justLoggedIn = localStorage.getItem('just-logged-in') == 'true'
 	
 	if justLoggedIn

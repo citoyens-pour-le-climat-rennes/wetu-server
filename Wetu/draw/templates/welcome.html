@@ -23,6 +23,7 @@
     <title>Espero</title>
 
     <link href="{% static 'libs/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'libs/fullpage.min.css' %}" />
     <link href="{% static 'css/welcome-styles.css' %}" rel="stylesheet">
     <!-- <link href="https://fonts.googleapis.com/css?family=Amatic+SC" rel="stylesheet"> -->
     <!-- <link href="https://fonts.googleapis.com/css?family=Mali|Open+Sans:400,700" rel="stylesheet"> -->
@@ -45,20 +46,29 @@
   </head>
 
   <body class="cd-column cd-grow" data-authenticated="{{ request.user.is_authenticated }}">
+  
+  <div id="fullpage">
+    
+    <div class="section">
 
-    <div class="cd-welcome-container cd-column cd-grow">
-      <div class="cd-column cd-center cd-grow">
         <h1>Espero</h1>
         <div class="sutitle cd-row cd-center">La fresque monumentale pour le climat</div>
-        
-        <div id="intro-video">
-          <iframe  class="" style="margin-top: 15vh;" width="600" height="400" src="https://www.youtube.com/embed/T4LVXCCmIKA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+        <div id="intro-video" class="cd-column cd-center">
+          <iframe  class="" width="600" height="400" src="https://www.youtube.com/embed/T4LVXCCmIKA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+          <div class="cd-row cd-center cd-info"><a class="cd-center-text" href="info">En savoir plus</a></div>
+
+          <br class="line">
         </div>
-        
-                
+
+    </div>
+
+    <div class="section">
+      
         <form action="" class="cd-survey cd-column large">
           
-          <div class="participate-section section section-1">
+          <div class="slide cd-section cd-section-1">
             <h3>Souhaitez-vous participer à la fresque ?</h3><br>
             
             <div class="cd-radio validate">
@@ -88,7 +98,7 @@
             </div>
           </div>
 
-          <div class="participate-event-section section section-2 hidden">
+          <div class="slide cd-section cd-section-2">
             <h3>A quel rassemblement souhaitez-vous participer ?</h3><br>
   
 
@@ -109,48 +119,33 @@
 
               <span class="SVGInline svg-checked"><svg class="SVGInline-svg" width="16" height="13" xmlns="http://www.w3.org/2000/svg"><path fillrule="nonzero" d="M14.293.293l1.414 1.414L5 12.414.293 7.707l1.414-1.414L5 9.586z"></path></svg></span>
             </div>
+             </div>
 
-<!-- 
-            <input type="checkbox" id="participate-event-500" name="participate-event"> <label for="participate-event-500">au rassemblement de 500 &#13217;.</label><br>
-            <input type="checkbox" id="participate-event-2500" name="participate-event"> <label for="participate-event-2500">au rassemblement de 2500 &#13217;.</label><br>
-            <input type="checkbox" id="participate-event-10000" name="participate-event"> <label for="participate-event-10000">au rassemblement de 10000 &#13217;.</label><br> -->
-          </div>
-
-          <div class="participate-area-section section section-3 hidden">
-            <h3>Quelle surface êtes-vous prêt à dessiner en ligne au total ?</h3><br>
+          <div class="slide cd-section cd-section-3">
+            <h3>Combien de dessins êtes-vous prêt à créer en ligne au total ?</h3><br>
             <p>Sachant que la création se déroule sur plusieurs mois.</p>
 
 
             <div class="cd-radio">
-              <div class="cd-icon">A</div> <label>25 x 25 cm</label>
+              <div class="cd-icon">A</div> <label>Aucun</label>
               <span class="SVGInline svg-checked"><svg class="SVGInline-svg" width="16" height="13" xmlns="http://www.w3.org/2000/svg"><path fillrule="nonzero" d="M14.293.293l1.414 1.414L5 12.414.293 7.707l1.414-1.414L5 9.586z"></path></svg></span>
             </div>
 
             <div class="cd-radio">
-              <div class="cd-icon">B</div> <label>50 x 50 cm</label>
+              <div class="cd-icon">B</div> <label>1 à 3 dessins</label>
               <span class="SVGInline svg-checked"><svg class="SVGInline-svg" width="16" height="13" xmlns="http://www.w3.org/2000/svg"><path fillrule="nonzero" d="M14.293.293l1.414 1.414L5 12.414.293 7.707l1.414-1.414L5 9.586z"></path></svg></span>
             </div>
 
             <div class="cd-radio">
-              <div class="cd-icon">C</div> <label>1 &#13217;</label>
+              <div class="cd-icon">C</div> <label>3 à 6 dessins</label>
               <span class="SVGInline svg-checked"><svg class="SVGInline-svg" width="16" height="13" xmlns="http://www.w3.org/2000/svg"><path fillrule="nonzero" d="M14.293.293l1.414 1.414L5 12.414.293 7.707l1.414-1.414L5 9.586z"></path></svg></span>
             </div>
 
             <div class="cd-radio">
-              <div class="cd-icon">D</div> <label>2 &#13217;</label>
+              <div class="cd-icon">D</div> <label>Plus de 6 dessins</label>
               <span class="SVGInline svg-checked"><svg class="SVGInline-svg" width="16" height="13" xmlns="http://www.w3.org/2000/svg"><path fillrule="nonzero" d="M14.293.293l1.414 1.414L5 12.414.293 7.707l1.414-1.414L5 9.586z"></path></svg></span>
             </div>
 
-            <div class="cd-radio">
-              <div class="cd-icon">E</div> <label>5 &#13217;</label>
-              <span class="SVGInline svg-checked"><svg class="SVGInline-svg" width="16" height="13" xmlns="http://www.w3.org/2000/svg"><path fillrule="nonzero" d="M14.293.293l1.414 1.414L5 12.414.293 7.707l1.414-1.414L5 9.586z"></path></svg></span>
-            </div>
-
-            <div class="cd-radio">
-              <div class="cd-icon">F</div> <label>10 &#13217;</label>
-              <span class="SVGInline svg-checked"><svg class="SVGInline-svg" width="16" height="13" xmlns="http://www.w3.org/2000/svg"><path fillrule="nonzero" d="M14.293.293l1.414 1.414L5 12.414.293 7.707l1.414-1.414L5 9.586z"></path></svg></span>
-            </div>
-            
             <!-- 
             <select>
               <option value="25">25 x 25 cm</option>
@@ -163,7 +158,7 @@
             
           </div>
           
-          <div class="participate-area-section section section-4 hidden">
+          <div class="slide cd-section cd-section-4">
             <h3>Quelle surface êtes-vous pêt à imprimer ou peindre au total ?</h3><br>
             <p>Sachant qu'il y a 3 événements éspacés de plusieurs mois pour assembler la fresque.</p>
             
@@ -195,7 +190,7 @@
             
           </div>
 
-          <div class="participate-area-section section section-5 hidden">
+          <div class="slide cd-section cd-section-5">
             <h3>Merci beaucoup !</h3><br>
 
             <p>Veuillez entrer votre email pour valider votre participation.</p>
@@ -204,7 +199,7 @@
             
           </div>
 
-          <div class="participate-area-section section section-6 hidden cd-center-text">
+          <div class="slide cd-section cd-section-6 cd-center-text">
             <h3>Votre participation a bien été enregistré !</h3><br>
 
             <p>Vous pouvez maintenant vous connecter à l'application</p>
@@ -240,10 +235,43 @@
             </div>
 
           </div>
+          
+          <br class="line">
 
         </form>
 
-        <div id="login-form"></div>
+    </div>
+
+    <div class="section">Some section</div>
+    
+    <div class="section">      
+      <div id="login-form"></div>
+    </div>
+
+  </div>
+
+    <div class="cd-welcome-container cd-column cd-grow">
+      <div class="cd-column cd-center cd-grow">
+        
+<!--         <div class="cd-column">
+            
+            <div class="intro-badge"> <span class="badge">1</span> Une application en ligne pour créer une fresque collective.</div>
+
+            <div class="intro-badge"> <span class="badge">2</span> Tout le monde dessine un morceau de la fresque.</div>
+
+            <div class="intro-badge"> <span class="badge">3</span> La fresque est assemblée sur une place publique.</div>
+
+        </div>
+ -->
+        
+                
+
+<!-- 
+            <input type="checkbox" id="participate-event-500" name="participate-event"> <label for="participate-event-500">au rassemblement de 500 &#13217;.</label><br>
+            <input type="checkbox" id="participate-event-2500" name="participate-event"> <label for="participate-event-2500">au rassemblement de 2500 &#13217;.</label><br>
+            <input type="checkbox" id="participate-event-10000" name="participate-event"> <label for="participate-event-10000">au rassemblement de 10000 &#13217;.</label><br> -->
+         
+
 
         <ul class="button-list cd-column editions hidden" data-authenticated="{{ is_authenticated }}">
           <!-- <li><a href="/nantes-maker-campus/">Nantes Maker Campus</a></li>
@@ -255,6 +283,8 @@
 
       </div>
     </div>
+
+    <script type="text/javascript" src="{% static 'libs/fullpage.js' %}"></script>
     <script src="{% static 'js/welcome.js' %}"></script>
   </body>
 </html>
