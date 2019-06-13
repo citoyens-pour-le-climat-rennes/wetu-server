@@ -44,6 +44,7 @@ def index(request, site=None, owner=None, cityName=None, x=0, y=0, useDebugFiles
 		userProfile = UserProfile.objects.get(username=request.user.username)
 		profileImageURL = userProfile.profile_image_url
 		result['userIsAdmin'] = userProfile.admin
+		result['emailConfirmed'] = userProfile.emailConfirmed
 	except UserProfile.DoesNotExist:
 		print 'user profile does not exist.'
 
@@ -157,10 +158,10 @@ def termsOfService(request):
 def privacyPolicy(request):
 	return render_to_response(	"privacy-policy.html", {}, RequestContext(request) )
 
-def connections(request):
-	if not request.user.is_authenticated():
-		return render_to_response(	"connections.html", {}, RequestContext(request) )
-	return index(request)
+# def connections(request):
+# 	if not request.user.is_authenticated():
+# 		return render_to_response(	"connections.html", {}, RequestContext(request) )
+# 	return index(request)
 
 def ajaxCall(request):
 	# import pdb; pdb.set_trace()
@@ -208,3 +209,4 @@ class CustomSignupView(SignupView):
         return context
 
 connection = CustomSignupView.as_view()
+

@@ -1,6 +1,6 @@
-# state = 'Email'
-# previousState = 'Start'
-# userIsKnown = false
+state = 'Email'
+previousState = 'Start'
+userIsKnown = false
 # createAccount = false
 
 $.ajaxSetup beforeSend: (xhr, settings) ->
@@ -26,9 +26,7 @@ $.ajaxSetup beforeSend: (xhr, settings) ->
 
 
 $(document).ready ()->
-	$('#id_login').attr('placeholder', "Nom d'utilisateur ou email")
-	$('#id_username').attr('placeholder', "Nom d'utilisateur")
-	$('label[for="id_remember"]').text('se souvenir de moi').css({'margin-left': '10px'}).parent().css( { 'display': 'flex', 'flex-direction': 'row-reverse' } )
+	$('label[for="id_remember"]').text('se sourvenir de moi').parent().css( 'display': 'flex', 'flex-direction': 'row-reverse' )
 	return
 
 

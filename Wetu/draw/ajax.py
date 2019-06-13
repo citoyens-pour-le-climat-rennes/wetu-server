@@ -240,7 +240,7 @@ def setVoteThresholds(request, cityName, positiveVoteThreshold=10, negativeVoteT
 	return json.dumps({"message": "success"})
 
 def recomputeDrawingStates(request):
-	drawings = Drawing.objects.get(status__in=['pending', 'drawing', 'rejected'])
+	drawings = Drawing.objects.get(status__in=['pending', 'drawing', 'validated', 'rejected'])
 	
 	for drawing in drawings:
 		# send_mail('[Comme un dessein] recomputeDrawingStates', u'recomputeDrawingStates: updateDrawingState ' + str(drawing.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
@@ -298,6 +298,140 @@ def setCityDimensions(request, cityName, width, height, strokeWidth):
 	city.strokeWidth = strokeWidth
 	city.save()
 	return json.dumps({"message": "success"})
+
+@checkDebug
+def changeUser(request, username):
+	
+	if not request.user.is_authenticated():
+		return json.dumps({'state': 'not_logged_in'})
+
+	try:
+		userProfile = UserProfile.objects.get(username=request.user.username)
+	except UserProfile.DoesNotExist:
+		return json.dumps({"status": "error", "message": "The user does not exists."})
+
+	if userProfile.banned:
+		return json.dumps({'state': 'error', 'message': 'Your account has been suspended'})
+
+	if username != request.user.username: 			# if change username: check that it does not already exist
+		try:
+			existingUser = UserProfile.objects.get(username=username)
+			return json.dumps( { 'state': 'error', 'message': 'This username is already being used' } )
+		except UserProfile.DoesNotExist:
+			pass
+
+	# Changing email does not work 
+	# What happens if email is linked to social account?
+
+	# if request.user.email != email:
+	# 	emailAddress = EmailAddress.objects.get(user=request.user)
+
+	# 	try:
+	# 		existingEmailAddress = EmailAddress.objects.get(email=email)
+	# 		return json.dumps( { 'state': 'error', 'message': 'This email address is already in use' } )
+	# 	except EmailAddress.DoesNotExist:
+	# 		pass
+
+	# 	try:
+	# 		emailAddress.email = email
+	# 		emailAddress.save()
+	# 	except NotUniqueError:
+	# 		return json.dumps( { 'state': 'error', 'message': 'This email address is already in use' } )
+	# 	except:
+	# 		return json.dumps( { 'state': 'error', 'message': 'This email address is not valid' } )
+
+	oldUsername = request.user.username
+
+	if len(username) <= 0:
+		return json.dumps( { 'state': 'error', 'message': 'This username is not valid' } )
+
+	try:
+		request.user.username = username
+		request.user.save()
+		userProfile.username = username
+		userProfile.save()
+	except NotUniqueError:
+		return json.dumps( { 'state': 'error', 'message': 'This username is already being used' } )
+	except:
+		return json.dumps( { 'state': 'error', 'message': 'This username is not valid' } )
+
+	Drawing.objects(owner=oldUsername).update(owner=username)
+	Tile.objects(owner=oldUsername).update(owner=username)
+
+	return  json.dumps({'state': 'success', 'username': username})
+
+@checkDebug
+def deleteUser(request):
+
+	if not request.user.is_authenticated():
+		return json.dumps({'state': 'not_logged_in'})
+
+	try:
+		userProfile = UserProfile.objects.get(username=request.user.username)
+	except UserProfile.DoesNotExist:
+		return json.dumps({"status": "error", "message": "The user does not exists."})
+
+	anonymous_name = 'anonymous_' + str(random.random())
+
+	Drawing.objects(owner=request.user.username).update(owner=anonymous_name)
+	Tile.objects(owner=request.user.username).delete()
+
+	for vote in userProfile.votes[:]:
+		if isinstance(vote, Vote):
+			try:
+				vote.drawing.votes.remove(vote)
+				vote.drawing.save()
+			except DoesNotExist:
+				pass
+			try:
+				vote.tile.votes.remove(vote)
+				vote.tile.save()
+			except DoesNotExist:
+				pass
+			vote.delete()
+
+	for comment in userProfile.comments[:]:
+		if isinstance(comment, Comment):
+			try:
+				comment.drawing.comments.remove(comment)
+				comment.drawing.save()
+			except DoesNotExist:
+				pass
+			try:
+				comment.tile.comments.remove(comment)
+				comment.tile.save()
+			except DoesNotExist:
+				pass
+			comment.delete()
+
+	userProfile.delete()
+	request.user.delete()
+
+	return  json.dumps({'state': 'success'})
+
+@checkDebug
+def deleteUserDrawings(request, username):
+
+	if not isAdmin(request.user):
+		return json.dumps({"status": "error", "message": "not_admin"})
+
+	if not request.user.is_authenticated():
+		return json.dumps({'state': 'not_logged_in'})
+
+	try:
+		userProfile = UserProfile.objects.get(username=request.user.username)
+	except UserProfile.DoesNotExist:
+		return json.dumps({"status": "error", "message": "The user does not exists."})
+
+	drawings = Drawing.objects(owner=username)
+	
+	for drawing in drawings:
+		layerName = 'inactive' if drawing.status == 'rejected' else 'active'
+		removeDrawingFromRasters(city, drawing, layerName)
+
+	drawings.delete()
+
+	return  json.dumps({'state': 'success'})
 
 # allauth.account.signals.email_confirmed(request, email_address)
 @receiver(email_confirmed)
@@ -362,8 +496,8 @@ def on_email_confirmation_sent(sender, request, confirmation, signup, **kwargs):
 	send_mail('[Comme un dessein] New email confirmation sent', u'A new email confirmation was sent to ' + str(confirmation.email_address) + ', to confirm his email manually follow the link: https://commeundessein.co/accounts/confirm-email/' + confirmation.key , 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 	return
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def isEmailKnown(request, email):
 	if len(email) <= 0:
 		return json.dumps({ 'error': 'The email address is empty.' })
@@ -386,8 +520,8 @@ def isEmailKnown(request, email):
 		usernameIsKnown = False
 	return json.dumps({ 'emailIsKnown': emailIsKnown, 'usernameIsKnown': usernameIsKnown, 'emailShortNameIsKnown': emailShortNameIsKnown })
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def isUsernameKnown(request, username):
 	try:
 		user = User.objects.get(username=username)
@@ -396,8 +530,8 @@ def isUsernameKnown(request, username):
 	return json.dumps({'usernameIsKnown': True})
 
 # @dajaxice_register
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def multipleCalls(request, functionsAndArguments):
 	results = []
 	for fa in functionsAndArguments:
@@ -406,8 +540,8 @@ def multipleCalls(request, functionsAndArguments):
 
 
 ## debug
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def debugDatabase(request):
 	models = ['Path', 'Div', 'Box', 'Drawing']
 
@@ -498,6 +632,10 @@ def getGithubAuthToken(request):
 # @dajaxice_register
 @checkDebug
 def createCity(request, name, public=None):
+	
+	if not isAdmin(request.user):
+		return json.dumps({"status": "error", "message": "not_admin"})
+
 	try:
 		city = City.objects.get(name=name, owner=request.user.username)
 		return json.dumps( { 'state': 'error', 'message': 'The city named ' + name + ' already exists.' } )
@@ -512,6 +650,8 @@ def createCity(request, name, public=None):
 # @dajaxice_register
 @checkDebug
 def deleteCity(request, name):
+	if not isAdmin(request.user):
+		return json.dumps({"status": "error", "message": "not_admin"})
 	try:
 		city = City.objects.get(name=name, owner=request.user.username)
 	except City.DoesNotExist:
@@ -534,6 +674,8 @@ def deleteCity(request, name):
 # @dajaxice_register
 @checkDebug
 def updateCity(request, pk, name, public=None):
+	if not isAdmin(request.user):
+		return json.dumps({"status": "error", "message": "not_admin"})
 	try:
 		city = City.objects.get(name=name, owner=request.user.username)
 		return json.dumps( { 'state': 'error', 'message': 'The city named ' + name + ' already exists.' } )
@@ -678,8 +820,8 @@ def loadAll(request, cityName=None):
 
 	return json.dumps( { 'items': items, 'user': request.user.username } )
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def loadDraft(request, cityName=None):
 
 	city = getCity(cityName)
@@ -705,9 +847,9 @@ def loadDraft(request, cityName=None):
 	if request.user.is_authenticated() and len(drafts) == 0:
 		try:
 			clientId = '' + str(datetime.datetime.now()) + str(random.random())
-			d = Drawing(clientId=clientId, city=cityPk, planetX=0, planetY=0, owner=request.user.username, date=datetime.datetime.now(), status='draft')
-			d.save()
-			drafts = [d]
+			draft = Drawing(clientId=clientId, city=cityPk, planetX=0, planetY=0, owner=request.user.username, date=datetime.datetime.now(), status='draft')
+			draft.save()
+			drafts = [draft]
 		except NotUniqueError:
 			pass
 
@@ -715,7 +857,7 @@ def loadDraft(request, cityName=None):
 		items.append(drafts[0].to_json())
 
 	if isAdmin(request.user):
-		flaggedDrawings = Drawing.objects(city=cityPk, status='flagged_pending').only('svg', 'status', 'pk', 'clientId', 'owner', 'title', 'box')
+		flaggedDrawings = Drawing.objects(city=cityPk, status='flagged_pending').only('status', 'pk', 'clientId', 'owner', 'title', 'box', 'pathList')
 	
 		for drawing in flaggedDrawings:
 			items.append(drawing.to_json())
@@ -761,8 +903,8 @@ def loadDraft(request, cityName=None):
 
 # 	return json.dumps( { 'tiles': tiles.to_json(), 'user': request.user.username } )
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def loadDrawingsAndTilesFromBounds(request, bounds, cityName=None, drawingsToIgnore=None, tilesToIgnore=None, rejected=False):
 
 	city = getCity(cityName)
@@ -772,7 +914,7 @@ def loadDrawingsAndTilesFromBounds(request, bounds, cityName=None, drawingsToIgn
 
 	cityPk = str(city.pk)
 
-	statusToLoad = ['pending', 'drawing', 'drawn']
+	statusToLoad = ['pending', 'drawing', 'validated', 'drawn']
 
 	if isAdmin(request.user):
 		statusToLoad.append('emailNotConfirmed')
@@ -803,6 +945,7 @@ def loadDrawingsAndTilesFromBounds(request, bounds, cityName=None, drawingsToIgn
 		tiles = Tile.objects(city=cityPk, box__geo_intersects=box).only('status', 'owner', 'pk', 'x', 'y', 'clientId', 'photoURL')
 	else:
 		tiles = Tile.objects(city=cityPk, box__geo_intersects=box, pk__nin=tilesToIgnore).only('status', 'owner', 'pk', 'x', 'y', 'clientId', 'photoURL')
+
 
 	return json.dumps( { 'tiles': tiles.to_json(), 'items': items, 'user': request.user.username } )
 
@@ -850,9 +993,9 @@ def loadDrawingsAndTilesFromBounds(request, bounds, cityName=None, drawingsToIgn
 # 	if request.user.is_authenticated() and len(drafts) == 0:
 # 		try:
 # 			clientId = '' + str(datetime.datetime.now()) + str(random.random())
-# 			d = Drawing(clientId=clientId, city=cityPk, planetX=0, planetY=0, owner=request.user.username, date=datetime.datetime.now(), status='draft')
-# 			d.save()
-# 			drafts = [d]
+# 			drawing = Drawing(clientId=clientId, city=cityPk, planetX=0, planetY=0, owner=request.user.username, date=datetime.datetime.now(), status='draft')
+# 			drawing.save()
+# 			drafts = [drawing]
 # 		except NotUniqueError:
 # 			pass
 
@@ -914,9 +1057,9 @@ def emailIsConfirmed(request, userProfile=None):
 # 	if request.user.is_authenticated() and len(drafts) == 0:
 # 		try:
 # 			clientId = '' + str(datetime.datetime.now()) + str(random.random())
-# 			d = Drawing(clientId=clientId, city=cityPk, planetX=0, planetY=0, owner=request.user.username, date=datetime.datetime.now(), status='draft')
-# 			d.save()
-# 			drafts = [d]
+# 			drawing = Drawing(clientId=clientId, city=cityPk, planetX=0, planetY=0, owner=request.user.username, date=datetime.datetime.now(), status='draft')
+# 			drawing.save()
+# 			drafts = [drawing]
 # 		except NotUniqueError:
 # 			pass
 
@@ -926,8 +1069,8 @@ def emailIsConfirmed(request, userProfile=None):
 # 	# return json.dumps( { 'paths': paths, 'boxes': boxes, 'divs': divs, 'user': user, 'rasters': rasters, 'areasToUpdate': areas, 'zoom': zoom } )
 # 	return json.dumps( { 'items': items, 'user': request.user.username } )
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def loadVotes(request, cityName=None):
 
 	try:
@@ -936,13 +1079,15 @@ def loadVotes(request, cityName=None):
 		return json.dumps( { 'state': 'fail_silently', 'message': 'User does not exist.' } )
 
 	votes = []
-	for vote in userVotes.votes:
-		if isinstance(vote, Vote):
-			try:
-				pk = str(vote.drawing.clientId) if vote.drawing else str(vote.tile.clientId)
-				votes.append({ 'pk': pk, 'positive': vote.positive, 'emailConfirmed': vote.author.emailConfirmed } )
-			except DoesNotExist:
-				pass
+
+	if userVotes.votes:
+		for vote in userVotes.votes:
+			if isinstance(vote, Vote):
+				try:
+					pk = str(vote.drawing.clientId) if vote.drawing else str(vote.tile.clientId)
+					votes.append({ 'pk': pk, 'positive': vote.positive, 'emailConfirmed': vote.author.emailConfirmed } )
+				except DoesNotExist:
+					pass
 
 	return json.dumps( { 'votes': votes } )
 
@@ -995,9 +1140,9 @@ def loadVotes(request, cityName=None):
 # --- Drawings --- #
 
 # @dajaxice_register
-@checkDebug
 @checkSimulateSlowResponse
-def saveDrawing(request, clientId, cityName, date, title, description=None, points=None):
+@checkDebug
+def saveDrawing(request, clientId, cityName, date, title, description=None, points=None, data=None):
 
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
@@ -1012,9 +1157,9 @@ def saveDrawing(request, clientId, cityName, date, title, description=None, poin
 	if city.finished:
 		return json.dumps({'state': 'info', 'message': "The installation is over"})
 
-	paths = []
+	pathList = []
 	if points:
-		paths.append(json.dumps(points))
+		pathList.append(json.dumps({ 'points': points, 'data': data }))
 
 	drafts = Drawing.objects(city=cityPk, owner=request.user.username, status='draft')
 	
@@ -1026,12 +1171,12 @@ def saveDrawing(request, clientId, cityName, date, title, description=None, poin
 				draft.delete()
 
 	try:
-		d = Drawing(clientId=clientId, city=cityPk, planetX=0, planetY=0, owner=request.user.username, pathList=paths, date=datetime.datetime.fromtimestamp(date/1000.0), title=title, description=description, status='draft')
-		d.save()
+		drawing = Drawing(clientId=clientId, city=cityPk, planetX=0, planetY=0, owner=request.user.username, pathList=pathList, date=datetime.datetime.fromtimestamp(date/1000.0), title=title, description=description, status='draft')
+		drawing.save()
 	except NotUniqueError:
 		return json.dumps({'state': 'error', 'message': 'A drawing with this id already exists.'})
 
-	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk), 'negativeVoteThreshold': city.negativeVoteThreshold, 'positiveVoteThreshold': city.positiveVoteThreshold, 'voteMinDuration': city.voteMinDuration } )
+	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(drawing.pk), 'negativeVoteThreshold': city.negativeVoteThreshold, 'positiveVoteThreshold': city.positiveVoteThreshold, 'voteMinDuration': city.voteMinDuration } )
 
 # @checkDebug
 # def saveDrawing2(request, clientId, date, pathPks, title, description):
@@ -1088,22 +1233,22 @@ def saveDrawing(request, clientId, cityName, date, title, description=None, poin
 # 	points = [ [xMin, yMin], [xMax, yMin], [xMax, yMax], [xMin, yMax], [xMin, yMin] ]
 
 # 	try:
-# 		d = Drawing(clientId=clientId, city=city, planetX=planetX, planetY=planetY, box=[points], owner=request.user.username, paths=paths, date=datetime.datetime.fromtimestamp(date/1000.0), title=title, description=description)
-# 		d.save()
+# 		drawing = Drawing(clientId=clientId, city=city, planetX=planetX, planetY=planetY, box=[points], owner=request.user.username, paths=paths, date=datetime.datetime.fromtimestamp(date/1000.0), title=title, description=description)
+# 		drawing.save()
 # 	except NotUniqueError:
 # 		return json.dumps({'state': 'error', 'message': 'A drawing with this name already exists.'})
 
 # 	pathPks = []
 # 	for path in paths:
-# 		path.drawing = d
+# 		path.drawing = drawing
 # 		path.isDraft = False
 # 		path.save()
 # 		pathPks.append(str(path.pk))
 
-# 	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk), 'pathPks': pathPks, 'negativeVoteThreshold': negativeVoteThreshold, 'positiveVoteThreshold': positiveVoteThreshold, 'voteMinDuration': voteMinDuration.total_seconds() } )
+# 	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(drawing.pk), 'pathPks': pathPks, 'negativeVoteThreshold': negativeVoteThreshold, 'positiveVoteThreshold': positiveVoteThreshold, 'voteMinDuration': voteMinDuration.total_seconds() } )
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def submitDrawing(request, pk, clientId, svg, date, bounds, title=None, description=None, png=None):
 
 	if not request.user.is_authenticated():
@@ -1115,43 +1260,41 @@ def submitDrawing(request, pk, clientId, svg, date, bounds, title=None, descript
 		return json.dumps( { 'status': 'error', 'message': 'The user profile does not exist.' } )
 	
 	if userProfile.banned:
-		return json.dumps({'state': 'error', 'message': 'User is banned.'})
+		return json.dumps({'state': 'error', 'message': 'Your account has been suspended'})
 
 	if not emailIsConfirmed(request, userProfile):
 		return json.dumps({'state': 'error', 'message': 'Please confirm your email'})
 
-	d = getDrawing(pk, clientId)
+	drawing = getDrawing(pk, clientId)
 
-	if d is None:
+	if drawing is None:
 		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
 	
 	try:
-		city = City.objects.get(pk=d.city)
+		city = City.objects.get(pk=drawing.city)
 		if city.finished:
 			return json.dumps({'state': 'info', 'message': "The city is finished"})
 	except City.DoesNotExist:
 		return json.dumps({'state': 'info', 'message': "The city is does not exist"})
 
-	d.svg = svg
-	d.date = datetime.datetime.fromtimestamp(date/1000.0)
+	drawing.svg = svg
+	drawing.date = datetime.datetime.fromtimestamp(date/1000.0)
 
-	d.status = 'pending'
-	d.title = title
-	d.description = description
+	drawing.status = 'pending'
+	drawing.title = title
+	drawing.description = description
 
-	d.box = makeBoxFromBounds(city, bounds)
-	# d.bounds = json.dumps(bounds)
-	# d.left = int(floor(bounds['x'] / 1000))
-	# d.top = int(floor(bounds['y'] / 1000))
+	drawing.box = makeBoxFromBounds(city, bounds)
+	# drawing.bounds = json.dumps(bounds)
+	# drawing.left = int(floor(bounds['x'] / 1000))
+	# drawing.top = int(floor(bounds['y'] / 1000))
 	
-	# send_mail('[Comme un dessein] submitDrawing pending', u'submitDrawing pending ' + str(d.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+	# send_mail('[Comme un dessein] submitDrawing pending', u'submitDrawing pending ' + str(drawing.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 
 	try:
-		d.save()
+		drawing.save()
 	except NotUniqueError:
 		return json.dumps({'state': 'error', 'message': 'A drawing with this name already exists.'})
-
-	# import pdb; pdb.set_trace()
 	
 	# Save image
 	imgstr = re.search(r'base64,(.*)', png).group(1)
@@ -1166,18 +1309,18 @@ def submitDrawing(request, pk, clientId, svg, date, bounds, title=None, descript
 	svgFile.write(svg)
 	svgFile.close()
 
-	drawingChanged.send(sender=None, type='new', clientId=d.clientId, pk=str(d.pk), svg=d.svg, city=city.name, itemType='drawing', bounds=bounds)
+	drawingChanged.send(sender=None, type='new', clientId=drawing.clientId, pk=str(drawing.pk), svg=drawing.svg, city=city.name, itemType='drawing', bounds=bounds)
 
-	send_mail('[Espero] New drawing', u'A new drawing has been submitted: https://commeundessein.co/drawing-'+str(d.pk) + u'\nsee thumbnail at: https://commeundessein.co/static/drawings/'+str(d.pk)+u'.png', 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+	send_mail('[Espero] New drawing', u'A new drawing has been submitted: https://commeundessein.co/drawing-'+str(drawing.pk) + u'\nsee thumbnail at: https://commeundessein.co/static/drawings/'+str(drawing.pk)+u'.png', 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 
-	thread = Thread(target = createDrawingDiscussion, args = (d,))
+	thread = Thread(target = createDrawingDiscussion, args = (drawing,))
 	thread.start()
 	thread.join()
 
-	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(d.pk), 'status': d.status, 'negativeVoteThreshold': city.negativeVoteThreshold, 'positiveVoteThreshold': city.positiveVoteThreshold, 'voteMinDuration': city.voteMinDuration } )
+	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(drawing.pk), 'status': drawing.status, 'negativeVoteThreshold': city.negativeVoteThreshold, 'positiveVoteThreshold': city.positiveVoteThreshold, 'voteMinDuration': city.voteMinDuration } )
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def submitTile(request, number, x, y, bounds, clientId, cityName):
 
 	if not request.user.is_authenticated():
@@ -1189,7 +1332,7 @@ def submitTile(request, number, x, y, bounds, clientId, cityName):
 		return json.dumps( { 'status': 'error', 'message': 'The user profile does not exist.' } )
 	
 	if userProfile.banned:
-		return json.dumps({'state': 'error', 'message': 'User is banned.'})
+		return json.dumps({'state': 'error', 'message': 'Your account has been suspended'})
 
 	if not emailIsConfirmed(request, userProfile):
 		return json.dumps({'state': 'error', 'message': 'Please confirm your email'})
@@ -1217,9 +1360,9 @@ def submitTile(request, number, x, y, bounds, clientId, cityName):
 
 	drawingChanged.send(sender=None, type='new', clientId=tile.clientId, pk=str(tile.pk), city=cityName, itemType='tile', bounds=bounds)
 
-	# send_mail('[Espero] New drawing', u'A new drawing has been submitted: https://commeundessein.co/drawing-'+str(d.pk) + u'\nsee thumbnail at: https://commeundessein.co/static/drawings/'+str(d.pk)+u'.png', 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+	# send_mail('[Espero] New drawing', u'A new drawing has been submitted: https://commeundessein.co/drawing-'+str(drawing.pk) + u'\nsee thumbnail at: https://commeundessein.co/static/drawings/'+str(drawing.pk)+u'.png', 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 
-	# thread = Thread(target = createDrawingDiscussion, args = (d,))
+	# thread = Thread(target = createDrawingDiscussion, args = (drawing,))
 	# thread.start()
 	# thread.join()
 
@@ -1253,39 +1396,39 @@ def createDrawingDiscussion(drawing):
 # 	else:
 # 		return json.dumps({"status": "error", "message": "deprecated function: no need to validate drawings anymore."})
 
-# 	d = getDrawing(pk, None)
+# 	drawing = getDrawing(pk, None)
 
-# 	if d is None:
+# 	if drawing is None:
 # 		return json.dumps({'state': 'error', 'message': 'Drawing does not exist'})
 
-# 	if d.status != 'notConfirmed':
-# 		return json.dumps({'state': 'error', 'message': 'Drawing status is not notConfirmed: ' + d.status })
+# 	if drawing.status != 'notConfirmed':
+# 		return json.dumps({'state': 'error', 'message': 'Drawing status is not notConfirmed: ' + drawing.status })
 
 # 	try:
-# 		userProfile = UserProfile.objects.get(username=d.owner)
+# 		userProfile = UserProfile.objects.get(username=drawing.owner)
 # 	except userProfile.DoesNotExist:
 # 		return json.dumps( { 'status': 'error', 'message': 'The user profile does not exist.' } )
 
 # 	if userProfile.emailConfirmed:
-# 		d.status = 'pending'
-# 		# send_mail('[Comme un dessein] validateDrawing', u'validateDrawing pending ' + str(d.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+# 		drawing.status = 'pending'
+# 		# send_mail('[Comme un dessein] validateDrawing', u'validateDrawing pending ' + str(drawing.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 # 		cityName = 'Wetu'
 # 		try:
-# 			city = City.objects.get(pk=d.city)
+# 			city = City.objects.get(pk=drawing.city)
 # 			cityName = city.name
 # 		except City.DoesNotExist:
 # 			print('The city does not exist')
-# 		drawingChanged.send(sender=None, type='new', clientId=d.clientId, pk=str(d.pk), svg=d.svg, city=cityName)
+# 		drawingChanged.send(sender=None, type='new', clientId=drawing.clientId, pk=str(drawing.pk), svg=drawing.svg, city=cityName)
 # 	else:
-# 		# send_mail('[Comme un dessein] validateDrawing', u'validateDrawing emailNotConfirmed ' + str(d.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
-# 		d.status = 'emailNotConfirmed'
+# 		# send_mail('[Comme un dessein] validateDrawing', u'validateDrawing emailNotConfirmed ' + str(drawing.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+# 		drawing.status = 'emailNotConfirmed'
 
-# 	d.save()
+# 	drawing.save()
 # 	return json.dumps( {'state': 'success'} )
 
-@checkDebug
 @checkSimulateSlowResponse
-def bannUser(request, username, removeDrawings=False, removeVotes=False, removeComments=False):
+@checkDebug
+def bannUser(request, username, reportDrawings=False, reportTiles=False, removeVotes=False, removeComments=False):
 	if not isAdmin(request.user):
 		return json.dumps({"status": "error", "message": "not_admin"})
 	try:
@@ -1295,24 +1438,27 @@ def bannUser(request, username, removeDrawings=False, removeVotes=False, removeC
 
 	userProfile.banned = True
 
-	if removeDrawings:
+	if reportDrawings:
 		drawings = Drawing.objects(owner=userProfile.username)
 		for drawing in drawings:
-			drawing.delete()
+			reportAbuse(request, drawing.pk, 'drawing')
+
+	if reportTiles:
+		tiles = Tile.objects(owner=userProfile.username)
+		for tile in tiles:
+			reportAbuse(request, tile.pk, 'tile')
 
 	if removeVotes:
 		for vote in userProfile.votes[:]:
 			if isinstance(vote, Vote):
 				try:
-					vote.author.votes.remove(vote)
-				except DoesNotExist:
-					pass
-				try:
 					vote.drawing.votes.remove(vote)
+					vote.drawing.save()
 				except DoesNotExist:
 					pass
 				try:
 					vote.tile.votes.remove(vote)
+					vote.tile.save()
 				except DoesNotExist:
 					pass
 				vote.delete()
@@ -1321,23 +1467,23 @@ def bannUser(request, username, removeDrawings=False, removeVotes=False, removeC
 		for comment in userProfile.comments[:]:
 			if isinstance(comment, Comment):
 				try:
-					comment.author.comments.remove(comment)
-				except DoesNotExist:
-					pass
-				try:
 					comment.drawing.comments.remove(comment)
+					comment.drawing.save()
 				except DoesNotExist:
 					pass
 				try:
 					comment.tile.comments.remove(comment)
+					comment.tile.save()
 				except DoesNotExist:
 					pass
 				comment.delete()
 
+	userProfile.save()
+
 	return json.dumps( {'state': 'success'} )
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def createUsers(request, logins):
 
 	if not isAdmin(request.user):
@@ -1368,8 +1514,8 @@ def createUsers(request, logins):
 
 	return json.dumps( {'state': 'success'} )
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def reportAbuse(request, pk, itemType='drawing'):
 
 	if not request.user.is_authenticated():
@@ -1385,66 +1531,69 @@ def reportAbuse(request, pk, itemType='drawing'):
 
 	if not userProfile.emailConfirmed:
 		return json.dumps({"status": "error", "message": "Your email must be confirmed to report an abuse."})
+	
+	if userProfile.banned:
+		return json.dumps({'state': 'error', 'message': 'Your account has been suspended'})
 
 	if itemType == 'drawing':
 		try:
-			d = Drawing.objects.get(pk=pk)
+			item = Drawing.objects.get(pk=pk)
 		except Drawing.DoesNotExist:
 			return json.dumps({'state': 'error', 'message': 'Element does not exist'})
 	else:
 		try:
-			d = Tile.objects.get(pk=pk)
+			item = Tile.objects.get(pk=pk)
 		except Tile.DoesNotExist:
 			return json.dumps({'state': 'error', 'message': 'Element does not exist'})
 
 	try:
-		city = City.objects.get(pk=d.city)
+		city = City.objects.get(pk=item.city)
 		if city.finished:
 			return json.dumps({'state': 'info', 'message': "The installation is over"})
 	except City.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': "The city does not exist"})
 
-	if d.status != 'flagged_pending' and d.status != 'flagged':
-		d.previousStatus = d.status
+	if item.status != 'flagged_pending' and item.status != 'flagged':
+		item.previousStatus = item.status
 
-	wasFlaggedPending = d.status == 'flagged_pending'
+	wasFlaggedPending = item.status == 'flagged_pending'
 	
 	if userProfile.admin:
-		d.status = 'flagged'
+		item.status = 'flagged'
 		try:
-			drawingOwner = UserProfile.objects.get(username=d.owner)
+			drawingOwner = UserProfile.objects.get(username=item.owner)
 			drawingOwner.nAbuses += 1
 			drawingOwner.save()
 		except UserProfile.DoesNotExist:
 			pass
 	else:
-		d.status = 'flagged_pending'
-	# send_mail('[Comme un dessein] reportAbuse', u'reportAbuse flagged ' + str(d.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
-	d.abuseReporter = request.user.username
-	d.save()
+		item.status = 'flagged_pending'
+	# send_mail('[Comme un dessein] reportAbuse', u'reportAbuse flagged ' + str(item.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+	item.abuseReporter = request.user.username
+	item.save()
 
 	if itemType == 'drawing' and not wasFlaggedPending: 	# if status was flagged_pending: the drawing was removed when the user flagged it
-		layerName = 'inactive' if d.previousStatus == 'rejected' else 'active'
-		removeDrawingFromRasters(city, d, layerName)
+		layerName = 'inactive' if item.previousStatus == 'rejected' else 'active'
+		removeDrawingFromRasters(city, item, layerName)
 	
 	emailOfDrawingOwner = ''
 	try:
-		ownerOfDrawing = User.objects.get(username=d.owner)
+		ownerOfDrawing = User.objects.get(username=item.owner)
 		emailOfDrawingOwner = ownerOfDrawing.email
 	except User.DoesNotExist:
 		print('OwnerOfDrawing does not exist.')
 
 	if itemType == 'drawing':
-		send_mail('[Espero] Abuse report !', u'The drawing \"' + d.title + u'\" has been reported on Comme un Dessein !\n\nVerify it on https://commeundessein.co/drawing-'+str(d.pk)+u'\nAuthor of the report: ' + request.user.username + u', email: ' + request.user.email + u'\nAuthor of the flagged drawing: ' + d.owner + ', email: ' + emailOfDrawingOwner, 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+		send_mail('[Espero] Abuse report !', u'The drawing \"' + item.title + u'\" has been reported on Comme un Dessein !\n\nVerify it on https://commeundessein.co/drawing-'+str(item.pk)+u'\nAuthor of the report: ' + request.user.username + u', email: ' + request.user.email + u'\nAuthor of the flagged drawing: ' + item.owner + ', email: ' + emailOfDrawingOwner, 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 	else:
-		send_mail('[Espero] Abuse report !', u'The tile \"' + str(d.number) + u'\" has been reported on Comme un Dessein !\n\nVerify it on https://commeundessein.co/drawing-'+str(d.pk)+u'\nAuthor of the report: ' + request.user.username + u', email: ' + request.user.email + u'\nAuthor of the flagged drawing: ' + d.owner + ', email: ' + emailOfDrawingOwner, 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+		send_mail('[Espero] Abuse report !', u'The tile \"' + str(item.number) + u'\" has been reported on Comme un Dessein !\n\nVerify it on https://commeundessein.co/drawing-'+str(item.pk)+u'\nAuthor of the report: ' + request.user.username + u', email: ' + request.user.email + u'\nAuthor of the flagged drawing: ' + item.owner + ', email: ' + emailOfDrawingOwner, 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 
-	drawingChanged.send(sender=None, type='status', clientId=d.clientId, status=d.status, pk=str(d.pk), itemType=itemType, bounds=makeBoundsFromBox(city, d.box))
+	drawingChanged.send(sender=None, type='status', clientId=item.clientId, status=item.status, pk=str(item.pk), itemType=itemType, bounds=makeBoundsFromBox(city, item.box))
 
 	return json.dumps( {'state': 'success'} )
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def cancelAbuse(request, pk, itemType='drawing'):
 
 	if not request.user.is_authenticated():
@@ -1484,8 +1633,8 @@ def cancelAbuse(request, pk, itemType='drawing'):
 
 	return json.dumps( {'state': 'success'} )
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def deleteUsers(request, logins):
 	if not isAdmin(request.user):
 		return json.dumps({"status": "error", "message": "not_admin"})
@@ -1516,8 +1665,8 @@ def deleteUsers(request, logins):
   			pass
 	return json.dumps( {'state': 'success'} )
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def createDrawingThumbnail(request, pk, png=None):
 	
 	if not isAdmin(request.user):
@@ -1530,51 +1679,53 @@ def createDrawingThumbnail(request, pk, png=None):
 	return
 
 # @dajaxice_register
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def loadDrawing(request, pk, loadSVG=False, loadVotes=True, svgOnly=False, loadPathList=False):
 	try:
-		drawingSet = Drawing.objects.only('pk')
+		fields = ['pk']
 		if not svgOnly:
-			drawingSet = drawingSet.only('status', 'clientId', 'title', 'owner', 'discussionId', 'box')
+			fields += ['status', 'clientId', 'title', 'owner', 'discussionId', 'box']
 		if loadSVG or svgOnly:
-			drawingSet = drawingSet.only('svg')
+			fields.append('svg')
 		if loadVotes:
-			drawingSet = drawingSet.only('votes')
+			fields.append('votes')
 		if loadPathList:
-			drawingSet = drawingSet.only('pathList')
-		d = drawingSet.get(pk=pk)
+			fields.append('pathList')
+
+		drawing = Drawing.objects.only(*fields).get(pk=pk)
 	except Drawing.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
 	
 	votes = []
 	
-	if loadVotes:
-		for vote in d.votes:
+	if loadVotes and drawing.votes:
+
+		for vote in drawing.votes:
 			if isinstance(vote, Vote):
 				try:
 					votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk), 'emailConfirmed': vote.author.emailConfirmed } )
 				except DoesNotExist:
 					pass
 
-	return json.dumps( {'state': 'success', 'votes': votes, 'drawing': d.to_json() } )
+	return json.dumps( {'state': 'success', 'votes': votes, 'drawing': drawing.to_json() } )
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def loadTile(request, pk, loadVotes=True):
 	try:
-		tileSet = Tile.objects.only('pk', 'clientId', 'author', 'number', 'x', 'y', 'status', 'photoURL', 'dueDate', 'placementDate')
+		fields = ['pk', 'clientId', 'author', 'number', 'x', 'y', 'status', 'photoURL', 'dueDate', 'placementDate']
 
 		if loadVotes:
-			tileSet = tileSet.only('votes')
+			fields.append('votes')
 
-		tile = tileSet.get(pk=pk)
+		tile = Tile.objects.only(*fields).get(pk=pk)
 	except Tile.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
 	
 	votes = []
 	
-	if loadVotes:
+	if loadVotes and tile.votes:
 		for vote in tile.votes:
 			if isinstance(vote, Vote):
 				try:
@@ -1584,23 +1735,23 @@ def loadTile(request, pk, loadVotes=True):
 
 	return json.dumps( {'state': 'success', 'votes': votes, 'tile': tile.to_json(), 'tile_author': tile.author.username } )
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def loadTimelapse(request, pks):
 	
-	drawings = Drawing.objects(pk__in=pks, status__in=['rejected', 'drawn', 'drawing', 'pending']).only('pk', 'status', 'votes')
+	drawings = Drawing.objects(pk__in=pks, status__in=['rejected', 'drawn', 'drawing', 'validated', 'pending']).only('pk', 'status', 'votes')
 
 	results = []
 	
-	for d in drawings:
+	for drawing in drawings:
 		votes = []
-		for vote in d.votes:
+		for vote in drawing.votes:
 			if isinstance(vote, Vote):
 				try:
 					votes.append( { 'vote': vote.to_json(), 'author': vote.author.username, 'authorPk': str(vote.author.pk), 'emailConfirmed': vote.author.emailConfirmed } )
 				except DoesNotExist:
 					pass
-		result = { 'pk': str(d.pk), 'votes': votes, 'status': d.status }
+		result = { 'pk': str(drawing.pk), 'votes': votes, 'status': drawing.status }
 		results.append(result)
 
 	# file = json.dumps( {'state': 'success', 'results': results }, indent=4 )
@@ -1610,8 +1761,8 @@ def loadTimelapse(request, pks):
 
 	return json.dumps( {'state': 'success', 'results': results } )
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def getDrawingDiscussionId(request, pk):
 	try:
 		drawing = Drawing.objects.only('discussionId').get(pk=pk)
@@ -1620,8 +1771,8 @@ def getDrawingDiscussionId(request, pk):
 
 	return  json.dumps( {'state': 'success', 'drawing': drawing.to_json() } )
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def loadComments(request, itemPk, itemType='drawing'):
 	
 	if itemType == 'tile':
@@ -1646,13 +1797,17 @@ def loadComments(request, itemPk, itemType='drawing'):
 
 	return json.dumps( {'state': 'success', 'comments': comments } )
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def loadDrawings(request, pks, loadSVG=False):
 	try:
-		drawings = Drawing.objects(pk__in=pks).only('status', 'pk', 'clientId', 'title', 'owner', 'votes')
+		fields = ['status', 'pk', 'clientId', 'title', 'owner', 'votes']
+		
 		if loadSVG:
-			d = d.only('svg')
+			fields.append('svg')
+
+		drawings = Drawing.objects(pk__in=pks).only(*fields)
+
 	except Drawing.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
 
@@ -1669,8 +1824,8 @@ def loadDrawings(request, pks, loadSVG=False):
 	return json.dumps( { 'items': items } )
 
 # @dajaxice_register
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def updateDrawing(request, pk, title, description=None):
 
 	if not request.user.is_authenticated():
@@ -1682,37 +1837,37 @@ def updateDrawing(request, pk, title, description=None):
 		return json.dumps({'state': 'error', 'message': 'The user profile does not exist.'})
 	
 	if user.banned:
-		return json.dumps({'state': 'error', 'message': 'User is banned.'})
+		return json.dumps({'state': 'error', 'message': 'Your account has been suspended'})
 
 	try:
-		d = Drawing.objects.get(pk=pk)
+		drawing = Drawing.objects.get(pk=pk)
 	except Drawing.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
 
 	try:
-		city = City.objects.get(pk=d.city)
+		city = City.objects.get(pk=drawing.city)
 		if city.finished:
 			return json.dumps({'state': 'info', 'message': "The installation is over"})
 	except City.DoesNotExist:
 		pass
 
-	if not userAllowed(request, d.owner):
+	if not userAllowed(request, drawing.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
 	
-	if isDrawingStatusValidated(d):
+	if isDrawingStatusValidated(drawing):
 		return json.dumps({'state': 'error', 'message': 'The drawing is already validated, it cannot be modified anymore.'})
 
-	d.title = title
+	drawing.title = title
 	
 	if description:
-		d.description = description
+		drawing.description = description
 
 	try:
-		d.save()
+		drawing.save()
 	except NotUniqueError:
 		return json.dumps({'state': 'error', 'message': 'A drawing with this name already exists.'})
 
-	drawingChanged.send(sender=None, type='title', clientId=d.clientId, title=title, description=description, itemType='drawing')
+	drawingChanged.send(sender=None, type='title', clientId=drawing.clientId, title=title, description=description, itemType='drawing')
 
 	return json.dumps( {'state': 'success' } )
 
@@ -1721,59 +1876,59 @@ def getDrawing(pk=None, clientId=None):
 	if pk is None and clientId is None:
 		return None
 
-	d = None
+	drawing = None
 
 	if pk:
 		try:
-			d = Drawing.objects.get(pk=pk)
+			drawing = Drawing.objects.get(pk=pk)
 		except Drawing.DoesNotExist:
 			if not clientId:
 				return None
 	
-	if d is None and clientId:
+	if drawing is None and clientId:
 		try:
-			d = Drawing.objects.get(clientId=clientId)
+			drawing = Drawing.objects.get(clientId=clientId)
 		except Drawing.DoesNotExist:
 			return None
 
-	return d
+	return drawing
 
 # @dajaxice_register
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def addPathToDrawing(request, points, data, bounds, pk=None, clientId=None):
 	
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
 
-	d = getDrawing(pk, clientId)
+	drawing = getDrawing(pk, clientId)
 
-	if d is None:
+	if drawing is None:
 		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
 
-	if not userAllowed(request, d.owner):
+	if not userAllowed(request, drawing.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
 
-	if d.status != 'draft':
+	if drawing.status != 'draft':
 		return json.dumps({'state': 'error', 'message': 'The drawing is not a draft, it cannot be modified anymore.'})
 
 	try:
-		city = City.objects.get(pk=d.city)
+		city = City.objects.get(pk=drawing.city)
 		if city.finished:
 			return json.dumps({'state': 'info', 'message': "The installation is over"})
 	except City.DoesNotExist:
 		pass
 
-	d.pathList.append(json.dumps({ 'points': points, 'data': data }))
+	drawing.pathList.append(json.dumps({ 'points': points, 'data': data }))
 	
-	d.box = makeBoxFromBounds(city, bounds)
+	drawing.box = makeBoxFromBounds(city, bounds)
 
-	d.save()
+	drawing.save()
 
 	return json.dumps( {'state': 'success' } )
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def addPathsToDrawing(request, pointLists, bounds, pk=None, clientId=None):
 
 	if not request.user.is_authenticated():
@@ -1782,35 +1937,35 @@ def addPathsToDrawing(request, pointLists, bounds, pk=None, clientId=None):
 	if pk is None and clientId is None:
 		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
 
-	d = getDrawing(pk, clientId)
+	drawing = getDrawing(pk, clientId)
 
-	if d is None:
+	if drawing is None:
 		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
 
 	try:
-		city = City.objects.get(pk=d.city)
+		city = City.objects.get(pk=drawing.city)
 		if city.finished:
 			return json.dumps({'state': 'info', 'message': "This installation is over"})
 	except City.DoesNotExist:
 		pass
 
-	if not userAllowed(request, d.owner):
+	if not userAllowed(request, drawing.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
 
-	if d.status != 'draft':
+	if drawing.status != 'draft':
 		return json.dumps({'state': 'error', 'message': 'The drawing is not a draft, it cannot be modified anymore.'})
 
 	for p in pointLists:
-		d.pathList.append(json.dumps({ 'points': p['points'], 'data': p['data'] }))
+		drawing.pathList.append(json.dumps({ 'points': p['points'], 'data': p['data'] }))
 
-	d.box = makeBoxFromBounds(city, bounds)
+	drawing.box = makeBoxFromBounds(city, bounds)
 
-	d.save()
+	drawing.save()
 
 	return json.dumps( {'state': 'success' } )
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def setPathsToDrawing(request, pointLists, bounds, pk=None, clientId=None):
 	
 	if not request.user.is_authenticated():
@@ -1819,40 +1974,40 @@ def setPathsToDrawing(request, pointLists, bounds, pk=None, clientId=None):
 	if pk is None and clientId is None:
 		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
 
-	d = getDrawing(pk, clientId)
+	drawing = getDrawing(pk, clientId)
 
-	if d is None:
+	if drawing is None:
 		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
 
 	try:
-		city = City.objects.get(pk=d.city)
+		city = City.objects.get(pk=drawing.city)
 		if city.finished:
 			return json.dumps({'state': 'info', 'message': "The installation is over"})
 	except City.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': "The city does not exist"})
 
-	if not userAllowed(request, d.owner):
+	if not userAllowed(request, drawing.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
 
-	if d.status != 'draft':
+	if drawing.status != 'draft':
 		return json.dumps({'state': 'error', 'message': 'The drawing is not a draft, it cannot be modified anymore.'})
 
-	d.pathList = []
+	drawing.pathList = []
 
 	for p in pointLists:
-		d.pathList.append(json.dumps({ 'points': p['points'], 'data': p['data'] }))
+		drawing.pathList.append(json.dumps({ 'points': p['points'], 'data': p['data'] }))
 
 	if bounds:
-		d.box = makeBoxFromBounds(city, bounds)
+		drawing.box = makeBoxFromBounds(city, bounds)
 
-	d.box = None
+	drawing.box = None
 
-	d.save()
+	drawing.save()
 
 	return json.dumps( {'state': 'success' } )
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def updateDrawings(request):
 	if not isAdmin(request.user):
 		return json.dumps( { 'state': 'error', 'message': 'You must be administrator to update drawings.' } )
@@ -1867,26 +2022,26 @@ def updateDrawings(request):
 		drawing.save()
 	return json.dumps( {'state': 'success' } )
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def updateDrawingBounds(request, pk, bounds, svg):
 	if not isAdmin(request.user):
 		return json.dumps( { 'state': 'error', 'message': 'You must be administrator to update drawings.' } )
 	
 	try:
-		d = Drawing.objects.get(pk=pk)
+		drawing = Drawing.objects.get(pk=pk)
 	except Drawing.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
 
 	try:
-		city = City.objects.get(pk=d.city)
+		city = City.objects.get(pk=drawing.city)
 		if city.finished:
 			return json.dumps({'state': 'info', 'message': "The city is finished"})
 	except City.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': "The city does not exist"})
 
-	d.box = makeBoxFromBounds(city, bounds)
-	d.save()
+	drawing.box = makeBoxFromBounds(city, bounds)
+	drawing.save()
 
 	svgFile = open('Wetu/static/drawings/'+pk+'.svg', 'wb')
 	svgFile.write(svg)
@@ -1894,120 +2049,122 @@ def updateDrawingBounds(request, pk, bounds, svg):
 
 	return json.dumps( {'state': 'success' } )
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def updateDrawingSVG(request, pk, svg):
 	if not isAdmin(request.user):
 		return json.dumps( { 'state': 'error', 'message': 'You must be administrator to update drawings.' } )
 	try:
-		d = Drawing.objects.get(pk=pk)
+		drawing = Drawing.objects.get(pk=pk)
 	except Drawing.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
 
-	d.svg = svg
-	d.save()
+	drawing.svg = svg
+	drawing.save()
 
 	return json.dumps( {'state': 'success' } )
 
 # @dajaxice_register
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def deleteDrawing(request, pk):
 
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
 
 	try:
-		d = Drawing.objects.get(pk=pk)
+		drawing = Drawing.objects.get(pk=pk)
 	except Drawing.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': 'Element does not exist for this user.'})
 
 	try:
-		city = City.objects.get(pk=d.city)
+		city = City.objects.get(pk=drawing.city)
 		if city.finished:
 			return json.dumps({'state': 'info', 'message': "The installation is over"})
 	except City.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': "The city does not exist"})
 
 
-	if not userAllowed(request, d.owner):
+	if not userAllowed(request, drawing.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
 
-	if isDrawingStatusValidated(d):
+	if isDrawingStatusValidated(drawing):
 		return json.dumps({'state': 'error', 'message': 'The drawing is already validated, it cannot be cancelled anymore.'})
 
-	d.delete()
+	drawing.delete()
 
-	drawingChanged.send(sender=None, type='delete', clientId=d.clientId, pk=str(d.pk), itemType='drawing')
+	drawingChanged.send(sender=None, type='delete', clientId=drawing.clientId, pk=str(drawing.pk), itemType='drawing')
 
 	return json.dumps( { 'state': 'success', 'pk': pk } )
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def cancelDrawing(request, pk):
 
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
 
 	try:
-		d = Drawing.objects.get(pk=pk)
+		drawing = Drawing.objects.get(pk=pk)
 	except Drawing.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': 'Element does not exist for this user.'})
 
-	if not userAllowed(request, d.owner):
+	if not userAllowed(request, drawing.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
 	
 	try:
-		city = City.objects.get(pk=d.city)
+		city = City.objects.get(pk=drawing.city)
 		if city.finished:
 			return json.dumps({'state': 'info', 'message': "The installation is over"})
 	except City.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': "The city does not exist"})
 
-	if isDrawingStatusValidated(d):
+	if isDrawingStatusValidated(drawing):
 		return json.dumps({'state': 'error', 'message': 'The drawing is already validated, it cannot be cancelled anymore.'})
 
-	previousStatus = d.status
-	if d.status != 'flagged_pending' and d.status != 'flagged':
-		d.previousStatus = previousStatus
+	previousStatus = drawing.status
+	if drawing.status != 'flagged_pending' and drawing.status != 'flagged':
+		drawing.previousStatus = previousStatus
 
-	d.status = 'draft'
-	# send_mail('[Comme un dessein] cancelDrawing', u'cancelDrawing draft ' + str(d.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
-	d.svg = None
-	d.title = None
+	drawing.status = 'draft'
+	# send_mail('[Comme un dessein] cancelDrawing', u'cancelDrawing draft ' + str(drawing.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+	drawing.svg = None
+	drawing.title = None
 	
 	try:
-		drafts = Drawing.objects(city=d.city, status=['draft'], owner=request.user.username)
+		drafts = Drawing.objects(city=drawing.city, status=['draft'], owner=drawing.owner)
 		for draft in drafts:
 			if len(draft.pathList) > 0:
 				return json.dumps({'state': 'error', 'message': "You must submit your draft before cancelling a drawing"})
 	except Drawing.DoesNotExist:
-		print("No drafts")
+		pass
 
 	# for draft in drafts:
-	# 	d.pathList += draft.pathList
+	# 	drawing.pathList += draft.pathList
 
-	for vote in d.votes[:]:
+	for vote in drawing.votes[:]:
 		vote.author.votes.remove(vote)
-		d.votes.remove(vote)
+		vote.author.save()
+		drawing.votes.remove(vote)
 		vote.delete()
 
-	for comment in d.comments[:]:
+	for comment in drawing.comments[:]:
 		comment.author.comments.remove(comment)
-		d.comments.remove(comment)
+		comment.author.save()
+		drawing.comments.remove(comment)
 		comment.delete()
 
-	d.save()
+	drawing.save()
 
 	layerName = 'inactive' if previousStatus == 'rejected' else 'active'
-	removeDrawingFromRasters(city, d, layerName)
+	removeDrawingFromRasters(city, drawing, layerName)
 
-	drawingChanged.send(sender=None, type='cancel', clientId=d.clientId, pk=str(d.pk), itemType='drawing')
+	drawingChanged.send(sender=None, type='cancel', clientId=drawing.clientId, pk=str(drawing.pk), itemType='drawing')
 
-	return json.dumps( { 'state': 'success', 'pk': pk, 'status': d.status, 'pathList': d.pathList } )
+	return json.dumps( { 'state': 'success', 'pk': pk, 'status': drawing.status, 'pathList': drawing.pathList } )
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def cancelTile(request, pk):
 
 	if not request.user.is_authenticated():
@@ -2034,8 +2191,8 @@ def cancelTile(request, pk):
 
 	return json.dumps( { 'state': 'success', 'tile': tile.to_json() } )
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def deleteDrawings(request, drawingsToDelete, confirm=None):
 	if not isAdmin(request.user):
 		return json.dumps( {'state': 'error', 'message': 'not admin' } )
@@ -2050,8 +2207,9 @@ def deleteDrawings(request, drawingsToDelete, confirm=None):
 
 		try:
 			city = City.objects.get(pk=drawing.city)
-			layerName = 'inactive' if drawing.status == 'rejected' else 'inactive'
-			removeDrawingFromRasters(city, drawing, layerName)
+			if drawing.status != 'flagged_pending' and drawing.status != 'flagged':
+				layerName = 'inactive' if drawing.status == 'rejected' else 'inactive'
+				removeDrawingFromRasters(city, drawing, layerName)
 		except City.DoesNotExist:
 			pass
 
@@ -2061,8 +2219,8 @@ def deleteDrawings(request, drawingsToDelete, confirm=None):
 
 # --- get drafts --- #
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def removeDeadReferences(request):
 
 	if not isAdmin(request.user):
@@ -2176,26 +2334,32 @@ def updateDrawingState(drawingPk=None, drawing=None, unflag=False):
 
 	(nPositiveVotes, nNegativeVotes) = computeVotes(drawing)
 
-	if isDrawingValidated(city, nPositiveVotes, nNegativeVotes):
-		drawing.status = 'drawing'
+	drawingStateChanged = False
+
+	if isDrawingValidated(city, nPositiveVotes, nNegativeVotes) and drawing.status == 'pending':
+		drawing.status = 'validated'
 		drawing.save()
-	elif isDrawingRejected(city, nNegativeVotes):
-		drawingWasActive = drawing.status == 'pending' or drawing.status == 'validated' or drawing.status == 'created' or drawing.status == 'drawing'
+		drawingStateChanged = True
+	elif isDrawingRejected(city, nNegativeVotes) and drawing.status == 'pending':
+		# drawingWasActive = drawing.status == 'pending' or drawing.status == 'validated' or drawing.status == 'created' or drawing.status == 'drawing'
 		drawing.status = 'rejected'
 		drawing.save()
-		if drawingWasActive:
-			removeDrawingFromRasters(city, drawing, 'active')
+		# if drawingWasActive:
+		removeDrawingFromRasters(city, drawing, 'active')
 		updateRastersFromDrawing(city, drawing, 'inactive')
+		drawingStateChanged = True
 	elif (drawing.status == 'flagged' or drawing.status == 'flagged_pending') and unflag: 	# not accepted nor rejected: it was pending
 		drawing.status = drawing.previousStatus
 		drawing.save()
 		layerName = 'inactive' if drawing.status == 'rejected' else 'active'
 		updateRastersFromDrawing(city, drawing, layerName)
+		drawingStateChanged = True
 
-	# send_mail('[Comme un dessein] updateDrawingState', u'updateDrawingState ' + drawing.status + ' ' + str(drawing.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+	if drawingStateChanged:
+		# send_mail('[Comme un dessein] updateDrawingState', u'updateDrawingState ' + drawing.status + ' ' + str(drawing.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 
-	# drawingValidated.send(sender=None, clientId=drawing.clientId, status=drawing.status)
-	drawingChanged.send(sender=None, type='status', clientId=drawing.clientId, status=drawing.status, pk=str(drawing.pk), itemType='drawing', bounds=makeBoundsFromBox(city, drawing.box))
+		# drawingValidated.send(sender=None, clientId=drawing.clientId, status=drawing.status)
+		drawingChanged.send(sender=None, type='status', clientId=drawing.clientId, status=drawing.status, pk=str(drawing.pk), itemType='drawing', bounds=makeBoundsFromBox(city, drawing.box))
 
 	return drawing
 
@@ -2218,36 +2382,41 @@ def updateTileState(tilePk=None, tile=None, unflag=False):
 		return
 
 	(nPositiveVotes, nNegativeVotes) = computeVotes(tile)
+	
+	tileStateChanged = False
 
-	if isTileValidated(city, nPositiveVotes, nNegativeVotes):
+	if isTileValidated(city, nPositiveVotes, nNegativeVotes) and tile.status == 'pending':
 		tile.status = 'validated'
 		tile.save()
-	elif isTileRejected(city, nNegativeVotes):
+		tileStateChanged = True
+	elif isTileRejected(city, nNegativeVotes) and tile.status == 'pending':
 		pk = str(tile.pk)
 		clientId = tile.clientId
 		tile.delete()
 		drawingChanged.send(sender=None, type='cancel', clientId=clientId, pk=pk, itemType='tile')
+		tileStateChanged = True
 		return tile
 	elif (tile.status == 'flagged' or tile.status == 'flagged_pending') and unflag: 	# not accepted nor rejected: it was pending
 		tile.status = tile.previousStatus
 		tile.save()
+		tileStateChanged = True
 
-	# send_mail('[Comme un dessein] updateDrawingState', u'updateDrawingState ' + tile.status + ' ' + str(tile.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+	if tileStateChanged:
+		# send_mail('[Comme un dessein] updateDrawingState', u'updateDrawingState ' + tile.status + ' ' + str(tile.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 
-	# tileValidated.send(sender=None, tileId=tile.clientId, status=tile.status)
-	drawingChanged.send(sender=None, type='status', clientId=tile.clientId, status=tile.status, pk=str(tile.pk), itemType='tile', bounds=makeBoundsFromBox(city, tile.box))
+		# tileValidated.send(sender=None, tileId=tile.clientId, status=tile.status)
+		drawingChanged.send(sender=None, type='status', clientId=tile.clientId, status=tile.status, pk=str(tile.pk), itemType='tile', bounds=makeBoundsFromBox(city, tile.box))
 
 	return tile
 
 def isDrawingStatusValidated(drawing):
-	return drawing.status == 'drawing' or drawing.status == 'drawn'
+	return drawing.status == 'drawing' or drawing.status == 'drawn' or drawing.status == 'validated'
 
 def hasOwnerDisabledEmail(owner):
 	return hasattr(owner, 'disableEmail') and owner.disableEmail
 
-
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def vote(request, pk, date, positive, itemType='drawing'):
 
 	if not request.user.is_authenticated():
@@ -2259,7 +2428,7 @@ def vote(request, pk, date, positive, itemType='drawing'):
 		return json.dumps({'state': 'error', 'message': 'The user does not exist'})
 
 	if user.banned:
-		return json.dumps({'state': 'error', 'message': 'User is banned.'})
+		return json.dumps({'state': 'error', 'message': 'Your account has been suspended'})
 
 	if not emailIsConfirmed(request, user):
 		return json.dumps({'state': 'error', 'message': 'Please confirm your email'})
@@ -2310,7 +2479,9 @@ def vote(request, pk, date, positive, itemType='drawing'):
 					# cancel vote: delete vote and return:
 					author = vote.author.username
 					vote.author.votes.remove(vote)
+					vote.author.save()
 					item.votes.remove(vote)
+					item.save()
 					vote.delete()
 					
 					title = item.title if itemType == 'drawing' else str(item.number)
@@ -2319,7 +2490,9 @@ def vote(request, pk, date, positive, itemType='drawing'):
 				else:
 					# votes are different: delete vote and break (create a new one):
 					vote.author.votes.remove(vote)
+					vote.author.save()
 					item.votes.remove(vote)
+					item.save()
 					vote.delete()
 					break
 		except DoesNotExist:
@@ -2414,27 +2587,27 @@ def vote(request, pk, date, positive, itemType='drawing'):
 
 # 	return json.dumps( {'state': 'success', 'items': items } )
 
-@checkDebug
 @checkSimulateSlowResponse
-def addComment(request, itemPk, comment, date, itemType):
+@checkDebug
+def addComment(request, itemPk, comment, date, itemType, insertAfter=None):
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
 
 	if not emailIsConfirmed(request):
 		return json.dumps({'state': 'error', 'message': 'Please confirm your email'})
 
-	drawing = None
+	item = None
 	if itemType == 'drawing':
 		try:
-			drawing = Drawing.objects.get(pk=itemPk)
+			item = Drawing.objects.get(pk=itemPk)
 		except Drawing.DoesNotExist:
 			return json.dumps({'state': 'error', 'message': 'Drawing does not exist.', 'pk': itemPk})
 
-		if drawing.status == 'draft' or drawing.status == 'emailNotConfirmed' or drawing.status == 'notConfirmed':
+		if item.status == 'draft' or item.status == 'emailNotConfirmed' or item.status == 'notConfirmed':
 			return json.dumps({'state': 'error', 'message': 'Cannot comment on this drawing.'})
 	else:
 		try:
-			drawing = Tile.objects.get(pk=itemPk)
+			item = Tile.objects.get(pk=itemPk)
 		except Tile.DoesNotExist:
 			return json.dumps({'state': 'error', 'message': 'Element does not exist'})
 
@@ -2446,41 +2619,40 @@ def addComment(request, itemPk, comment, date, itemType):
 		return json.dumps({'state': 'error', 'message': 'The user profile does not exist.'})
 	
 	if user.banned:
-		return json.dumps({'state': 'error', 'message': 'User is banned.'})
+		return json.dumps({'state': 'error', 'message': 'Your account has been suspended'})
 
 	emailConfirmed = EmailAddress.objects.filter(user=request.user, verified=True).exists()
 	user.emailConfirmed = emailConfirmed
 
 	if itemType == 'drawing':
-		c = Comment(author=user, drawing=drawing, text=comment, date=datetime.datetime.fromtimestamp(date/1000.0))
+		c = Comment(author=user, drawing=item, text=comment, date=datetime.datetime.fromtimestamp(date/1000.0))
 	else:
-		c = Comment(author=user, tile=drawing, text=comment, date=datetime.datetime.fromtimestamp(date/1000.0))
+		c = Comment(author=user, tile=item, text=comment, date=datetime.datetime.fromtimestamp(date/1000.0))
 	c.save()
 
-	drawing.comments.append(c)
-	drawing.save()
+	item.comments.append(c)
+	item.save()
 
 	user.comments.append(c)
 	user.save()
 	
 	owner = None
 	try:
-		owner = User.objects.get(username=drawing.owner)
+		owner = User.objects.get(username=item.owner)
 	except User.DoesNotExist:
 		print("Owner not found")
 	if owner and not hasOwnerDisabledEmail(owner):
 		if itemType == 'drawing':
-			send_mail('[Espero] ' + request.user.username + u' a commenté votre dessin !', request.user.username + u' a commenté votre dessin \"' + drawing.title + u'\" sur Comme un Dessein !\n\nVisitez le resultat sur https://commeundessein.co/drawing-'+str(drawing.pk)+u'\nMerci d\'avoir participé à Espero,\nLe collectif Indien dans la ville\nhttp://idlv.co/\nidlv.contact@gmail.com', 'contact@commeundessein.co', [owner.email], fail_silently=True)
+			send_mail('[Espero] ' + request.user.username + u' a commenté votre dessin !', request.user.username + u' a commenté votre dessin \"' + item.title + u'\" sur Comme un Dessein !\n\nVisitez le resultat sur https://commeundessein.co/drawing-'+str(item.pk)+u'\nMerci d\'avoir participé à Espero,\nLe collectif Indien dans la ville\nhttp://idlv.co/\nidlv.contact@gmail.com', 'contact@commeundessein.co', [owner.email], fail_silently=True)
 		else:
-			send_mail('[Espero] ' + request.user.username + u' a commenté votre case !', request.user.username + u' a commenté votre case \"' + str(drawing.number) + u'\" sur Comme un Dessein !\n\nVisitez le resultat sur https://commeundessein.co/drawing-'+str(drawing.pk)+u'\nMerci d\'avoir participé à Espero,\nLe collectif Indien dans la ville\nhttp://idlv.co/\nidlv.contact@gmail.com', 'contact@commeundessein.co', [owner.email], fail_silently=True)
+			send_mail('[Espero] ' + request.user.username + u' a commenté votre case !', request.user.username + u' a commenté votre case \"' + str(item.number) + u'\" sur Comme un Dessein !\n\nVisitez le resultat sur https://commeundessein.co/tile-'+str(item.pk)+u'\nMerci d\'avoir participé à Espero,\nLe collectif Indien dans la ville\nhttp://idlv.co/\nidlv.contact@gmail.com', 'contact@commeundessein.co', [owner.email], fail_silently=True)
 
-	# drawingChanged.send(sender=None, type='addComment', clientId=drawing.clientId, pk=str(drawing.pk), itemType=itemType, comment=c.text)
-	
+	drawingChanged.send(sender=None, type='addComment', author=request.user.username, clientId=item.clientId, pk=str(item.pk), itemType=itemType, comment=c.text, commentPk= str(c.pk), date=unix_time_millis(c.date), itemPk= str(item.pk), insertAfter=insertAfter)
 
-	return json.dumps( {'state': 'success', 'author': request.user.username, 'itemPk':str(drawing.pk), 'clientId': drawing.clientId, 'commentPk': str(c.pk), 'comment': c.to_json(), 'emailConfirmed': emailConfirmed, 'itemType': itemType } )
+	return json.dumps( {'state': 'success', 'author': request.user.username, 'itemPk':str(item.pk), 'clientId': item.clientId, 'commentPk': str(c.pk), 'comment': c.to_json(), 'emailConfirmed': emailConfirmed, 'itemType': itemType } )
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def modifyComment(request, commentPk, comment):
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
@@ -2491,7 +2663,7 @@ def modifyComment(request, commentPk, comment):
 		return json.dumps({'state': 'error', 'message': 'The user profile does not exist.'})
 	
 	if user.banned:
-		return json.dumps({'state': 'error', 'message': 'User is banned.'})
+		return json.dumps({'state': 'error', 'message': 'Your account has been suspended'})
 
 	if not emailIsConfirmed(request, user):
 		return json.dumps({'state': 'error', 'message': 'Please confirm your email'})
@@ -2511,10 +2683,13 @@ def modifyComment(request, commentPk, comment):
 	itemPk = str(c.drawing.pk) if c.drawing else str(c.tile.pk)
 	itemType = 'drawing' if c.drawing else 'tile'
 	clientId = c.drawing.clientId if c.drawing else c.tile.clientId
+
+	drawingChanged.send(sender=None, type='modifyComment', clientId=clientId, itemType=itemType, comment=c.text, commentPk=commentPk, itemPk=itemPk)
+
 	return json.dumps( {'state': 'success', 'comment': comment, 'commentPk': str(c.pk), 'itemPk': itemPk, 'clientId': clientId, 'itemType': itemType } )
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def deleteComment(request, commentPk):
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
@@ -2525,7 +2700,7 @@ def deleteComment(request, commentPk):
 		return json.dumps({'state': 'error', 'message': 'The user profile does not exist.'})
 	
 	if user.banned:
-		return json.dumps({'state': 'error', 'message': 'User is banned.'})
+		return json.dumps({'state': 'error', 'message': 'Your account has been suspended'})
 
 	if not emailIsConfirmed(request, user):
 		return json.dumps({'state': 'error', 'message': 'Please confirm your email'})
@@ -2552,11 +2727,14 @@ def deleteComment(request, commentPk):
 	itemPk = str(c.drawing.pk) if c.drawing else str(c.tile.pk)
 	itemType = 'drawing' if c.drawing else 'tile'
 	clientId = c.drawing.clientId if c.drawing else c.tile.clientId
+	
+	drawingChanged.send(sender=None, type='deleteComment', clientId=clientId, itemType=itemType, comment=c.text, commentPk=commentPk, itemPk=itemPk)
+
 	return json.dumps( {'state': 'success', 'commentPk': str(c.pk), 'itemPk': itemPk, 'clientId': clientId, 'itemType': itemType } )
 
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def loadItems(request, itemsToLoad):
 	items = []
 
@@ -2640,8 +2818,8 @@ def loadItems(request, itemsToLoad):
 # 	return  json.dumps( {'state': 'success', 'message': 'no path' } )
 
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def setDrawingStatus(request, pk, status):
 
 	if not isAdmin(request.user):
@@ -2695,8 +2873,8 @@ def setDrawingStatus(request, pk, status):
 # 	return json.dumps( {'state': 'success', 'message': 'Drawing status successfully updated.', 'pk': pk } )
 
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def setDrawingToCity(request, pk, cityName):
 	
 	if not isAdmin(request.user):
@@ -2707,16 +2885,16 @@ def setDrawingToCity(request, pk, cityName):
 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
 
 	try:
-		d = Drawing.objects.get(pk=pk)
+		drawing = Drawing.objects.get(pk=pk)
 	except Drawing.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
 	
-	d.city = str(city.pk)
-	d.save()
+	drawing.city = str(city.pk)
+	drawing.save()
 
-	for path in d.paths:
+	for path in drawing.paths:
 		if isinstance(path, Path):
-			path.city = d.city
+			path.city = drawing.city
 			path.save()
 
 	return json.dumps( {'state': 'success' } )
@@ -2735,7 +2913,6 @@ def intersectRectangles(l1, t1, r1, b1, l2, t2, r2, b2):
 	b = min(b1, b2)
 	return (l, t, r, b)
 
-@checkDebug
 def pasteImage2onImage1(image1, image2, box1, box2, scale = 1):
 
 	union = intersectRectangles(box1[0], box1[1], box1[2], box1[3], box2[0], box2[1], box2[2], box2[3])
@@ -2746,7 +2923,6 @@ def pasteImage2onImage1(image1, image2, box1, box2, scale = 1):
 
 	return image1
 
-@checkDebug
 def blendImages(image1, image2, box1, box2, scale = 1, overwrite = False):
 	if overwrite:
 		return pasteImage2onImage1(image1, image2, box1, box2, scale)
@@ -2762,32 +2938,28 @@ def blendImages(image1, image2, box1, box2, scale = 1, overwrite = False):
 
 	return alpha_composite
 
-@checkDebug
-def getDrawingBounds(city, drawing):
-	drawingBounds = makeBoundsFromBox(city, drawing.box)
-	return [ drawingBounds['x'], drawingBounds['y'], drawingBounds['x'] + drawingBounds['width'], drawingBounds['y'] + drawingBounds['height'] ]
-
-@checkDebug
 def boundsOverlap(b1, b2):
-	ileft = max(b1[0], b2[0])
-	itop = max(b1[1], b2[1])
-	iright = min(b1[2], b2[2])
-	ibottom = min(b1[3], b2[3])
+	ileft = max(b1['x'], b2['x'])
+	itop = max(b1['y'], b2['y'])
+	iright = min(b1['x'] + b1['width'], b2['x'] + b2['width'])
+	ibottom = min(b1['y'] + b1['height'], b2['y'] + b2['height'])
 
 	if (iright-ileft) <= 0 or (ibottom-itop) <= 0 or (iright-ileft) * (ibottom-itop) <= 0.001:
 		return False
 
 	return True
 
-@checkDebug
+def boundsToBoxList(bounds):
+	return [bounds['x'], bounds['y'], bounds['x'] + bounds['width'], bounds['y'] + bounds['height']]
+
 def removeDrawingFromRasters(city, drawing, rasterType = 'active'):
 	
-	drawingBounds = getDrawingBounds(city, drawing)
+	drawingBounds = makeBoundsFromBox(city, drawing.box)
 
-	imageX = drawingBounds[0]
-	imageY = drawingBounds[1]
-	imageWidth = int(drawingBounds[2] - drawingBounds[0])
-	imageHeight = int(drawingBounds[3] - drawingBounds[1])
+	imageX = drawingBounds['x']
+	imageY = drawingBounds['y']
+	imageWidth = drawingBounds['width']
+	imageHeight = drawingBounds['height']
 	
 	scaleFactor = 4
 
@@ -2808,26 +2980,27 @@ def removeDrawingFromRasters(city, drawing, rasterType = 'active'):
 
 	geometry = makeBoxFromBounds(city, {'x': imageX, 'y': imageY, 'width': imageWidth, 'height': imageHeight})
 
-	overlappingDrawings = Drawing.objects(city=drawing.city, planetX=drawing.planetX, planetY=drawing.planetY, status__in=['pending', 'drawing', 'drawn'], box__geo_intersects=geometry)
-	
-	drawingBounds[0] = l
-	drawingBounds[1] = t
-	drawingBounds[2] = r
-	drawingBounds[3] = b
+	statuses = ['pending', 'drawing', 'drawn', 'validated'] if rasterType == 'active' else ['rejected']
+	overlappingDrawings = Drawing.objects(pk__ne=drawing.pk, city=drawing.city, planetX=drawing.planetX, planetY=drawing.planetY, status__in=statuses, box__geo_intersects=geometry).order_by('+date')
+		
+	drawingBounds['x'] = l
+	drawingBounds['y'] = t
+	drawingBounds['width'] = r - l
+	drawingBounds['height'] = b - t
 
-	for d in overlappingDrawings:
+	for overlappingDrawing in overlappingDrawings:
 
-		dBounds = getDrawingBounds(city, d)
+		dBounds = makeBoundsFromBox(city, overlappingDrawing.box)
 
 		if boundsOverlap(drawingBounds, dBounds):
 
-			imageName = 'Wetu/static/drawings/' + str(d.pk) + '.png'
+			imageName = 'Wetu/static/drawings/' + str(overlappingDrawing.pk) + '.png'
 			try:
 				dImage = Image.open(imageName)
 
-				(clampedImage, dBounds[0], dBounds[1], dBounds[2], dBounds[3]) = createClampedImage(dImage, {'x': dBounds[0], 'y': dBounds[1], 'width': dBounds[2]-dBounds[0], 'height': dBounds[3] - dBounds[1]})
+				(clampedImage, dBounds['x'], dBounds['y'], dBounds['width'], dBounds['height']) = createClampedImage(dImage, dBounds)
 				
-				blendImages(newImage, clampedImage, drawingBounds, dBounds)
+				blendImages(newImage, clampedImage, boundsToBoxList(drawingBounds), boundsToBoxList(dBounds))
 
 			except IOError:
 				pass
@@ -2836,7 +3009,6 @@ def removeDrawingFromRasters(city, drawing, rasterType = 'active'):
 
 	return
 
-@checkDebug
 def updateRasters(imageData, bounds):
 
 	try:
@@ -2846,8 +3018,6 @@ def updateRasters(imageData, bounds):
 
 	return updateRastersFromImage(image, bounds)
 
-
-@checkDebug
 def updateRastersFromDrawing(city, drawing, rasterType = 'active'):
 
 	try:
@@ -2882,7 +3052,6 @@ def createClampedImage(image, bounds, scaleFactor=4):
 
 	return (clampedImage, imageX, imageY, imageWidth, imageHeight)
 
-@checkDebug
 def updateRastersFromImage(image, bounds, overwrite = False, rasterType = 'active'):
 
 	# find top, left, bottom and right positions of the area in the quantized space
@@ -2931,8 +3100,8 @@ def updateRastersFromImage(image, bounds, overwrite = False, rasterType = 'activ
 # --- images --- #
 
 # @dajaxice_register
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def saveImage(request, image):
 
 	imageData = re.search(r'base64,(.*)', image).group(1)
@@ -2960,13 +3129,12 @@ def saveImage(request, image):
 
 	return json.dumps( { 'url': imageName } )
 
-@checkDebug
 @checkSimulateSlowResponse
+@checkDebug
 def submitTilePhoto(request, pk, imageName, dataURL):
 	
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
-
 
 	try:	
 		tile = Tile.objects.get(pk=pk)
@@ -2980,7 +3148,15 @@ def submitTilePhoto(request, pk, imageName, dataURL):
 	except City.DoesNotExist:
 		return json.dumps({'state': 'error', 'message': "The city does not exist"})
 
-	if request.user.username != tile.owner and not isAdmin(request.user):
+	try:
+		user = UserProfile.objects.get(username=request.user.username)
+	except UserProfile.DoesNotExist:
+		return json.dumps({'state': 'error', 'message': 'The user profile does not exist.'})
+	
+	if user.banned:
+		return json.dumps({'state': 'error', 'message': 'Your account has been suspended'})
+
+	if request.user.username != tile.owner and not user.admin:
 		return json.dumps({'state': 'error', 'message': 'Not owner of tile'})
 
 	if tile.status != 'pending':
@@ -2994,6 +3170,7 @@ def submitTilePhoto(request, pk, imageName, dataURL):
 
 	tile.photoURL = imageName+'.jpg'
 	tile.status = 'created'
+	tile.dueDate = datetime.datetime.now()
 	tile.save()
 
 	drawingChanged.send(sender=None, type='status', clientId=tile.clientId, status=tile.status, pk=str(tile.pk), city=city.name, itemType='tile', photoURL=tile.photoURL, bounds=makeBoundsFromBox(city, tile.box))
@@ -3011,3 +3188,4 @@ def submitTilePhoto(request, pk, imageName, dataURL):
 # 	output.close()
 
 # 	return json.dumps( { 'url': imageName } )
+

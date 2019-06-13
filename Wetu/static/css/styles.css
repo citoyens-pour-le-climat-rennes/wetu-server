@@ -345,7 +345,7 @@ body.line #FavoriteTools ul.tool-list .tool-btn img {
   height: 42px;
 }
 body.line #FavoriteTools ul.tool-list .tool-btn span.glyphicon {
-  line-height: 42px;
+  line-height: 32px;
 }
 body.line #FavoriteTools ul.tool-list .tool-btn:hover {
   background-color: #0089d9;
@@ -450,12 +450,14 @@ body.hand #drawingPanel .container .content .votes button img.hand {
 #FavoriteTools h3.title button .glyphicon-facetime-video {
   margin-right: 5px;
 }
+#FavoriteTools h3.title .small-title {
+  display: none;
+}
 #FavoriteTools ul.tool-list {
   width: 100%;
   float: left;
   list-style-type: none;
   display: flex;
-  flex-wrap: wrap;
   margin: 0;
   padding: 0;
   min-height: 30px;
@@ -476,6 +478,9 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   cursor: pointer;
   float: left;
   padding: 10px;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
 }
 #FavoriteTools ul.tool-list .tool-btn img {
   width: 30px;
@@ -514,7 +519,8 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   display: none;
 }
 #FavoriteTools ul.tool-list .tool-btn.displayName span.tool-name {
-  display: inline-block;
+  display: inline;
+  white-space: nowrap;
   color: white;
   margin-right: 10px;
 }
@@ -987,8 +993,16 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   margin-top: 0;
   border-radius: 0;
   border: none;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding: 20px 10px;
+}
+#user-profile .user-profile .dropdown-menu li a,
+#user-profile #user-login-group .dropdown-menu li a {
+  line-height: 40px;
+}
+#user-profile .user-profile .dropdown-menu li a:hover,
+#user-profile #user-login-group .dropdown-menu li a:hover {
+  background-color: #0089d9;
+  color: white;
 }
 #user-profile .user-profile .username,
 #user-profile #user-login-group .username {
@@ -1387,6 +1401,10 @@ li.tool-btn.selected .favorite-btn {
 }
 .modal.in {
   z-index: 100000;
+}
+.modal .modal-dialog {
+  max-height: 100%;
+  overflow-y: auto;
 }
 .modal .modal-content {
   border-radius: 0;
@@ -2166,7 +2184,8 @@ li.tool-btn.selected .favorite-btn {
   bottom: 0;
   right: 0;
 }
-#loadingBar {
+#loadingBar,
+#dropMessage {
   z-index: 1005;
   display: flex;
   flex-direction: row;
@@ -2181,20 +2200,24 @@ li.tool-btn.selected .favorite-btn {
   background-color: rgba(0, 0, 0, 0.3);
   z-index: 999999;
 }
-#loadingBar .spinnger {
+#loadingBar .spinnger,
+#dropMessage .spinnger {
   position: absolute;
   left: 50%;
   top: 50%;
 }
-#loadingBar .background {
+#loadingBar .background,
+#dropMessage .background {
   background-color: white;
   opacity: 0.8;
   padding: 15px 25px;
 }
-#loadingBar .glyphicon-refresh-animate {
+#loadingBar .glyphicon-refresh-animate,
+#dropMessage .glyphicon-refresh-animate {
   top: 3px;
 }
-#loadingBar span.text {
+#loadingBar span.text,
+#dropMessage span.text {
   margin-left: 10px;
 }
 .form-control {
@@ -2388,19 +2411,23 @@ body.allauth p input[type="email"] {
     margin-right: 0;
   }
 }
-@media (max-width: 1200px) {
+@media (max-width: 1300px) {
+  #FavoriteTools h3.title {
+    display: none;
+  }
   #FavoriteTools #user-profile .username {
     display: none;
   }
   #FavoriteTools #user-profile .dropdown-menu > li > a {
     padding: 3px 5px;
   }
+  #FavoriteTools ul.tool-list.long .tool-btn.displayName span.tool-name {
+    display: none;
+  }
 }
 @media (max-width: 1024px) {
   #FavoriteTools h3.title {
-    width: 68px;
-    font-size: 16px;
-    padding-top: 12px;
+    display: none;
   }
   #FavoriteTools .mode-button .text {
     display: none;
@@ -3209,4 +3236,106 @@ body.timeline-active #CommeUnDessein_alerts.activated .btn.show {
 .tile-info .tile-thumbnail {
   margin-top: 10px;
   margin-bottom: 10px;
+}
+#RItems ul.layers li.layer ul.rPath-list.hide-drawings li[data-id] {
+  display: none;
+}
+form.login {
+  font-family: 'Open Sans', sans-serif;
+}
+form.login label[for="id_login"],
+form.login label[for="id_password"],
+form.login label[for="id_email"],
+form.login label[for="id_username"],
+form.login label[for="id_password1"] {
+  display: none;
+}
+form.login input[type="text"],
+form.login input[type="password"],
+form.login input[type="email"] {
+  color: #666;
+  display: block;
+  width: 100%;
+  margin-bottom: 12px;
+  border: 1px solid #d4d4d4;
+  border-radius: 3px;
+  height: 60px;
+  padding-left: 12px;
+  box-sizing: border-box;
+  -webkit-user-select: auto;
+  -moz-user-select: auto;
+  -ms-user-select: auto;
+  user-select: auto;
+  font-size: 14px;
+  line-height: 30px;
+}
+form.login input[type="text"]:focus,
+form.login input[type="password"]:focus,
+form.login input[type="email"]:focus {
+  border: 1px solid #18a0fb;
+  outline: none;
+}
+form.login button.btn.btn-lg {
+  width: 100%;
+  font-weight: 300;
+  font-size: 18px;
+  height: 60px;
+  background-color: #18a0fb;
+  border-color: #18a0fb;
+  cursor: pointer;
+  border-radius: 3px;
+  color: white;
+}
+form.login button.btn.btn-lg:hover {
+  background-color: #1978c5;
+}
+form.login label {
+  font-weight: 300;
+}
+form.login ul.button-list {
+  list-style-type: none;
+  padding: 0;
+  margin-bottom: 0px;
+}
+form.login ul.button-list li {
+  font-weight: 300;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  cursor: pointer;
+  color: #666;
+  border-radius: 3px;
+  border: 1px solid #aaa;
+  width: 100%;
+  height: 60px;
+  background-color: #fff;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+form.login ul.button-list li a {
+  text-decoration: none;
+  color: #666;
+}
+form.login ul.button-list li a:hover,
+form.login ul.button-list li a:hover:visited {
+  text-decoration: none;
+  color: #666;
+}
+form.login ul.button-list li:hover {
+  background-color: #efefef;
+  box-shadow: inherit;
+}
+form.login ul.button-list li span.title {
+  margin-left: 5px;
+}
+form.login ul.errorlist {
+  list-style: none;
+  padding-left: 10px;
+}
+#cd-form-footer {
+  margin-top: 20px;
+}
+.social-account-buttons {
+  margin-top: 10vh;
 }

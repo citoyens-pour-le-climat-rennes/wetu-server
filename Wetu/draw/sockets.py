@@ -8,7 +8,7 @@ import ast
 from django.core import serializers
 from django.contrib.auth.models import User
 from django.db.models import F
-from models import Path, Box, Div, UserProfile, Drawing
+from models import Drawing
 from ajax import TIPIBOT_PASSWORD, drawingChanged
 from pprint import pprint
 from django.contrib.auth import authenticate, login, logout
@@ -47,33 +47,9 @@ chatNamespace = None
 def on_drawing_changed(sender, **kwargs):
     if kwargs is not None and 'clientId' in kwargs and 'type' in kwargs:
         print "drawing change: " + str(kwargs['type']) + ", " + str(kwargs['clientId'])
-        # chatNamespace.emit_to_room(chatNamespace.room, 'drawing change', {'type': 'status', 'clientId': kwargs['clientId'], 'status': kwargs['status']})
-        args = { 'type': kwargs['type'], 'clientId': kwargs['clientId'] }
-        if 'status' in kwargs:
-            args['status'] = kwargs['status']
-        if 'city' in kwargs:
-            args['city'] = kwargs['city']
-        if 'votes' in kwargs:
-            args['votes'] = kwargs['votes']
-        if 'pk' in kwargs:
-            args['pk'] = kwargs['pk']
-        if 'title' in kwargs:
-            args['title'] = kwargs['title']
-        if 'description' in kwargs:
-            args['description'] = kwargs['description']
-        if 'svg' in kwargs:
-            args['svg'] = kwargs['svg']
-        if 'positive' in kwargs:
-            args['positive'] = kwargs['positive']
-        if 'author' in kwargs:
-            args['author'] = kwargs['author']
-        if 'itemType' in kwargs:
-            args['itemType'] = kwargs['itemType']
-        if 'photoURL' in kwargs:
-            args['photoURL'] = kwargs['photoURL']
-        if 'bounds' in kwargs:
-            args['bounds'] = kwargs['bounds']
-        chatNamespace.broadcast_event('drawing change', args)
+
+        kwargs.pop('signal', None)
+        chatNamespace.broadcast_event('drawing change', kwargs)
 
 @namespace('/chat')
 class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
@@ -221,7 +197,7 @@ class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
 
     def on_bounce(self, data):
         print "bounce: " + str(data)
-        self.emit_to_room(self.room, 'bounce', data)
+        # self.emit_to_room(self.room, 'bounce', data)
 
     def on_drawing_change(self, data):
         print "drawing change: " + str(data)

@@ -141,166 +141,166 @@ class Drawing(Document):
 Drawing.register_delete_rule(Vote, 'drawing', CASCADE)
 Drawing.register_delete_rule(Comment, 'drawing', CASCADE)
 
-class Path(Document):
-    clientId = StringField(required=True, unique=True)
+# class Path(Document):
+#     clientId = StringField(required=True, unique=True)
 
-    city = StringField(required=True)
-    planetX = DecimalField(required=True)
-    planetY = DecimalField(required=True)
-    box = PolygonField(required=True)
-    points = LineStringField()
-    rType = StringField(default='Path')
-    owner = StringField(required=True)
+#     city = StringField(required=True)
+#     planetX = DecimalField(required=True)
+#     planetY = DecimalField(required=True)
+#     box = PolygonField(required=True)
+#     points = LineStringField()
+#     rType = StringField(default='Path')
+#     owner = StringField(required=True)
     
-    date = DateTimeField(default=datetime.datetime.now)
-    lastUpdate = DateTimeField(default=datetime.datetime.now)
-    object_type = StringField(default='brush')
-    lock = StringField(default=None)
-    needUpdate = BooleanField(default=False)
+#     date = DateTimeField(default=datetime.datetime.now)
+#     lastUpdate = DateTimeField(default=datetime.datetime.now)
+#     object_type = StringField(default='brush')
+#     lock = StringField(default=None)
+#     needUpdate = BooleanField(default=False)
 
-    isDraft = BooleanField(default=True)
-    drawing = ReferenceField('Drawing', reverse_delete_rule=NULLIFY)
+#     isDraft = BooleanField(default=True)
+#     drawing = ReferenceField('Drawing', reverse_delete_rule=NULLIFY)
 
-    # areas = ListField(ReferenceField('Area'))
+#     # areas = ListField(ReferenceField('Area'))
 
-    data = StringField(default='')
+#     data = StringField(default='')
 
-    meta = {
-        'indexes': [
-            "city",
-            "drawing",
-            "owner",
-            [ ("planetX", 1), ("planetY", 1), ("points", "2dsphere") ]
-        ]
-    }
+#     meta = {
+#         'indexes': [
+#             "city",
+#             "drawing",
+#             "owner",
+#             [ ("planetX", 1), ("planetY", 1), ("points", "2dsphere") ]
+#         ]
+#     }
 
-Path.register_delete_rule(Drawing, 'paths', PULL)
+# Path.register_delete_rule(Drawing, 'paths', PULL)
 
-class Box(Document):
-    clientId = StringField(required=True, unique=True)
+# class Box(Document):
+#     clientId = StringField(required=True, unique=True)
 
-    city = StringField(required=True)
-    planetX = DecimalField(required=True)
-    planetY = DecimalField(required=True)
-    box = PolygonField(required=True)
-    rType = StringField(default='Box')
-    owner = StringField()
-    date = DateTimeField(default=datetime.datetime.now)
-    lastUpdate = DateTimeField(default=datetime.datetime.now)
-    object_type = StringField()
+#     city = StringField(required=True)
+#     planetX = DecimalField(required=True)
+#     planetY = DecimalField(required=True)
+#     box = PolygonField(required=True)
+#     rType = StringField(default='Box')
+#     owner = StringField()
+#     date = DateTimeField(default=datetime.datetime.now)
+#     lastUpdate = DateTimeField(default=datetime.datetime.now)
+#     object_type = StringField()
 
-    url = URLField(required=True, unique=True)
-    restrictedArea = BooleanField(default=False)
-    disableToolbar = BooleanField(default=False)
-    loadEntireArea = BooleanField(default=False)
+#     url = URLField(required=True, unique=True)
+#     restrictedArea = BooleanField(default=False)
+#     disableToolbar = BooleanField(default=False)
+#     loadEntireArea = BooleanField(default=False)
 
-    # module = ReferenceField('Module')
+#     # module = ReferenceField('Module')
 
-    # deprecated: put in data
-    # url = URLField(verify_exists=True, required=False)
+#     # deprecated: put in data
+#     # url = URLField(verify_exists=True, required=False)
 
-    # message = StringField()
-    # areas = ListField(ReferenceField('Area'))
+#     # message = StringField()
+#     # areas = ListField(ReferenceField('Area'))
 
-    data = StringField(default='')
+#     data = StringField(default='')
 
-    meta = {
-        'indexes': [
-            "city",
-            "owner",
-            [ ("planetX", 1), ("planetY", 1), ("box", "2dsphere") ]
-        ]
-    }
+#     meta = {
+#         'indexes': [
+#             "city",
+#             "owner",
+#             [ ("planetX", 1), ("planetY", 1), ("box", "2dsphere") ]
+#         ]
+#     }
 
-class AreaToUpdate(Document):
-    city = StringField(required=True)
-    planetX = DecimalField(required=True)
-    planetY = DecimalField(required=True)
-    box = PolygonField(required=True)
+# class AreaToUpdate(Document):
+#     city = StringField(required=True)
+#     planetX = DecimalField(required=True)
+#     planetY = DecimalField(required=True)
+#     box = PolygonField(required=True)
 
-    rType = StringField(default='AreaToUpdate')
-    # areas = ListField(ReferenceField('Area'))
+#     rType = StringField(default='AreaToUpdate')
+#     # areas = ListField(ReferenceField('Area'))
 
-    meta = {
-        'indexes': [
-            "city",
-            [ ("planetX", 1), ("planetY", 1), ("box", "2dsphere") ]
-        ]
-    }
+#     meta = {
+#         'indexes': [
+#             "city",
+#             [ ("planetX", 1), ("planetY", 1), ("box", "2dsphere") ]
+#         ]
+#     }
 
-class Div(Document):
-    clientId = StringField(required=True, unique=True)
+# class Div(Document):
+#     clientId = StringField(required=True, unique=True)
 
-    city = StringField(required=True)
-    planetX = DecimalField(required=True)
-    planetY = DecimalField(required=True)
-    box = PolygonField(required=True)
-    rType = StringField(default='Div')
-    owner = StringField()
-    date = DateTimeField(default=datetime.datetime.now)
-    lastUpdate = DateTimeField(default=datetime.datetime.now)
-    object_type = StringField()
-    lock = StringField(default=None)
+#     city = StringField(required=True)
+#     planetX = DecimalField(required=True)
+#     planetY = DecimalField(required=True)
+#     box = PolygonField(required=True)
+#     rType = StringField(default='Div')
+#     owner = StringField()
+#     date = DateTimeField(default=datetime.datetime.now)
+#     lastUpdate = DateTimeField(default=datetime.datetime.now)
+#     object_type = StringField()
+#     lock = StringField(default=None)
 
-    # deprecated: put in data
-    url = StringField(required=False)
-    message = StringField()
+#     # deprecated: put in data
+#     url = StringField(required=False)
+#     message = StringField()
 
-    # areas = ListField(ReferenceField('Area'))
+#     # areas = ListField(ReferenceField('Area'))
 
-    data = StringField(default='')
+#     data = StringField(default='')
 
-    meta = {
-        'indexes': [
-            "city",
-            "owner",
-            [ ("planetX", 1), ("planetY", 1), ("box", "2dsphere") ]
-        ]
-    }
+#     meta = {
+#         'indexes': [
+#             "city",
+#             "owner",
+#             [ ("planetX", 1), ("planetY", 1), ("box", "2dsphere") ]
+#         ]
+#     }
 
-class Tool(Document):
-    name = StringField(unique=True)
-    className = StringField(unique=True)
-    originalName = StringField()
-    originalClassName = StringField()
-    owner = StringField()
-    source = StringField()
-    compiledSource = StringField()
-    nRequests = IntField(default=0)
-    isTool = BooleanField()
-    # requests = ListField(StringField())
-    accepted = BooleanField(default=False)
+# class Tool(Document):
+#     name = StringField(unique=True)
+#     className = StringField(unique=True)
+#     originalName = StringField()
+#     originalClassName = StringField()
+#     owner = StringField()
+#     source = StringField()
+#     compiledSource = StringField()
+#     nRequests = IntField(default=0)
+#     isTool = BooleanField()
+#     # requests = ListField(StringField())
+#     accepted = BooleanField(default=False)
 
-    meta = {
-        'indexes': [ "accepted", "name" ]
-    }
+#     meta = {
+#         'indexes': [ "accepted", "name" ]
+#     }
 
-class Module(Document):
-    name = StringField(unique=True)
-    moduleType = StringField()
-    category = StringField()
-    description = StringField()
-    repoName = StringField(unique=True)
-    owner = StringField()
-    url = StringField()
-    githubURL = URLField()
-    iconURL = StringField()
-    thumbnailURL = StringField()
-    source = StringField()
-    compiledSource = StringField()
-    local = BooleanField()
-    # lock = ReferenceField('Box', required=False)
-    lastUpdate = DateTimeField(default=datetime.datetime.now)
+# class Module(Document):
+#     name = StringField(unique=True)
+#     moduleType = StringField()
+#     category = StringField()
+#     description = StringField()
+#     repoName = StringField(unique=True)
+#     owner = StringField()
+#     url = StringField()
+#     githubURL = URLField()
+#     iconURL = StringField()
+#     thumbnailURL = StringField()
+#     source = StringField()
+#     compiledSource = StringField()
+#     local = BooleanField()
+#     # lock = ReferenceField('Box', required=False)
+#     lastUpdate = DateTimeField(default=datetime.datetime.now)
 
-    accepted = BooleanField(default=False)
+#     accepted = BooleanField(default=False)
 
-    meta = {
-        'indexes': [ "accepted", "moduleType", "name" ]
-    }
+#     meta = {
+#         'indexes': [ "accepted", "moduleType", "name" ]
+#     }
 
 class Site(Document):
     name = StringField(unique=True, required=True)
-    box = ReferenceField(Box, required=True, reverse_delete_rule=CASCADE)
+    # box = ReferenceField(Box, required=True, reverse_delete_rule=CASCADE)
 
     # deprecated: put in data
     restrictedArea = BooleanField(default=False)

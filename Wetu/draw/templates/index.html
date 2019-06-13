@@ -43,6 +43,7 @@
 
     <!-- <link href="https://fonts.googleapis.com/css?family=Amatic+SC|Open+Sans:400,700" rel="stylesheet"> -->
     <link href="https://fonts.googleapis.com/css?family=Mali|Open+Sans:400,700" rel="stylesheet">
+    <!-- <link href="https://fonts.googleapis.com/css?family=Coming+Soon|Open+Sans:400,700&display=swap" rel="stylesheet"> -->
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -66,7 +67,7 @@
     <div id="FavoriteTools" class="cd-row">
       <h3 class="title"> 
         <!-- <img class="title-img" src="{% static 'images/icons/logo48.png' %}" alt="commeUnDessein_logo"/> -->
-        <span><a href="/">Espero</a></span>
+        <a href="/"><span class="big-title">Espero</span><span class="small-title">E</span></a>
         
         <!--
         <a href="https://gaming.youtube.com/watch?v=qlgzIEsSc6w">
@@ -114,6 +115,7 @@
                       {% endif %} </span><span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
+                      <li><a href="" id="modify-user-profile" data-i18n="Profile">Profile</a></li>
                       <li><a href="{% url 'account_logout' %}" data-i18n="Sign Out">Sign Out</a></li>
                     </ul>
                   </div>
@@ -124,19 +126,26 @@
             {% else %}
 
               <div id="user-login-group" class="btn-group">
-                <a href="/connexions/">
+                <!-- <a href="/connexions/"> -->
                   <button type="button" class="btn btn-success submit mode-button log-in dropdown-toggle">
                     <img class="glyphicon" src="{% static 'images/icons/inverted/icones_connexion.png' %}"/> <span class="text" data-i18n="Sign in / up">Sign in / up</span>
                   </button>
-                </a>
+                <!-- </a> -->
+
+
+
                 <!-- <button type="button" class="btn btn-warning submit mode-button log-in dropdown-toggle" data-toggle="dropdown">
-                  <span class="glyphicon glyphicon-log-in"></span><span class="text" data-i18n="Sign in / up">Sign in / up</span>
-                </button> -->
-                <!-- <ul class="dropdown-menu" role="menu">
+                  <img class="glyphicon" src="{% static 'images/icons/inverted/icones_connexion.png' %}"/> <span class="text" data-i18n="Sign in / up">Sign in / up</span>
+ -->
+                  <!-- <span class="glyphicon glyphicon-log-in"></span><span class="text" data-i18n="Sign in / up">Sign in / up</span> -->
+               <!--  </button>
+                <ul class="dropdown-menu" role="menu">
+                  <li>Se connecter avec</li>
                   <li><a href="{% provider_login_url "google" %}">Google</a></li>
-                  <li><a href="{% provider_login_url "github" %}">Github</a></li>
+                  <li><a href="{% provider_login_url "github" %}">Github</a></li> 
                   <li><a href="/accounts/facebook/login/"><div class="fb">Facebook</div></a></li>
                   <li><a href="{% url 'account_login' %}">Comme un Dessein</a></li>
+                  <div class="dropdown-divider"></div>
                   <li class="sign-up"><a href="{% url 'account_signup' %}" data-i18n='Sign up'>Sign up</a></li>
                 </ul> -->
               </div>
@@ -457,7 +466,8 @@
                 <div class="panel panel-default in last-panel about-panel">
 
                   <a href="http://idlv.co/"><img src="static/images/icons/inverted/icones_idlv.png"></a>
-                  <img src="static/images/icons/inverted/icones_CC_NCSABY.png">
+                  <!-- <img src="static/images/icons/inverted/icones_CC_NCSABY.png"> -->
+                  <!-- <div><img src='static/images/icons/cc.svg'></div> -->
                   
                   <!-- <a id="about-link" href="/about.html" data-i18n="About">About</a> -->
                   <a id="terms-of-service-link" href="/terms-of-service.html" data-i18n="Terms of Service" class="cd-link">Terms of Service</a>
@@ -486,7 +496,7 @@
           <div class="hidden text-separator"></div>
 
           <!-- <canvas id="background-canvas" resize hidpi="off"></canvas> -->
-          <canvas id="canvas" resize hidpi="off" data-pos-x="{{ x }}" data-pos-y="{{ y }}" data-points="{{ points }}" data-box="{{ box }}" data-site="{{ site }}" data-message="{{ message }}" data-load-entire-area="{{ loadEntireArea }}" data-city="{{ city }}" data-city-event-date="{{ cityEventDate }}" data-city-event-date="{{ cityEventLocation }}" data-city-finished="{{ cityFinished }}" data-city-message="{{ cityMessage }}" data-city-stroke-width="{{ cityStrokeWidth }}" data-city-width="{{ cityWidth }}" data-city-height="{{ cityHeight }}" data-owner="{{ owner }}" data-is-admin="{{ userIsAdmin }}" data-drawing-pk="{{ drawingPk }}" data-tile-pk="{{ tilePk }}" data-bounds="{{ bounds }}" data-github-login="{{ githubLogin }}" data-username="{{ request.user.username }}" data-is-authenticated="{{ request.user.is_authenticated }}" data-drawing-mode="{{ drawingMode }}" data-positiveVoteThreshold="{{ positiveVoteThreshold }}" data-negativeVoteThreshold="{{ negativeVoteThreshold }}" data-voteMinDuration="{{ voteMinDuration }}"></canvas>
+          <canvas id="canvas" resize hidpi="off" data-pos-x="{{ x }}" data-pos-y="{{ y }}" data-points="{{ points }}" data-box="{{ box }}" data-site="{{ site }}" data-message="{{ message }}" data-load-entire-area="{{ loadEntireArea }}" data-city="{{ city }}" data-city-event-date="{{ cityEventDate }}" data-city-event-date="{{ cityEventLocation }}" data-city-finished="{{ cityFinished }}" data-city-message="{{ cityMessage }}" data-city-stroke-width="{{ cityStrokeWidth }}" data-city-width="{{ cityWidth }}" data-city-height="{{ cityHeight }}" data-owner="{{ owner }}" data-is-admin="{{ userIsAdmin }}" data-drawing-pk="{{ drawingPk }}" data-tile-pk="{{ tilePk }}" data-bounds="{{ bounds }}" data-github-login="{{ githubLogin }}" data-username="{{ request.user.username }}" data-user-email="{{ request.user.email }}" data-email-confirmed="{{ emailConfirmed }}" data-is-authenticated="{{ request.user.is_authenticated }}" data-drawing-mode="{{ drawingMode }}" data-positiveVoteThreshold="{{ positiveVoteThreshold }}" data-negativeVoteThreshold="{{ negativeVoteThreshold }}" data-voteMinDuration="{{ voteMinDuration }}"></canvas>
           <div id="rasters"></div>
 
           <div id="html-view">
@@ -566,7 +576,14 @@
 
                         <a class="cd-large-link" href="http://idlv.co/" target="_blank"><img src="static/images/icons/inverted/icones_idlv.png"></a>
 
-                        <a class="cd-large-link" href="https://creativecommons.org/licenses/by-nc-sa/3.0/fr/" target="_blank"><img src="static/images/icons/inverted/icones_CC_NCSABY.png"> </a>
+                        <a class="cd-large-link" href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">
+                          <!-- <img src="static/images/icons/inverted/icones_CC_NCSABY.png">  -->
+                          <img src='static/images/icons/cc-by-sa.svg'>
+                          <!-- <br> -->
+                          <!-- <span>CC-BY-SA</span> -->
+
+                        </a>
+                        
                         
                         <!-- <a id="about-link" href="/about.html" data-i18n="About">About</a> -->
                         <a class="cd-small-link" id="terms-of-service-link" href="/terms-of-service.html" target="_blank" data-i18n="Terms of Service">Terms of Service</a>
@@ -606,7 +623,7 @@
                           <div class="vote-stat"><span class="vote-stat-title" data-i18n='Number'>Number</span> : <span class="number"></span></div>
                           <div class="vote-stat"><span class="vote-stat-title" data-i18n='Position'>Position</span> : <span class="position"></span></div>
                           <div class="vote-stat"><span class="vote-stat-title" data-i18n='Status'>Status</span> : <span class="status"></span></div>
-                          <div class="vote-stat"><span class="vote-stat-title" data-i18n='This tile must be achieved before the'>This tile must be achieved before the</span> : <span class="display-block due-date"></span></div>
+                          <div class="vote-stat"><span class="vote-stat-title due-date-title" data-i18n='This tile must be achieved before the'>This tile must be achieved before the</span> : <span class="display-block due-date"></span></div>
                           <div class="vote-stat"><span class="vote-stat-title" data-i18n='This tile must be placed the'>This tile must be placed the</span> : <span class="display-block placement-date"></span></div>
                         </div>
 
@@ -878,6 +895,11 @@
         <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> <span class="text" data-i18n='Loading'>Loading</span>...
       </div>
     </div>
+    <!-- <div id="dropMessage" class="">
+      <div class="background">
+        <span class="text" data-i18n='Drop your image here to trace it'>Drop your image here to trace it</span>
+      </div>
+    </div> -->
     <!-- <canvas id="loadingBar"></canvas> -->
     
     <div id="popovers"></div>

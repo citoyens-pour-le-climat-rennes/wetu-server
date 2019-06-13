@@ -23,7 +23,7 @@ urlpatterns = [
     url(r'^tile-(?P<tilePk>[\w]+)$', views.index, {'visit': True}, name='index'),
     url(r'^debug/tile-(?P<tilePk>[\w]+)$', views.index, {'visit': True, 'useDebugFiles': True}, name='index'),
     url(r'^connexion/$', views.connection, name='connection'),
-    url(r'^connexions/$', views.connections, name='connections'),
+    # url(r'^connexions/$', views.connections, name='connections'),
     url(r'^visite', views.index, {'visit': True}, name='index'),
     url(r'^debug-visite', views.index, {'visit': True, 'useDebugFiles': True}, name='index'),
     url(r'^about\.html', views.about),

@@ -169,8 +169,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
         },
@@ -249,8 +247,8 @@ ACCOUNT_EMAIL_REQUIRED = localSettings['ACCOUNT_EMAIL_REQUIRED']
 ACCOUNT_EMAIL_VERIFICATION = localSettings['ACCOUNT_EMAIL_VERIFICATION'] # "mandatory", "optional"
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
-
-ACCOUNT_ADAPTER = 'Wetu.adapter.AccountAdapterCD'
+ACCOUNT_UNIQUE_EMAIL = True 
+# ACCOUNT_ADAPTER = 'Wetu.adapter.AccountAdapterCD'
 
 # ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 
@@ -268,3 +266,5 @@ SOCIALACCOUNT_PROVIDERS = {
         'SCOPE': ['public_repo']
     }
 }
+
+LOCALE_PATHS = [ os.path.join(BASE_DIR, "locale"), ]
