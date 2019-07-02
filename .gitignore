@@ -66,6 +66,7 @@ Wetu/media/
 Wetu/js/*.map
 Wetu/static/libs/
 Wetu/static/docs/
+Wetu/static/videos/
 Wetu/static/node_modules/
 Wetu/static/comme-un-dessein-client/
 Wetu/Wetu/static/

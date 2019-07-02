@@ -3189,3 +3189,93 @@ def submitTilePhoto(request, pk, imageName, dataURL):
 
 # 	return json.dumps( { 'url': imageName } )
 
+EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
+
+def updateAnswerCounts(question, questions, answerValues, removeValues=False):
+
+	while len(question.answerCounts) < len(question.values):
+		question.answerCounts.append(0)
+	valueIndex = 0
+	for value in question.values:
+		if value in answerValues:
+			question.answerCounts[valueIndex] += 1 if not removeValues else -1
+		valueIndex += 1
+
+	questions.append(question)
+	return
+
+
+
+@checkDebug
+def submitSurvey(request, answers, email):
+
+	answerObjects = []
+	questions = []
+
+	alreadyAnswered = False
+
+	if not EMAIL_REGEX.match(email):
+			return json.dumps({"status": "error", "message": "Your email is invalid"})
+
+	printSize = 0
+	printSizes = {
+		'0': 0,
+		'50cm': 0.25,
+		'1m': 1,
+		'2m': 2,
+		'5m': 5,
+		'10m': 10
+	}
+
+	for questionName, answerValues in answers.iteritems():
+		
+		try:
+			question = Question.objects.get(name=questionName)
+		except Question.DoesNotExist:
+			return json.dumps({"status": "error", "message": "Some answers are not valid"})
+
+		answersAreValid = all(answerValue in question.values for answerValue in answerValues)
+		if answersAreValid:
+			try:
+				existingAnswer = Answer.objects.get(question=question, author=email)
+				updateAnswerCounts(question, questions, existingAnswer.values, True)
+				existingAnswer.values = answerValues
+				updateAnswerCounts(question, questions, answerValues)
+				existingAnswer.save()
+				alreadyAnswered = True
+			except Answer.DoesNotExist:
+				answer = Answer(question=question, author=email, values=answerValues)
+				updateAnswerCounts(question, questions, answerValues)
+				answerObjects.append(answer)
+				if questionName == 'print-size':
+					printSize = printSizes[answerValues[0]]
+		else:
+			return json.dumps({"status": "error", "message": "Some answers are not valid"})
+
+	for answer in answerObjects:
+		answer.save()
+
+	for question in questions:
+		question.save()
+
+	if not alreadyAnswered:
+		try:
+			city = City.objects.get(name='rennes')
+			city.nParticipants += 1
+			city.squareMeters += printSize
+			city.save()
+		except City.DoesNotExist:
+			pass
+
+	return json.dumps({"message": "Your participation was successfully updated" if alreadyAnswered else "success"})
+
+def getSurveyResults(request):
+
+	questions = Question.objects.all().order_by('order')
+
+	results = []
+	for question in questions:
+		results.append({ 'name': question.name, 'values': question.values, 'answers': question.answerCounts, 'text': question.text, 'legends': question.legends })
+
+	return json.dumps( results )
+

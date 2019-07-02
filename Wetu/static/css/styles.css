@@ -2,6 +2,7 @@ body {
   background-color: white;
   overflow: hidden;
   font-family: 'Open Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 body .popover {
   font-family: 'Open Sans', sans-serif;
@@ -128,7 +129,7 @@ select:-webkit-autofill {
 .commeUnDessein-ui,
 .commeUnDessein-ui.open {
   background-color: #33383E;
-  font-size: 11px;
+  font-size: 13px;
   color: #eeeeee;
 }
 .commeUnDessein-ui .form-control[readonly],
@@ -330,7 +331,7 @@ h4 {
   font-size: 14px;
 }
 .btn {
-  font-size: 12px;
+  font-size: 13px;
 }
 .btn-transparent {
   color: white;
@@ -1158,8 +1159,8 @@ li.tool-btn.dark {
   background-color: #1f2226;
 }
 li.tool-btn img {
-  width: 25px;
-  height: 25px;
+  width: 40px;
+  height: 40px;
   margin-right: 5px;
 }
 li.tool-btn span.short-name {
@@ -1895,14 +1896,14 @@ li.tool-btn.selected .favorite-btn {
   margin-right: 8px;
 }
 #drawingPanel .container .content .votes button {
-  font-size: 12px;
+  font-size: 13px;
   flex-grow: 1;
   align-items: center;
   margin-left: 0px;
 }
 #drawingPanel .container .content .votes button img {
   margin-right: 8px;
-  width: 30px;
+  width: 40px;
   display: none;
 }
 #drawingPanel .container .content .votes button.voted {

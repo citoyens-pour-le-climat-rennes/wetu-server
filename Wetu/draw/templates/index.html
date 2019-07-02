@@ -42,7 +42,7 @@
     <!-- Latest compiled and minified CSS -->
 
     <!-- <link href="https://fonts.googleapis.com/css?family=Amatic+SC|Open+Sans:400,700" rel="stylesheet"> -->
-    <link href="https://fonts.googleapis.com/css?family=Mali|Open+Sans:400,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Mali|Open+Sans:300,400,700" rel="stylesheet">
     <!-- <link href="https://fonts.googleapis.com/css?family=Coming+Soon|Open+Sans:400,700&display=swap" rel="stylesheet"> -->
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -106,7 +106,8 @@
 
                     <button type="button" class="btn btn-transparent mode-button dropdown-toggle" data-toggle="dropdown">
                     <!-- <img class="user-img" src="{{ profileImageURL }}"/> -->
-                    <img class="glyphicon" src="{% static 'images/icons/inverted/icones_user_picture_02.png' %}"/>
+                    <!-- <img class="glyphicon" src="{% static 'images/icons/inverted/icones_user_picture_02.png' %}"/> -->
+                    <img class="glyphicon" src="{% static 'images/icons/inverted/new 1/Profile.svg' %}"/>
                     <span class="username">
                       {% if request.user.first_name or request.user.last_name %}
                         {{ request.user.first_name }} {{ request.user.last_name }}
@@ -670,7 +671,11 @@
                           <div class="cd-column cd-grow vote-buttons">
                             
                             <div class="cd-row">
-                              <button class="btn btn-success icon-only btn-lg vote-up" type="button"><img class="line" src="static/images/icons/inverted/icones_icon_thumbsup.png"><img class="hand" src="static/images/icons/inverted/a-thumbup.png"><span class="glyphicon glyphicon-plus"></span><span class="text" data-i18n="Vote up">Vote up</span></button>
+                              <button class="btn btn-success icon-only btn-lg vote-up" type="button">
+                                <!-- <img class="line" src="static/images/icons/inverted/icones_icon_thumbsup.png"> -->
+                                <img class="line" src="static/images/icons/inverted/new 1/Thumb up.svg">
+                                <img class="hand" src="static/images/icons/inverted/a-thumbup.png">
+                                <span class="glyphicon glyphicon-plus"></span><span class="text" data-i18n="Vote up">Vote up</span></button>
                               <span class="n-votes positive">0</span>
                               <div class="vote-list positive">
                                 <div class="arrow-left"></div>
@@ -680,7 +685,11 @@
                             </div>
 
                             <div class="cd-row">
-                              <button class="btn btn-danger icon-only btn-lg vote-down" type="button"><img class="line" src="static/images/icons/inverted/icones_icon_thumbsdown.png"><img class="hand" src="static/images/icons/inverted/a-thumbdown.png"><span class="glyphicon glyphicon-minus"></span><span class="text" data-i18n="Vote down">Vote down</span></button>
+                              <button class="btn btn-danger icon-only btn-lg vote-down" type="button">
+                                <!-- <img class="line" src="static/images/icons/inverted/icones_icon_thumbsdown.png"> -->
+                                <img class="line" src="static/images/icons/inverted/new 1/Thumb down.svg">
+                                <img class="hand" src="static/images/icons/inverted/a-thumbdown.png">
+                                <span class="glyphicon glyphicon-minus"></span><span class="text" data-i18n="Vote down">Vote down</span></button>
                               <span class="n-votes negative">0</span>
                               <div class="vote-list negative">
                                 <div class="arrow-left"></div>

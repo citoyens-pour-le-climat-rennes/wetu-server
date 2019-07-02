@@ -39,14 +39,111 @@ body {
 #login-form form {
   padding-top: 20px;
 }
-h1 {
-  font-size: 26px;
+.cd-title h1 {
+  font-size: 28px;
   font-weight: 200;
   display: flex;
   flex-direction: row;
   justify-content: center;
   margin-top: 3vh;
-  color: #525252;
+  color: white;
+}
+.cd-title .subtitle {
+  font-size: 16px;
+}
+.cd-welcome {
+  color: white;
+  background-color: #8bc34a;
+}
+.cd-welcome .section.cd-green {
+  background: url(static/css/pattern-green.png) repeat 0 0;
+}
+.cd-welcome .section.cd-green .cd-login {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+.cd-welcome .section.cd-green .cd-login button {
+  background-color: #fbd311;
+  color: #373737;
+  font-size: 14px;
+  font-weight: 700;
+  margin-left: 10px;
+  padding: 8px 16px;
+  border-radius: 4px;
+}
+.cd-welcome #intro-video {
+  border: 10px solid white;
+  border-radius: 10px;
+}
+.cd-welcome .cd-info a {
+  color: white;
+  margin-right: 20px;
+}
+.cd-welcome .cd-section .cd-section-container {
+  max-width: 800px;
+  background: white;
+  padding: 70px 70px;
+  border-radius: 4px;
+  margin: auto;
+}
+.cd-welcome .fp-slidesNav.fp-bottom {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+.cd-welcome form {
+  padding-top: 0;
+}
+.cd-welcome .cd-stats {
+  font-size: 3em;
+  font-style: italic;
+  padding: 10px;
+  text-align: center;
+}
+.cd-welcome .cd-stats span {
+  margin-right: 10px;
+}
+#next-button {
+  color: #76b83f;
+  position: absolute;
+  bottom: 0;
+  border-radius: 0;
+  width: 100px;
+  opacity: 0.5;
+  border-top-right-radius: 4px;
+  border-top-left-radius: 4px;
+}
+.cd-frame {
+  height: 80%;
+  justify-content: space-around;
+  align-items: center;
+}
+@media screen and (max-height: 800px) {
+  .cd-frame {
+    height: 100%;
+  }
+}
+@media screen and (max-width: 1080px) {
+  .cd-login button .text {
+    display: none;
+  }
+}
+@media screen and (max-width: 850px) and (max-height: 800px) {
+  .cd-frame {
+    padding-top: 50px;
+  }
+}
+#fp-nav ul li a.active span,
+#fp-nav ul li:hover a.active span,
+.fp-slidesNav ul li a.active span,
+.fp-slidesNav ul li:hover a.active span {
+  background-color: white;
+}
+#fp-nav ul li a span,
+.fp-slidesNav ul li a span {
+  background-color: white;
 }
 .cd-survey h3 {
   font-family: Karla;
@@ -58,7 +155,42 @@ h1 {
   color: #3D3D3D;
   opacity: 0.7;
   font-size: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 0;
+}
+#survey-results .chart {
+  background: white;
+  max-width: 800px;
+  margin: auto;
+  border-radius: 4px;
+  padding: 60px;
+}
+#survey-results h3 {
+  text-align: center;
+  margin-bottom: 40px;
+  margin-top: 0;
+}
+#survey-results .arrows {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+}
+#survey-results .arrows .btn {
+  height: 40px;
+  width: 40px;
+  color: white;
+  background-color: #1976d2;
+  margin-left: 5px;
+  cursor: pointer;
+  z-index: 10;
+}
+#survey-results .arrows .btn .glyphicon {
+  font-size: 10px;
+}
+#survey-results .arrows .btn:active {
+  border-style: solid;
+}
+#survey-results .arrows .btn:focus {
+  outline: none;
 }
 .cd-container {
   width: 100%;
@@ -176,8 +308,8 @@ form ul.errorlist {
 }
 form .cd-footer {
   background-color: #f0f0f0;
-  width: 600px;
-  position: fixed;
+  width: 100%;
+  position: absolute;
   bottom: 0;
 }
 form .cd-footer .slider {
@@ -188,11 +320,11 @@ form .cd-footer .slider {
 form .cd-footer .slider .bar {
   min-width: 5px;
   height: 10px;
-  background-color: #4fb0ae;
+  background-color: #df8a0d;
 }
 form .cd-footer .btn {
   color: white;
-  background-color: #4fb0ae;
+  background-color: #df8a0d;
   margin: 10px 2px;
 }
 form .cd-footer .btn .glyphicon {
@@ -241,6 +373,9 @@ form .cd-footer .btn:focus {
 	}
 }
 */
+.cd-survey-inputs {
+  margin-top: 20px;
+}
 .cd-radio,
 .cd-checkbox {
   display: flex;
@@ -251,9 +386,9 @@ form .cd-footer .btn:focus {
   font-size: 20px;
   padding: 0px 10px;
   padding-right: 20px;
-  color: #4fb0ae;
-  background-color: rgba(79, 176, 174, 0.1);
-  box-shadow: rgba(79, 176, 174, 0.6) 0px 0px 0px 1px inset;
+  color: #df8a0d;
+  background-color: #ffc1072b;
+  box-shadow: #ff9800 0px 0px 0px 1px inset;
   border-radius: 4px;
   margin-bottom: 8px;
   cursor: pointer;
@@ -273,21 +408,17 @@ form .cd-footer .btn:focus {
   line-height: 16px;
   font-family: sans-serif;
   background-color: rgba(255, 255, 255, 0.8);
-  color: #4fb0ae;
+  color: #df8a0d;
   border-width: 1px;
   border-style: solid;
   border-radius: 2px;
-  border-color: rgba(79, 176, 174, 0.6);
+  border-color: #ff9800;
   flex-direction: row;
   align-items: center;
   justify-content: center;
   text-align: center;
   line-height: 23px;
   margin: 8px;
-}
-.cd-radio .cd-icon.checked,
-.cd-checkbox .cd-icon.checked {
-  background-color: #1978c5;
 }
 .cd-radio label,
 .cd-checkbox label {
@@ -300,7 +431,7 @@ form .cd-footer .btn:focus {
 .cd-radio label select,
 .cd-checkbox label select {
   cursor: pointer;
-  border-color: #4fb0ae;
+  border-color: #ff9800;
 }
 .cd-radio label select:focus,
 .cd-checkbox label select:focus {
@@ -309,23 +440,23 @@ form .cd-footer .btn:focus {
 .cd-radio .svg-checked,
 .cd-checkbox .svg-checked {
   opacity: 0;
-  fill: #4fb0ae;
+  fill: #df8a0d;
   padding: 0px 5px;
   transition: fill 0.2s ease 0s;
 }
 .cd-radio:hover,
 .cd-checkbox:hover {
-  background-color: rgba(79, 176, 174, 0.3);
+  background-color: #ffc10770;
 }
 .cd-radio.checked,
 .cd-checkbox.checked {
-  box-shadow: rgba(79, 176, 174, 0.8) 0px 0px 0px 2px inset;
+  box-shadow: #ff9800 0px 0px 0px 2px inset;
   -animation: blink 0.2s linear 2;
   -webkit-animation: blink 0.2s linear 2;
 }
 .cd-radio.checked .cd-icon,
 .cd-checkbox.checked .cd-icon {
-  background-color: #4fb0ae;
+  background-color: #ff9800;
   color: white;
 }
 .cd-radio.checked .svg-checked,
@@ -342,15 +473,15 @@ form .cd-footer .btn:focus {
 .cd-validate button {
   border-radius: 4px;
   padding: 10px 10px;
-  font-weight: 400;
   color: white;
-  background-color: #4fb0ae;
+  background-color: #ff9800;
+  border: none;
   font-weight: 700;
   box-shadow: none;
   outline: none;
 }
 .cd-validate button:hover {
-  background-color: #69bcba;
+  background-color: #ffc166;
 }
 .cd-validate button .svg-checked {
   opacity: 1;
@@ -359,12 +490,13 @@ form .cd-footer .btn:focus {
   transition: fill 0.2s ease 0s;
 }
 .cd-validate button:active {
-  border-style: solid;
+  border: none;
 }
 .cd-validate button:focus {
   outline: none;
 }
 .cd-validate span.text {
+  color: #3f3f3f;
   margin-left: 10px;
 }
 #cd-form-footer {

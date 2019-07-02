@@ -12,6 +12,36 @@ from django.dispatch import receiver
 
 from mongoengine import *
 
+class Question(Document):
+    name = StringField(required=True)
+    text = StringField(required=True)
+    description = StringField()
+    values = ListField(StringField())
+    legends = ListField(StringField())
+    answerCounts = ListField(IntField())
+    order = IntField()
+
+    meta = {
+        'ordering': ['+order']
+    }
+
+class Answer(Document):
+    question = ReferenceField(Question, required=True)
+    author = StringField(required=True)
+    values = ListField(StringField())
+
+class Comment(Document):
+    author = ReferenceField('UserProfile', required=True)   #, reverse_delete_rule=CASCADE) # see register_delete_rule after UserProfile
+    drawing = ReferenceField('Drawing')                     #, reverse_delete_rule=CASCADE) # see register_delete_rule after Drawing
+    tile = ReferenceField('Tile')                           #, reverse_delete_rule=CASCADE) # see register_delete_rule after Tile
+    date = DateTimeField(default=datetime.datetime.now, required=True)
+    emailConfirmed = BooleanField(default=False)
+    text = StringField(required=True)
+
+    meta = {
+        'indexes': [ "#author", "emailConfirmed" ]
+    }
+
 class Vote(Document):
     author = ReferenceField('UserProfile', required=True)   #, reverse_delete_rule=CASCADE) # see register_delete_rule after UserProfile
     drawing = ReferenceField('Drawing')                     #, reverse_delete_rule=CASCADE) # see register_delete_rule after Drawing
@@ -325,6 +355,9 @@ class City(Document):
     eventLocation = StringField()
     eventDate = DateTimeField(default=datetime.datetime.now)
     
+    nParticipants = IntField(default=0)
+    squareMeters = DecimalField(default=0)
+
     positiveVoteThreshold = IntField(default=10)
     negativeVoteThreshold = IntField(default=3)
     positiveVoteThresholdTile = IntField(default=5)

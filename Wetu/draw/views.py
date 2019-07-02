@@ -150,6 +150,14 @@ def about(request):
 def welcome(request):
 	result = {}
 	result['is_authenticated'] = request.user.is_authenticated()
+
+	try:
+		city = City.objects.get(name='rennes')
+		result['nParticipants'] = city.nParticipants
+		result['squareMeters'] = city.squareMeters
+	except City.DoesNotExist:
+		pass
+
 	return render_to_response(	"welcome.html", result, RequestContext(request) )
 
 def termsOfService(request):
