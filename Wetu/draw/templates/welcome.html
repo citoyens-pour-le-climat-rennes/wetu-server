@@ -60,13 +60,13 @@
           
           <div class="cd-row cd-center cd-info"><a class="cd-center-text" href="info">En savoir plus</a></div>
 
-          <button class="btn btn-lg">
+          <button id="login-button" class="btn btn-lg">
             <!-- <img class="glyphicon" src="{% static 'images/icons/inverted/icones_connexion.png' %}"/> -->
             <span class="glyphicon glyphicon-user"></span>
             <span class="text">Se connecter</span>
           </button>
 
-          <button class="btn btn-lg">
+          <button id="app-button" class="btn btn-lg">
             <!-- <img class="glyphicon" src="{% static 'images/icons/inverted/icones_connexion.png' %}"/> -->
             <span class="glyphicon glyphicon-arrow-right"></span>
             <span class="text">Aller sur l'application</span>
@@ -86,7 +86,8 @@
             <div id="intro-video" class="cd-column cd-center">
               <!-- <iframe  class="" width="800" height="480" -->
               <!-- <iframe  class="" width="640" height="320" src="https://www.youtube.com/embed/T4LVXCCmIKA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> -->
-              <video width="800" src="{% static 'videos/Espero-1.mp4#t=10.5' %}"  type="video/mp4" controls preload="metadata"></video>
+              <video width="800"  src="/videos/Espero-1.mp4"  type="video/mp4" controls preload="metadata"></video>
+
             </div>
 
             <div class="cd-row cd-center cd-stats">
@@ -96,7 +97,7 @@
               <div class=""><span>{{ squareMeters }}</span>  &#13217; planifiés</div>
             </div>
 
-            <button id="next-button" class="btn">
+            <button id="" class="btn next-button">
               <span class="glyphicon glyphicon-chevron-down"></span>
             </button>
 
@@ -114,7 +115,7 @@
             
             <div id="intro-video" class="cd-column cd-center">
 
-              <video width="800" src="{% static 'videos/Espero-2.mp4' %}"  type="video/mp4" controls></video>
+              <video width="800" src="videos/Espero-2.mp4"  type="video/mp4" controls></video>
             </div>
 
             <button id="next-button" class="btn">
@@ -137,10 +138,10 @@
           
           <div id="intro-video" class="cd-column cd-center">
 
-            <video width="800" src="{% static 'videos/Espero-2.mp4' %}"  type="video/mp4" controls></video>
+            <video width="800" src="/videos/Espero-2.mp4"  type="video/mp4" controls></video>
           </div>
 
-          <button id="next-button" class="btn">
+          <button id="" class="btn next-button">
             <span class="glyphicon glyphicon-chevron-down"></span>
           </button>
 
@@ -423,12 +424,10 @@
       </div>
 
     </div>
-    
-<!--     <div class="section">      
-      <div id="login-form"></div>
-    </div>
- -->
+
   </div>
+  
+  <div id="login-form" class="hidden"></div>
 
     <div class="cd-welcome-container cd-column cd-grow">
       <div class="cd-column cd-center cd-grow">
