@@ -48,6 +48,7 @@ loadLoginForm = ()->
 		localStorage.setItem('just-logged-in', 'true')
 		localStorage.setItem('selected-edition', location.pathname)
 
+		$('#login-form').removeClass('hidden').show().addClass('visible')
 		return
 	)
 
@@ -157,6 +158,24 @@ $(document).ready () ->
 		$(element).click (e)=>
 			localStorage.setItem('selected-edition', buttonHref)
 			return
+	
+	$('#login-button').click (event)->
+		loadLoginForm()
+		return
+
+	document.addEventListener("click", (event)->
+		loginForm = $('#login-form')
+		if loginForm.get(0) != event.target and (not jQuery.contains( loginForm.get(0), event.target )) and loginForm.hasClass('visible')
+			$('#login-form').hide().removeClass('visible')
+		return)
+
+	$('#app-button').click (event)->
+		location.pathname = 'demo'
+		return
+
+	$('.next-button').click (event)->
+		fullpage_api.moveSectionDown()
+		return
 
 	$('#submit-form').click (event)->
 		event.preventDefault()

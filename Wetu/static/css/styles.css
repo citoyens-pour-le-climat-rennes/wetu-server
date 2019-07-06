@@ -432,7 +432,7 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   margin: 10px;
   line-height: 1;
   color: white;
-  font-family: 'Mali', cursive;
+  font-weight: 300;
   font-size: 36px;
 }
 #FavoriteTools h3.title img {

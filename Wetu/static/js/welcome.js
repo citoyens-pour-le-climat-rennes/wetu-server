@@ -64,6 +64,7 @@
       });
       localStorage.setItem('just-logged-in', 'true');
       localStorage.setItem('selected-edition', location.pathname);
+      $('#login-form').removeClass('hidden').show().addClass('visible');
     });
     return true;
   };
@@ -171,6 +172,22 @@
       return $(element).click((e) => {
         localStorage.setItem('selected-edition', buttonHref);
       });
+    });
+    $('#login-button').click(function(event) {
+      loadLoginForm();
+    });
+    document.addEventListener("click", function(event) {
+      var loginForm;
+      loginForm = $('#login-form');
+      if (loginForm.get(0) !== event.target && (!jQuery.contains(loginForm.get(0), event.target)) && loginForm.hasClass('visible')) {
+        $('#login-form').hide().removeClass('visible');
+      }
+    });
+    $('#app-button').click(function(event) {
+      location.pathname = 'demo';
+    });
+    $('.next-button').click(function(event) {
+      fullpage_api.moveSectionDown();
     });
     $('#submit-form').click(function(event) {
       event.preventDefault();

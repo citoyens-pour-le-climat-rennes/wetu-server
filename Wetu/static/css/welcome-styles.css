@@ -36,6 +36,13 @@ body {
 .cd-welcome-container form.large {
   width: 600px;
 }
+#login-form {
+  position: absolute;
+  background: white;
+  padding: 60px;
+  width: 600px;
+  box-shadow: 3px 3px 5px 1px;
+}
 #login-form form {
   padding-top: 20px;
 }
@@ -105,7 +112,7 @@ body {
 .cd-welcome .cd-stats span {
   margin-right: 10px;
 }
-#next-button {
+button.next-button {
   color: #76b83f;
   position: absolute;
   bottom: 0;
@@ -114,6 +121,15 @@ body {
   opacity: 0.5;
   border-top-right-radius: 4px;
   border-top-left-radius: 4px;
+}
+button.next-button:focus:active {
+  outline: none;
+}
+button.next-button:focus {
+  outline: none;
+}
+button:focus {
+  outline: none;
 }
 .cd-frame {
   height: 80%;
@@ -189,9 +205,6 @@ body {
 #survey-results .arrows .btn:active {
   border-style: solid;
 }
-#survey-results .arrows .btn:focus {
-  outline: none;
-}
 .cd-container {
   width: 100%;
   max-width: 450px;
@@ -261,6 +274,9 @@ form button.btn.btn-lg {
 }
 form button.btn.btn-lg:hover {
   background-color: #1978c5;
+}
+form button.btn.btn-lg:focus {
+  outline: none;
 }
 form label {
   font-weight: 300;
