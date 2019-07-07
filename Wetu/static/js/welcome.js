@@ -285,7 +285,7 @@
             }
             if (result.message === 'Some answers are not valid') {
               $('#survey-error').removeClass('hidden').show();
-              $('#survey-error p').text("Certaine réponses ne sont pas valides.");
+              $('#survey-error p').text("Certaines réponses ne sont pas valides.");
             }
           } else {
             $('#survey-sent').removeClass('hidden').show();

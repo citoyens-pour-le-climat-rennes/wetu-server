@@ -59,12 +59,27 @@
         <div class="cd-login cd-row">
           
           <div class="cd-row cd-center cd-info"><a class="cd-center-text" href="info">En savoir plus</a></div>
+          
+          {% if not request.user.is_authenticated %}
 
           <button id="login-button" class="btn btn-lg">
             <!-- <img class="glyphicon" src="{% static 'images/icons/inverted/icones_connexion.png' %}"/> -->
             <span class="glyphicon glyphicon-user"></span>
             <span class="text">Se connecter</span>
           </button>
+          
+          {% else %}
+
+          <button id="logout-button" class="btn btn-lg">
+            <!-- <img class="glyphicon" src="{% static 'images/icons/inverted/icones_connexion.png' %}"/> -->
+            <a href="{% url 'account_logout' %}" style='text-decoration: none; color: #373737;'>
+              <span class="glyphicon glyphicon-user"></span>
+              <span >Se déconnecter</span>
+            </a>
+          </button>
+
+
+          {% endif %}
 
           <button id="app-button" class="btn btn-lg">
             <!-- <img class="glyphicon" src="{% static 'images/icons/inverted/icones_connexion.png' %}"/> -->

@@ -378,30 +378,22 @@ def deleteUser(request):
 
 	for vote in userProfile.votes[:]:
 		if isinstance(vote, Vote):
-			try:
+			if vote.drawing and vote in vote.drawing.votes:
 				vote.drawing.votes.remove(vote)
 				vote.drawing.save()
-			except DoesNotExist:
-				pass
-			try:
+			if vote.tile and vote in vote.tile.votes:
 				vote.tile.votes.remove(vote)
 				vote.tile.save()
-			except DoesNotExist:
-				pass
 			vote.delete()
 
 	for comment in userProfile.comments[:]:
 		if isinstance(comment, Comment):
-			try:
+			if comment.drawing and comment in comment.drawing.comments:
 				comment.drawing.comments.remove(comment)
 				comment.drawing.save()
-			except DoesNotExist:
-				pass
-			try:
+			if comment.tile and comment in comment.tile.comments:
 				comment.tile.comments.remove(comment)
 				comment.tile.save()
-			except DoesNotExist:
-				pass
 			comment.delete()
 
 	userProfile.delete()
@@ -1451,31 +1443,23 @@ def bannUser(request, username, reportDrawings=False, reportTiles=False, removeV
 	if removeVotes:
 		for vote in userProfile.votes[:]:
 			if isinstance(vote, Vote):
-				try:
+				if vote.drawing and vote in vote.drawing.votes:
 					vote.drawing.votes.remove(vote)
 					vote.drawing.save()
-				except DoesNotExist:
-					pass
-				try:
+				if vote.tile and vote in vote.tile.votes:
 					vote.tile.votes.remove(vote)
 					vote.tile.save()
-				except DoesNotExist:
-					pass
 				vote.delete()
 	
 	if removeComments:
 		for comment in userProfile.comments[:]:
 			if isinstance(comment, Comment):
-				try:
+				if comment.drawing and comment in comment.drawing.comments:
 					comment.drawing.comments.remove(comment)
 					comment.drawing.save()
-				except DoesNotExist:
-					pass
-				try:
+				if comment.tile and comment in comment.tile.comments:
 					comment.tile.comments.remove(comment)
 					comment.tile.save()
-				except DoesNotExist:
-					pass
 				comment.delete()
 
 	userProfile.save()
