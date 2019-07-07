@@ -447,7 +447,7 @@ def on_email_confirmed(sender, email_address, request, **kwargs):
 		return
 
 	try: 
-		emailAddress = EmailAddress.objects.get(user=request.user)
+		emailAddress = EmailAddress.objects.get(user=user)
 		if not emailAddress.verified:
 			emailAddress.verified = True
 			emailAddress.save()
