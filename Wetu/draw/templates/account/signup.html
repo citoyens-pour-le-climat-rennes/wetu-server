@@ -13,8 +13,15 @@
 
 {% block content %}
 
-<h1 class="">Espero</h1>
+{% if isCommeUnDessein %}
 
+	<h1 class="">Comme un Dessein</h1>
+
+{% else %}
+
+	<h1 class="">Espero</h1>
+
+{% endif %}
 
 
 <form id="signup_form" class="form-signin signup" id="signup_form" method="post" action="{% url 'connection' %}" role="form">

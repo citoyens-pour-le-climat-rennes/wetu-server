@@ -153,6 +153,12 @@ def projectToGeoJSON(city, bounds):
 	y = 180 * bounds['y'] / float(city.height)
 	width = 360 * bounds['width'] / float(city.width)
 	height = 180 * bounds['height'] / float(city.height)
+	x = min(max(x, -180), 180)
+	y = min(max(y, -90), 90)
+	if x + width > 180:
+		width = 180 - x
+	if y + height > 90:
+		height = 90 - y
 	return { 'x': x, 'y': y, 'width': width, 'height': height }
 
 def geoJSONToProject(city, bounds):
@@ -915,6 +921,9 @@ def loadDrawingsAndTilesFromBounds(request, bounds, cityName=None, drawingsToIgn
 
 	if rejected:
 		statusToLoad.append('rejected')
+
+	if bounds['x'] >= city.width / 2 or bounds['y'] >= city.height / 2 or city.width <= 0 or city.height <= 0:
+	 	return json.dumps( { 'tiles': [], 'items': [], 'user': request.user.username } )
 
 	box = makeBoxFromBounds(city, bounds)
 
@@ -2737,69 +2746,47 @@ def loadItems(request, itemsToLoad):
 	return json.dumps( {'state': 'success', 'items': items } )
 
 
-# @checkDebug
-# def getNextValidatedDrawing(request, cityName=None):
+@checkDebug
+def getNextValidatedDrawing(request, cityName, secret):
 	
-# 	city = getCity(cityName)
-# 	if not city:
-# 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
+	if secret != TIPIBOT_PASSWORD:
+		return json.dumps({'state': 'error', 'message': 'Secret invalid.'})
+
+	city = getCity(cityName)
+	if not city:
+		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
 	
-# 	drawings = Drawing.objects(status='drawing', city=str(city.pk))
+	drawings = Drawing.objects(status='validated', city=str(city.pk))
 
-# 	drawingNames = []
+	drawingNames = []
 
-# 	for drawing in drawings:
-# 		for vote in drawing.votes:
+	for drawing in drawings:
+		for vote in drawing.votes:
 
-# 			try:
-# 				if isinstance(vote, Vote) and vote.author.admin:
+			try:
+				if isinstance(vote, Vote) and vote.author.admin:
 
-# 					if drawing is not None:
+					if drawing is not None:
 						
-# 						drawingNames.append(drawing.title)
+						drawingNames.append(drawing.title)
 
-# 						# get all path of the first drawing
-# 						paths = []
-# 						# for path in drawing.paths:
-# 						# 	paths.append(path.to_json())
-# 						for path in drawing.pathList:
-# 							pJSON = json.loads(path)
-# 							paths.append(json.dumps({'data': json.dumps({'points': pJSON['points'], 'data': pJSON['data'], 'planet': {'x': 0, 'y': 0}}), '_id': {'$oid': None} }))
+						# get all path of the first drawing
+						paths = []
+						# for path in drawing.paths:
+						# 	paths.append(path.to_json())
+						for path in drawing.pathList:
+							pJSON = json.loads(path)
+							paths.append(json.dumps({'data': json.dumps({'points': pJSON['points'], 'data': pJSON['data'], 'planet': {'x': 0, 'y': 0}}), '_id': {'$oid': None} }))
 
-# 						return  json.dumps( {'state': 'success', 'pk': str(drawing.pk), 'items': paths, 'svg': drawing.svg } )
-# 			except DoesNotExist:
-# 				pass
+						return  json.dumps( {'state': 'success', 'pk': str(drawing.pk), 'items': paths, 'svg': drawing.svg } )
+			except DoesNotExist:
+				pass
 		
-# 	if len(drawings) > 0:
-# 		drawingChanged.send(sender=None, type='adminMessage', title='Drawing validated but no moderator', description='Drawing names: ' + json.dumps(drawingNames))
+	if len(drawings) > 0:
+		drawingChanged.send(sender=None, type='adminMessage', title='Drawing validated but no moderator', description='Drawing names: ' + json.dumps(drawingNames))
 
-# 	#	 send_mail('[Comme un dessein] Drawing validated but no moderator voted for it', '[Comme un dessein] One or more drawing has been validated but no moderator voted for it', 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
-# 	return  json.dumps( {'state': 'success', 'message': 'no path' } )
-
-# @checkDebug
-# def getNextTestDrawing(request, cityName=None):
-	
-# 	city = getCity(cityName)
-# 	if not city:
-# 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
-	
-# 	drawings = Drawing.objects(status='test', city=str(city.pk))
-
-# 	for drawing in drawings:
-# 		if drawing is not None:			
-
-# 			# get all path of the first drawing
-# 			paths = []
-# 			# for path in drawing.paths:
-# 			# 	paths.append(path.to_json())
-# 			for path in drawing.pathList:
-# 				pJSON = json.loads(path)
-# 				paths.append(json.dumps({'data': json.dumps({'points': pJSON['points'], 'data': pJSON['data'], 'planet': {'x': 0, 'y': 0}}), '_id': {'$oid': None} }))
-
-# 			return  json.dumps( {'state': 'success', 'pk': str(drawing.pk), 'items': paths } )
-		
-# 	#	 send_mail('[Comme un dessein] Drawing validated but no moderator voted for it', '[Comme un dessein] One or more drawing has been validated but no moderator voted for it', 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
-# 	return  json.dumps( {'state': 'success', 'message': 'no path' } )
+	#	 send_mail('[Comme un dessein] Drawing validated but no moderator voted for it', '[Comme un dessein] One or more drawing has been validated but no moderator voted for it', 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+	return  json.dumps( {'state': 'success', 'message': 'no path' } )
 
 
 @checkSimulateSlowResponse
@@ -2821,40 +2808,25 @@ def setDrawingStatus(request, pk, status):
 
 	return json.dumps( {'state': 'success', 'message': 'Drawing status successfully updated.', 'pk': pk, 'status': status } )
 
-# @checkDebug
-# def setDrawingStatusDrawn(request, pk, secret):
-# 	if secret != TIPIBOT_PASSWORD:
-# 		return json.dumps({'state': 'error', 'message': 'Secret invalid.'})
+@checkDebug
+def setDrawingStatusDrawn(request, pk, secret):
+	if secret != TIPIBOT_PASSWORD:
+		return json.dumps({'state': 'error', 'message': 'Secret invalid.'})
 
-# 	try:
-# 		drawing = Drawing.objects.get(pk=pk)
-# 	except Drawing.DoesNotExist:
-# 		return json.dumps({'state': 'error', 'message': 'Drawing does not exist.', 'pk': pk})
+	try:
+		drawing = Drawing.objects.get(pk=pk)
+	except Drawing.DoesNotExist:
+		return json.dumps({'state': 'error', 'message': 'Drawing does not exist.', 'pk': pk})
 	
-# 	drawing.status = 'drawn'
-# 	drawing.save()
-# 	send_mail('[Comme un dessein] Set drawing status drawn', u'Set drawing status drawn ' + str(drawing.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
+	drawing.status = 'drawn'
+	drawing.save()
 
-# 	# drawingValidated.send(sender=None, clientId=drawing.clientId, status=drawing.status)
-# 	drawingChanged.send(sender=None, type='status', clientId=drawing.clientId, status=drawing.status, pk=str(drawing.pk))
+	# send_mail('[Comme un dessein] Set drawing status drawn', u'Set drawing status drawn ' + str(drawing.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
 
-# 	return json.dumps( {'state': 'success', 'message': 'Drawing status successfully updated.', 'pk': pk } )
+	# drawingValidated.send(sender=None, clientId=drawing.clientId, status=drawing.status)
+	drawingChanged.send(sender=None, type='status', clientId=drawing.clientId, status=drawing.status, pk=str(drawing.pk))
 
-# @checkDebug
-# def setDrawingStatusDrawnTest(request, pk, secret):
-# 	if secret != TIPIBOT_PASSWORD:
-# 		return json.dumps({'state': 'error', 'message': 'Secret invalid.'})
-
-# 	try:
-# 		drawing = Drawing.objects.get(pk=pk)
-# 	except Drawing.DoesNotExist:
-# 		return json.dumps({'state': 'error', 'message': 'Drawing does not exist.', 'pk': pk})
-	
-# 	drawing.status = 'drawntest'
-# 	drawing.save()
-# 	send_mail('[Comme un dessein] setDrawingStatusDrawnTest', u'setDrawingStatusDrawnTest status: drawntest ' + str(drawing.pk), 'contact@commeundessein.co', ['idlv.contact@gmail.com'], fail_silently=True)
-
-# 	return json.dumps( {'state': 'success', 'message': 'Drawing status successfully updated.', 'pk': pk } )
+	return json.dumps( {'state': 'success', 'message': 'Drawing status successfully updated.', 'pk': pk } )
 
 
 @checkSimulateSlowResponse

@@ -23,7 +23,11 @@
     <meta name="author" content="IDLV">
     <link rel="shortcut icon" href="{% static 'images/icons/icon.png' %}">
 
-    <title>Espero</title>
+    {% if isCommeUnDessein %}
+      <title>Comme un Dessein</title>
+    {% else %}
+      <title>Espero</title>
+    {% endif %}
 
     <!-- Nanoscroller CSS -->
     <!-- <link href="{% static 'libs/nanoscroller.css' %}" rel="stylesheet"> -->
@@ -45,8 +49,12 @@
     <link href="{% static 'css/styles.css' %}" rel="stylesheet">
     <!-- Latest compiled and minified CSS -->
 
-    <!-- <link href="https://fonts.googleapis.com/css?family=Amatic+SC|Open+Sans:400,700" rel="stylesheet"> -->
-    <link href="https://fonts.googleapis.com/css?family=Mali|Open+Sans:300,400,700" rel="stylesheet">
+    {% if isCommeUnDessein %}
+      <link href="https://fonts.googleapis.com/css?family=Amatic+SC|Open+Sans:400,700" rel="stylesheet">
+    {% else %}
+      <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+    {% endif %}
+
     <!-- <link href="https://fonts.googleapis.com/css?family=Coming+Soon|Open+Sans:400,700&display=swap" rel="stylesheet"> -->
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -71,8 +79,16 @@
     <div id="FavoriteTools" class="cd-row">
       <h3 class="title"> 
         <!-- <img class="title-img" src="{% static 'images/icons/logo48.png' %}" alt="commeUnDessein_logo"/> -->
-        <a href="/"><span class="big-title">Espero</span><span class="small-title">E</span></a>
+        {% if isCommeUnDessein %}
         
+          <a href="/"><span class="big-title commeundessein">Comme un Dessein</span><span class="small-title">C</span></a>
+        
+        {% else %}
+
+          <a href="/"><span class="big-title">Espero</span><span class="small-title">E</span></a>
+        
+        {% endif %}
+
         <!--
         <a href="https://gaming.youtube.com/watch?v=qlgzIEsSc6w">
           <button class="btn btn-default" type="button">
@@ -501,7 +517,7 @@
           <div class="hidden text-separator"></div>
 
           <!-- <canvas id="background-canvas" resize hidpi="off"></canvas> -->
-          <canvas id="canvas" resize hidpi="off" data-pos-x="{{ x }}" data-pos-y="{{ y }}" data-points="{{ points }}" data-box="{{ box }}" data-site="{{ site }}" data-message="{{ message }}" data-load-entire-area="{{ loadEntireArea }}" data-city="{{ city }}" data-city-event-date="{{ cityEventDate }}" data-city-event-date="{{ cityEventLocation }}" data-city-finished="{{ cityFinished }}" data-city-message="{{ cityMessage }}" data-city-stroke-width="{{ cityStrokeWidth }}" data-city-width="{{ cityWidth }}" data-city-height="{{ cityHeight }}" data-owner="{{ owner }}" data-is-admin="{{ userIsAdmin }}" data-drawing-pk="{{ drawingPk }}" data-tile-pk="{{ tilePk }}" data-bounds="{{ bounds }}" data-github-login="{{ githubLogin }}" data-username="{{ request.user.username }}" data-user-email="{{ request.user.email }}" data-email-confirmed="{{ emailConfirmed }}" data-is-authenticated="{{ request.user.is_authenticated }}" data-drawing-mode="{{ drawingMode }}" data-positiveVoteThreshold="{{ positiveVoteThreshold }}" data-negativeVoteThreshold="{{ negativeVoteThreshold }}" data-voteMinDuration="{{ voteMinDuration }}"></canvas>
+          <canvas id="canvas" resize hidpi="off" data-pos-x="{{ x }}" data-pos-y="{{ y }}" data-points="{{ points }}" data-box="{{ box }}" data-site="{{ site }}" data-message="{{ message }}" data-load-entire-area="{{ loadEntireArea }}" data-city="{{ city }}" data-city-event-date="{{ cityEventDate }}" data-city-event-date="{{ cityEventLocation }}" data-city-finished="{{ cityFinished }}" data-city-message="{{ cityMessage }}" data-city-stroke-width="{{ cityStrokeWidth }}" data-city-width="{{ cityWidth }}" data-city-height="{{ cityHeight }}" data-owner="{{ owner }}" data-is-admin="{{ userIsAdmin }}" data-drawing-pk="{{ drawingPk }}" data-tile-pk="{{ tilePk }}" data-bounds="{{ bounds }}" data-github-login="{{ githubLogin }}" data-username="{{ request.user.username }}" data-user-email="{{ request.user.email }}" data-email-confirmed="{{ emailConfirmed }}" data-is-authenticated="{{ request.user.is_authenticated }}" data-drawing-mode="{{ drawingMode }}" data-positiveVoteThreshold="{{ positiveVoteThreshold }}" data-negativeVoteThreshold="{{ negativeVoteThreshold }}" data-voteMinDuration="{{ voteMinDuration }}" data-application="{{ application }}"></canvas>
           <div id="rasters"></div>
 
           <div id="html-view">

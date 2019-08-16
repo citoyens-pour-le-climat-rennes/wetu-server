@@ -435,6 +435,9 @@ body.hand #drawingPanel .container .content .votes button img.hand {
   font-weight: 300;
   font-size: 36px;
 }
+#FavoriteTools h3.title .big-title.commeundessein {
+  font-family: 'Amatic SC', cursive;
+}
 #FavoriteTools h3.title img {
   width: 50px;
   padding: 10px;

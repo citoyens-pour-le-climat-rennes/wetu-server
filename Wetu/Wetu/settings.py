@@ -15,6 +15,7 @@ import sys
 import os
 import json
 import datetime
+
 from mongoengine import *
 connect('Wetu')
 
@@ -249,7 +250,9 @@ ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
 ACCOUNT_UNIQUE_EMAIL = True 
 ACCOUNT_ADAPTER = 'Wetu.adapter.AccountAdapterCD'
-
+ACCOUNT_FORMS = {
+    'signup': 'draw.views.MyCustomSignupForm'
+}
 # ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 
 # Dictionary containing provider specific settings.
@@ -268,3 +271,8 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 LOCALE_PATHS = [ os.path.join(BASE_DIR, "locale"), ]
+
+
+# Custom
+
+APPLICATION = localSettings['APPLICATION']

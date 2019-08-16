@@ -14,6 +14,9 @@ from ajax import getPositiveVoteThreshold, getNegativeVoteThreshold, getVoteMinD
 from math import floor
 from django.views.decorators.csrf import csrf_exempt
 from models import *
+
+from Wetu import settings
+
 # from django.http import JsonResponse
 import json
 
@@ -68,6 +71,8 @@ def index(request, site=None, owner=None, cityName=None, x=0, y=0, useDebugFiles
 	result['githubLogin'] = githubLogin
 	result['drawingMode'] = drawingMode
 	result['useDebugFiles'] = useDebugFiles
+	result['application'] = settings.APPLICATION
+	result['isCommeUnDessein'] = settings.APPLICATION == 'COMME_UN_DESSEIN'
 	
 	city = None
 	if cityName:
@@ -158,6 +163,9 @@ def welcome(request):
 	except City.DoesNotExist:
 		pass
 
+	if settings.APPLICATION == 'COMME_UN_DESSEIN':
+		return render_to_response(	"welcome-commeundessein.html", result, RequestContext(request) )
+
 	return render_to_response(	"welcome.html", result, RequestContext(request) )
 
 def termsOfService(request):
@@ -192,10 +200,9 @@ def ajaxCall(request):
 
 @csrf_exempt
 def ajaxCallNoCSRF(request):
-
 	data = json.loads(request.POST.get('data'))
 	function = data["function"]
-	if function == "getNextTestDrawing" or function == "setDrawingStatusDrawnTest":
+	if function == "getNextValidatedDrawing" or function == "setDrawingStatusDrawn":
 		args = data["args"]
 		print "ajaxCallNoCSRF"
 		print function
@@ -204,6 +211,7 @@ def ajaxCallNoCSRF(request):
 		args['request'] = request
 		result = getattr(ajax, function)(**args)
 		return HttpResponse(result, content_type="application/json")
+	return HttpResponse("Fail")
 
 # socketio_manage(request.environ, {'': BaseNamespace, '/chat': ChatNamespace, '/draw': DrawNamespace}, request)
 
@@ -214,7 +222,29 @@ class CustomSignupView(SignupView):
         context = super(CustomSignupView,
                         self).get_context_data(**kwargs)
         context['login_form'] = LoginForm() # add form to context
+        context['isCommeUnDessein'] = settings.APPLICATION == 'COMME_UN_DESSEIN'
+        print(context['isCommeUnDessein'])
+        print(settings.APPLICATION)
         return context
 
 connection = CustomSignupView.as_view()
 
+from allauth.account.forms import SignupForm
+class MyCustomSignupForm(SignupForm):
+
+    def get_context_data(self, **kwargs):
+        # we get context data from original view
+        context = super(MyCustomSignupForm, self).get_context_data(**kwargs)
+        context['login_form'] = LoginForm() # add form to context
+        context['isCommeUnDessein'] = settings.APPLICATION == 'COMME_UN_DESSEIN'
+        print(context['isCommeUnDessein'])
+        print(settings.APPLICATION)
+        print(context['isCommeUnDessein'])
+        print(settings.APPLICATION)
+        print(context['isCommeUnDessein'])
+        print(settings.APPLICATION)
+        return context
+
+    # def __init__(self, *args, **kwargs):
+        
+    #     super(MyCustomSignupForm, self).__init__(*args, **kwargs)
