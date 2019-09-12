@@ -69,7 +69,7 @@ def index(request, site=None, owner=None, cityName=None, x=0, y=0, useDebugFiles
 		result = loadSite(request, site)
 
 	# siteDomain = Site.objects.get_current().domain
-	siteDomain = shortcuts.get_current_site(request).domain
+	siteDomain = settings.DOMAIN # shortcuts.get_current_site(request).domain
 
 	result['profileImageURL'] = 'static/images/face.png'
 	# result['profileImageURL'] = profileImageURL
@@ -86,7 +86,7 @@ def index(request, site=None, owner=None, cityName=None, x=0, y=0, useDebugFiles
 			city = City.objects.get(name=cityName)
 			addCityToResult(result, city)
 		except:
-			return redirect(siteDomain)
+			return redirect('http://' + siteDomain)
 			print('City not found')
 
 	if pk:

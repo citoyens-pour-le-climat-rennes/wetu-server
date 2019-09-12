@@ -104,6 +104,7 @@ ROOT_URLCONF = 'Wetu.urls'
 WSGI_APPLICATION = 'Wetu.wsgi.application'
 
 
+
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
@@ -274,3 +275,4 @@ LOCALE_PATHS = [ os.path.join(BASE_DIR, "locale"), ]
 # Custom
 
 APPLICATION = localSettings['APPLICATION']
+DOMAIN = localSettings['DOMAIN']
