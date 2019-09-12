@@ -13,18 +13,9 @@
 
 {% block content %}
 
-{% if isCommeUnDessein %}
+<p>{{ Wetu.settings.APPLICATION }}</p>
 
-	<h1 class="">Comme un Dessein</h1>
-
-{% else %}
-
-	<h1 class="">Espero</h1>
-
-{% endif %}
-
-
-<form id="signup_form" class="form-signin signup" id="signup_form" method="post" action="{% url 'connection' %}" role="form">
+<form id="signup_form" class="form-signin signup" id="signup_form" method="post" action="{% url 'account_signup' %}" role="form">
   {% csrf_token %}
   {{ form.as_p }}
   {% if redirect_field_value %}

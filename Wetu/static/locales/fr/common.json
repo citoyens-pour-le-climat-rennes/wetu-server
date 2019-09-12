@@ -357,5 +357,11 @@
     "Confirmed": "Vérifié",
     "Not confirmed": "Non vérifié",
     "Manage emails": "Gérer les adresses emails",
-    "Move drawing": "Déplacer le dessin"
+    "Move drawing": "Déplacer le dessin",
+    "Email notification frequency": "Fréquence des notifications emails ",
+    "Daily": "Une fois par jour",
+    "Weekly": "Une fois par semaine",
+    "Monthly": "Une fois par mois",
+    "Never": "Jamais",
+    "You will only receive email if you have new notifications": "Vous ne receverez des emails que lorsque vous avez de nouvelles notifications"
 }

@@ -64,7 +64,7 @@ include/
 Wetu/static/images/sources/
 Wetu/media/
 Wetu/js/*.map
-Wetu/static/libs/
+Wetu/static/libsBckp/
 Wetu/static/docs/
 Wetu/static/videos/
 Wetu/static/node_modules/

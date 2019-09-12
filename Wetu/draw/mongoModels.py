@@ -30,18 +30,6 @@ class Answer(Document):
     author = StringField(required=True)
     values = ListField(StringField())
 
-class Comment(Document):
-    author = ReferenceField('UserProfile', required=True)   #, reverse_delete_rule=CASCADE) # see register_delete_rule after UserProfile
-    drawing = ReferenceField('Drawing')                     #, reverse_delete_rule=CASCADE) # see register_delete_rule after Drawing
-    tile = ReferenceField('Tile')                           #, reverse_delete_rule=CASCADE) # see register_delete_rule after Tile
-    date = DateTimeField(default=datetime.datetime.now, required=True)
-    emailConfirmed = BooleanField(default=False)
-    text = StringField(required=True)
-
-    meta = {
-        'indexes': [ "#author", "emailConfirmed" ]
-    }
-
 class Vote(Document):
     author = ReferenceField('UserProfile', required=True)   #, reverse_delete_rule=CASCADE) # see register_delete_rule after UserProfile
     drawing = ReferenceField('Drawing')                     #, reverse_delete_rule=CASCADE) # see register_delete_rule after Drawing
@@ -103,11 +91,13 @@ class UserProfile(Document):
     commeUnDesseinCoins = IntField(default=0)
     emailConfirmed = BooleanField(default=False)
     disableEmail = BooleanField(default=False)
+    emailFrequency = StringField(default='daily')                           # daily, weekly, monthly, never
     votes = ListField(ReferenceField('Vote', reverse_delete_rule=PULL))
     comments = ListField(ReferenceField('Comment', reverse_delete_rule=PULL))
     banned = BooleanField(default=False)
     nFalseReport = IntField(default=0)
     nAbuses = IntField(default=0)
+    emailNotifications = ListField(StringField())
 
     def profile_image_url(self):
 
@@ -352,6 +342,7 @@ class City(Document):
     width = DecimalField(default=4000)
     height = DecimalField(default=3000)
     finished = BooleanField(default=False)
+    useSVG = BooleanField(default=False)
     eventLocation = StringField()
     eventDate = DateTimeField(default=datetime.datetime.now)
     

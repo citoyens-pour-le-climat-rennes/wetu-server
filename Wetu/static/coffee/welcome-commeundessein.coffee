@@ -112,12 +112,13 @@ $(document).ready () ->
 		loginForm = $('#login-form')
 		if loginForm.get(0) != event.target and (not jQuery.contains( loginForm.get(0), event.target )) and loginForm.hasClass('visible')
 			loginForm.hide().removeClass('visible')
+			$('#background').addClass('hidden')
 		
 		selectEditionForm = $('#select-edition')
 		if selectEditionForm.get(0) != event.target and (not jQuery.contains( selectEditionForm.get(0), event.target )) and selectEditionForm.hasClass('visible')
 			selectEditionForm.hide().removeClass('visible')
+			$('#background').addClass('hidden')
 
-		$('#background').addClass('hidden')
 		return)
 
 	$('#app-button').click (event)->

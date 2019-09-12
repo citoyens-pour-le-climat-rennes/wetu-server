@@ -42,6 +42,18 @@
   <body class="allauth">
     <div class="cd-container">
 
+      <div class="cd-title">
+      {% if isCommeUnDessein %}
+
+        <h1 class="">Comme un Dessein</h1>
+
+      {% else %}
+
+        <h1 class="">Espero</h1>
+
+      {% endif %}
+      </div>
+
       {% block body %}
       <!-- <div class="menu">
         <ul class="button-list">

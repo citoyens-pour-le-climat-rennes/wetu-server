@@ -203,6 +203,15 @@ class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
         print "drawing change: " + str(data)
         self.emit_to_room(self.room, 'drawing change', data)
 
+    def on_draw_begin(self, user, point):
+        self.emit_to_room(self.room, 'draw begin', user, point)
+    
+    def on_draw_update(self, user, point):
+        self.emit_to_room(self.room, 'draw update', user, point)
+
+    def on_draw_end(self, user, point):
+        self.emit_to_room(self.room, 'draw end', user, point)
+
     # def on_beginDiv(self, user, p):
     #     self.log(u'{0} begin div: {1}'.format(user, p))
     #     self.emit_to_room(self.room, 'beginDiv', user, p)

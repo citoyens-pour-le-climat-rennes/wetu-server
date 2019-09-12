@@ -89,6 +89,10 @@ ul.button-list li a {
   color: #404040;
   font-size: 14px;
   font-weight: 700;
+  display: block;
+  width: 100%;
+  text-align: center;
+  line-height: 60px;
 }
 ul.button-list li a:hover,
 ul.button-list li a:hover:visited {

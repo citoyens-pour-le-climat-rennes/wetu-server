@@ -5,6 +5,8 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.shortcuts import redirect
+from django.contrib.sites.models import Site
+from django.contrib.sites import shortcuts
 
 from allauth.account.views import SignupView
 from allauth.account.forms import LoginForm
@@ -33,6 +35,7 @@ def addCityToResult(result, city):
 	result['cityStrokeWidth'] = city.strokeWidth
 	result['cityWidth'] = city.width
 	result['cityHeight'] = city.height
+	result['cityUseSVG'] = city.useSVG
 	return
 
 def index(request, site=None, owner=None, cityName=None, x=0, y=0, useDebugFiles=False, drawingMode=None, visit=False, pk=None, tilePk=None):
@@ -65,6 +68,9 @@ def index(request, site=None, owner=None, cityName=None, x=0, y=0, useDebugFiles
 	if site:
 		result = loadSite(request, site)
 
+	# siteDomain = Site.objects.get_current().domain
+	siteDomain = shortcuts.get_current_site(request).domain
+
 	result['profileImageURL'] = 'static/images/face.png'
 	# result['profileImageURL'] = profileImageURL
 	result['connectedToGithub'] = connectedToGithub
@@ -80,11 +86,11 @@ def index(request, site=None, owner=None, cityName=None, x=0, y=0, useDebugFiles
 			city = City.objects.get(name=cityName)
 			addCityToResult(result, city)
 		except:
-			return redirect('https://commeundessein.co/')
+			return redirect(siteDomain)
 			print('City not found')
 
 	if pk:
-		result['drawingImageURL'] = 'https://commeundessein.co/static/drawings/' + pk + '.png'
+		result['drawingImageURL'] = siteDomain + '/static/drawings/' + pk + '.png'
 		result['drawingPk'] = pk
 		try:
 			drawing = Drawing.objects.get(pk=pk)
@@ -215,36 +221,13 @@ def ajaxCallNoCSRF(request):
 
 # socketio_manage(request.environ, {'': BaseNamespace, '/chat': ChatNamespace, '/draw': DrawNamespace}, request)
 
-class CustomSignupView(SignupView):
-    # here we add some context to the already existing context
-    def get_context_data(self, **kwargs):
-        # we get context data from original view
-        context = super(CustomSignupView,
-                        self).get_context_data(**kwargs)
-        context['login_form'] = LoginForm() # add form to context
-        context['isCommeUnDessein'] = settings.APPLICATION == 'COMME_UN_DESSEIN'
-        print(context['isCommeUnDessein'])
-        print(settings.APPLICATION)
-        return context
+# class CustomSignupView(SignupView):
+#     # here we add some context to the already existing context
+#     def get_context_data(self, **kwargs):
+#         # we get context data from original view
+#         context = super(CustomSignupView, self).get_context_data(**kwargs)
+#         context['login_form'] = LoginForm() # add form to context
+#         return context
 
-connection = CustomSignupView.as_view()
+# connection = CustomSignupView.as_view()
 
-from allauth.account.forms import SignupForm
-class MyCustomSignupForm(SignupForm):
-
-    def get_context_data(self, **kwargs):
-        # we get context data from original view
-        context = super(MyCustomSignupForm, self).get_context_data(**kwargs)
-        context['login_form'] = LoginForm() # add form to context
-        context['isCommeUnDessein'] = settings.APPLICATION == 'COMME_UN_DESSEIN'
-        print(context['isCommeUnDessein'])
-        print(settings.APPLICATION)
-        print(context['isCommeUnDessein'])
-        print(settings.APPLICATION)
-        print(context['isCommeUnDessein'])
-        print(settings.APPLICATION)
-        return context
-
-    # def __init__(self, *args, **kwargs):
-        
-    #     super(MyCustomSignupForm, self).__init__(*args, **kwargs)

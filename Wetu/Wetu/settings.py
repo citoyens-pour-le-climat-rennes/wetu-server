@@ -17,7 +17,7 @@ import json
 import datetime
 
 from mongoengine import *
-connect('Wetu')
+connect('Wetu2')
 
 with open('/data/wetu/settings.json') as f:
     localSettings = json.loads(f.read().strip())
@@ -171,6 +171,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.template.context_processors.debug',
                 'django.contrib.messages.context_processors.messages',
+                'draw.context_processors.settings_context_processor'
             ],
         },
     },
@@ -250,9 +251,6 @@ ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
 ACCOUNT_UNIQUE_EMAIL = True 
 ACCOUNT_ADAPTER = 'Wetu.adapter.AccountAdapterCD'
-ACCOUNT_FORMS = {
-    'signup': 'draw.views.MyCustomSignupForm'
-}
 # ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 
 # Dictionary containing provider specific settings.
