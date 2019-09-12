@@ -3476,79 +3476,79 @@ def importObject(path, name, Object):
 
 def importDB(path):
 
-	importObject(path, 'users', UserProfile)
-	importObject(path, 'cities', City)
-	importObject(path, 'votes', Vote)
-	importObject(path, 'comments', Comment)
+	# importObject(path, 'users', UserProfile)
+	# importObject(path, 'cities', City)
+	# importObject(path, 'votes', Vote)
+	# importObject(path, 'comments', Comment)
 
-	# file = open(path + 'drawings.json', 'r')
-	# drawings = json.loads(file.read())
-	# n = 0
-	# for drawing in drawings:
+	file = open(path + 'drawings.json', 'r')
+	drawings = json.loads(file.read())
+	n = 0
+	for drawing in drawings:
 
-	# 	try:
-	# 		city = City.objects.get(pk=drawing['city'])
-	# 	except City.DoesNotExist:
-	# 		continue
+		try:
+			city = City.objects.get(pk=drawing['city'])
+		except City.DoesNotExist:
+			continue
 
-	# 	try:
-	# 		drawing = Drawing.objects.get(pk=drawing['_id']['$oid'])
-	# 		drawing['box'] = makeBoxFromBounds2(city, {'x': 0, 'y': 0, 'width': 10, 'height': 10})
-	# 		drawing.save()
-	# 		continue
-	# 	except Drawing.DoesNotExist:
-	# 		pass
+		try:
+			drawing = Drawing.objects.get(pk=drawing['_id']['$oid'])
+			drawing['box'] = makeBoxFromBounds2(city, {'x': 0, 'y': 0, 'width': 10, 'height': 10})
+			drawing.save()
+			continue
+		except Drawing.DoesNotExist:
+			pass
 
 
-	# 	drawing['previousStatus'] = 'unknown'
-	# 	if 'bounds' in drawing:
-	# 		del drawing['bounds']
-	# 	xMin = None
-	# 	xMax = None
-	# 	yMin = None
-	# 	yMax = None
+		drawing['previousStatus'] = 'unknown'
+		if 'bounds' in drawing:
+			del drawing['bounds']
+		xMin = None
+		xMax = None
+		yMin = None
+		yMax = None
 		
-	# 	if 'pathList' not in drawing:
-	# 		continue
+		if 'pathList' not in drawing:
+			continue
 
-	# 	pathList = drawing['pathList']
-	# 	newPathList = []
-	# 	m = 0
-	# 	for pathString in pathList:
-	# 		# for point in path['points']:
-	# 		points = json.loads(pathString)
-	# 		# for i in range(0, len(points), 4):
-	# 		# 	if xMin == None or xMin > points[i]['x']:
-	# 		# 		xMin = points[i]['x']
-	# 		# 	if xMax == None or xMax < points[i]['x']:
-	# 		# 		xMax = points[i]['x']
+		pathList = drawing['pathList']
+		newPathList = []
+		m = 0
+		for pathString in pathList:
+			# for point in path['points']:
+			points = json.loads(pathString)
+			# for i in range(0, len(points), 4):
+			# 	if xMin == None or xMin > points[i]['x']:
+			# 		xMin = points[i]['x']
+			# 	if xMax == None or xMax < points[i]['x']:
+			# 		xMax = points[i]['x']
 				
-	# 		# 	if yMin == None or yMin > points[i]['y']:
-	# 		# 		yMin = points[i]['y']
-	# 		# 	if yMax == None or yMax < points[i]['y']:
-	# 		# 		yMax = points[i]['y']
+			# 	if yMin == None or yMin > points[i]['y']:
+			# 		yMin = points[i]['y']
+			# 	if yMax == None or yMax < points[i]['y']:
+			# 		yMax = points[i]['y']
 
-	# 		newPathList.append(json.dumps({'points': points, 'data': { 'strokeColor': 'black' } }))
-	# 		m += 1
+			newPathList.append(json.dumps({'points': points, 'data': { 'strokeColor': 'black' } }))
+			m += 1
 		
-	# 	n += 1
+		n += 1
 
-	# 	drawing['pathList'] = newPathList
-	# 	n += 1
+		drawing['pathList'] = newPathList
+		n += 1
 
-	# 	# xMin *= 1000
-	# 	# yMin *= 1000
-	# 	# xMax *= 1000
-	# 	# yMax *= 1000
+		# xMin *= 1000
+		# yMin *= 1000
+		# xMax *= 1000
+		# yMax *= 1000
 
-	# 	# drawing['box'] = makeBoxFromBounds2(city, {'x': xMin, 'y': yMin, 'width': xMax-xMin, 'height': yMax-yMin})
-	# 	drawing['box'] = makeBoxFromBounds2(city, {'x': 0, 'y': 0, 'width': 10, 'height': 10})
+		# drawing['box'] = makeBoxFromBounds2(city, {'x': xMin, 'y': yMin, 'width': xMax-xMin, 'height': yMax-yMin})
+		drawing['box'] = makeBoxFromBounds2(city, {'x': 0, 'y': 0, 'width': 10, 'height': 10})
 
-	# 	try:
-	# 		do = Drawing.from_json(json.dumps(drawing))
-	# 		do.save(force_insert=True)
-	# 	except NotUniqueError:
-	# 		continue
+		try:
+			do = Drawing.from_json(json.dumps(drawing))
+			do.save(force_insert=True)
+		except NotUniqueError:
+			continue
 
 	return
 
