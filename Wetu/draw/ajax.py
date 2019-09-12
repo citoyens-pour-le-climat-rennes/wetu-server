@@ -3476,10 +3476,10 @@ def importObject(path, name, Object):
 
 def importDB(path):
 
-	# importObject(path, 'users', UserProfile)
-	# importObject(path, 'cities', City)
-	# importObject(path, 'votes', Vote)
-	# importObject(path, 'comments', Comment)
+	importObject(path, 'users', UserProfile)
+	importObject(path, 'cities', City)
+	importObject(path, 'votes', Vote)
+	importObject(path, 'comments', Comment)
 
 	file = open(path + 'drawings.json', 'r')
 	drawings = json.loads(file.read())
