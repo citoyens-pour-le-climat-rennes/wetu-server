@@ -3463,7 +3463,6 @@ def makeBoxFromBounds2(city, bounds):
 	bounds = projectToGeoJSON2(city, bounds)
 	return makeBox2(bounds['x'], bounds['y'], bounds['x'] + bounds['width'], bounds['y'] + bounds['height'])
 
-path = '/Users/Arthur/Projects/Wetu/exports/'
 
 def importObject(name, Object):
 	global path
@@ -3475,13 +3474,12 @@ def importObject(name, Object):
 		objects.save(force_insert=True)
 	return
 
-def importDB():
+def importDB(path):
 
 	# importObject('users', UserProfile)
 	# importObject('cities', City)
 	# importObject('votes', Vote)
 	# importObject('comments', Comment)
-	global path
 
 	file = open(path + 'drawings.json', 'r')
 	drawings = json.loads(file.read())

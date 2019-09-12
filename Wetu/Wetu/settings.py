@@ -17,7 +17,7 @@ import json
 import datetime
 
 from mongoengine import *
-connect('Wetu2')
+connect('Wetu')
 
 with open('/data/wetu/settings.json') as f:
     localSettings = json.loads(f.read().strip())
