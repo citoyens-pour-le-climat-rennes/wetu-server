@@ -3536,6 +3536,10 @@ def importDB(path):
 		drawing['pathList'] = newPathList
 		n += 1
 
+		if drawing['status'] not in ['draft', 'pending', 'rejected', 'validated', 'drawing', 'drawn', 'flagged', 'flagged_pending']:
+			print('Drawing status is not valid: ' + drawing['status'] + ', setting to rejected')
+			drawing['status'] = 'rejected'
+
 		# xMin *= 1000
 		# yMin *= 1000
 		# xMax *= 1000
@@ -3550,20 +3554,4 @@ def importDB(path):
 		except NotUniqueError:
 			continue
 
-	return
-
-def downscaleBoxes():
-	for drawing in Drawing.objects:
-		try:
-			city = City.objects.get(pk=drawing.city)
-			if drawing.box:
-				bounds = makeBoundsFromBox(city, drawing.box)
-				bounds['x'] *= 0.5
-				bounds['y'] *= 0.5
-				bounds['width'] *= 0.5
-				bounds['height'] *= 0.5
-				drawing.box = makeBoxFromBounds(city, bounds)
-				drawing.save()
-		except:
-			pass
 	return
