@@ -23,13 +23,11 @@
     <title>Comme un Dessein</title>
 
     <link href="{% static 'libs/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{% static 'libs/fullpage.min.css' %}" />
-    <link rel="stylesheet" type="text/css" href="{% static 'libs/Chart.min.css' %}" />
 
     <link href="{% static 'css/welcome-commeundessein-styles.css' %}" rel="stylesheet">
     <!-- <link href="https://fonts.googleapis.com/css?family=Amatic+SC" rel="stylesheet"> -->
     <!-- <link href="https://fonts.googleapis.com/css?family=Mali|Open+Sans:400,700" rel="stylesheet"> -->
-    <link href="https://fonts.googleapis.com/css?family=Amatic+SC|Karla|Roboto|Coming+Soon|Lato:300,700|Open+Sans:300,400,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600&display=swap" rel="stylesheet">
 
     <meta property="fb:app_id"          content="263330707483013" /> 
     <meta property="og:type"            content="article" /> 
@@ -161,14 +159,15 @@
   <div id="background" class="hidden"></div>
   <div id="login-form" class="hidden"></div>
   <div id="select-edition" class="popup hidden">
+    <button class="close-button">x</button>
     <h3>Edition en cours</h3>
 
-      <ul class="button-list cd-column editions" data-authenticated="False">
+      <ul class="button-list cd-column editions">
         <li><a href="/atelier-commun/">Atelier Commun</a></li>
       </ul>
 
     <h3>Editions passées</h3>
-      <ul class="button-list cd-column editions" data-authenticated="False">
+      <ul class="button-list cd-column editions">
         <li><a href="/nantes-maker-campus/">Nantes Maker Campus</a></li>
         <li><a href="/safra-numeriques/">Safra'Numériques</a></li>
         <li><a href="/tech-inn-vitre/">Tech Inn'Vitré</a></li>
@@ -177,39 +176,6 @@
       </ul>
   </div>
 
-    <div class="cd-welcome-container cd-column cd-grow">
-      <div class="cd-column cd-center cd-grow">
-        
-<!--         <div class="cd-column">
-            
-            <div class="intro-badge"> <span class="badge">1</span> Une application en ligne pour créer une fresque collective.</div>
-
-            <div class="intro-badge"> <span class="badge">2</span> Tout le monde dessine un morceau de la fresque.</div>
-
-            <div class="intro-badge"> <span class="badge">3</span> La fresque est assemblée sur une place publique.</div>
-
-        </div>
- -->
-        
-                
-
-<!-- 
-            <input type="checkbox" id="participate-event-500" name="participate-event"> <label for="participate-event-500">au rassemblement de 500 &#13217;.</label><br>
-            <input type="checkbox" id="participate-event-2500" name="participate-event"> <label for="participate-event-2500">au rassemblement de 2500 &#13217;.</label><br>
-            <input type="checkbox" id="participate-event-10000" name="participate-event"> <label for="participate-event-10000">au rassemblement de 10000 &#13217;.</label><br> -->
-         
-
-
-        <ul class="button-list cd-column editions hidden" data-authenticated="{{ is_authenticated }}">
-          <!-- <li><a href="/nantes-maker-campus/">Nantes Maker Campus</a></li>
-          <li><a href="/safra-numeriques/">Safra'Numériques</a></li>
-          <li><a href="/tech-inn-vitre/">Tech Inn'Vitré</a></li>
-          <li><a href='/festival-maintenant/'>Festival Maintenant</a></li> -->
-        </ul>
-
-
-      </div>
-    </div>
 
     <!-- <script type="text/javascript" src="{% static 'libs/fullpage.js' %}"></script> -->
     <!-- <script type="text/javascript" src="{% static 'libs/Chart.min.js' %}"></script> -->

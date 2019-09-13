@@ -20,6 +20,14 @@ $.ajaxSetup beforeSend: (xhr, settings) ->
 		xhr.setRequestHeader 'X-CSRFToken', getCookie('csrftoken')
 	return
 
+onResizeWindow = (event)=>
+	videoWidth = 800
+	videoHeight = 450
+	finalWidth = Math.min(window.innerWidth - 100, videoWidth)
+	finalHeight = Math.min(videoHeight * finalWidth / videoWidth, videoHeight)
+	$('#intro-video iframe').width(finalWidth).height(finalHeight)
+	return
+
 sectionIndex = 0
 nQuestions = 4
 nSections = 6
@@ -29,6 +37,18 @@ finished = false
 validateEmail = (email)->
   re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   return re.test(email)
+
+closeLoginForm = ()->
+	loginForm = $('#login-form')
+	loginForm.hide().removeClass('visible')
+	$('#background').addClass('hidden')
+	return
+
+closeSelectEdition = ()->
+	selectEditionForm = $('#select-edition')
+	selectEditionForm.hide().removeClass('visible')
+	$('#background').addClass('hidden')
+	return
 
 loadLoginForm = ()->
 
@@ -48,6 +68,8 @@ loadLoginForm = ()->
 		localStorage.setItem('just-logged-in', 'true')
 		localStorage.setItem('selected-edition', location.pathname)
 
+		closeButton = $('<button>').text('x').addClass('close-button').click(closeLoginForm)
+		$('#login-form').prepend(closeButton)
 		$('#login-form').removeClass('hidden').show().addClass('visible')
 		return
 	)
@@ -85,13 +107,17 @@ $(document).ready () ->
 	# })
 
 	# fullpage_api.setAllowScrolling(false)
+	
+	onResizeWindow()
+
+	window.onresize = onResizeWindow
 
 	justLoggedIn = localStorage.getItem('just-logged-in') == 'true'
 	
 	if justLoggedIn
 		localStorage.removeItem('just-logged-in')
 
-	if localStorage.getItem('selected-edition') != null && justLoggedIn && $('.editions').attr('data-authenticated') == 'True'
+	if localStorage.getItem('selected-edition') != null && justLoggedIn && $('body').attr('data-authenticated') == 'True'
 		window.location = localStorage.getItem('selected-edition')
 		return
 
@@ -111,15 +137,15 @@ $(document).ready () ->
 	document.addEventListener("click", (event)->
 		loginForm = $('#login-form')
 		if loginForm.get(0) != event.target and (not jQuery.contains( loginForm.get(0), event.target )) and loginForm.hasClass('visible')
-			loginForm.hide().removeClass('visible')
-			$('#background').addClass('hidden')
+			closeLoginForm()
 		
 		selectEditionForm = $('#select-edition')
 		if selectEditionForm.get(0) != event.target and (not jQuery.contains( selectEditionForm.get(0), event.target )) and selectEditionForm.hasClass('visible')
-			selectEditionForm.hide().removeClass('visible')
-			$('#background').addClass('hidden')
+			closeSelectEdition()
 
 		return)
+
+	$('#select-edition .close-button').click(closeSelectEdition)
 
 	$('#app-button').click (event)->
 		# location.pathname = 'demo'

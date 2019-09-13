@@ -107,7 +107,7 @@ ul.button-list li span.title {
   margin-left: 5px;
 }
 #background {
-  position: absolute;
+  position: fixed;
   top: 0;
   bottom: 0;
   left: 0;
@@ -126,7 +126,7 @@ ul.button-list li span.title {
 }
 #login-form,
 .popup {
-  position: absolute;
+  position: fixed;
   background: white;
   padding: 60px;
   width: 600px;
@@ -141,6 +141,19 @@ ul.button-list li span.title {
 #login-form form,
 .popup form {
   padding-top: 20px;
+}
+.close-button {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  background-color: #cacaca3d;
+  border: none;
+  border-radius: 50px;
+  color: #242424;
+  width: 30px;
+  height: 30px;
+  line-height: 0px;
+  padding-top: 0px;
 }
 .cd-title {
   margin-top: 60px;

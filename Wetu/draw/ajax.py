@@ -103,6 +103,7 @@ def sendEmails():
 				title = applicationName + ' - ' + 'Notifications'
 				fromMail = 'contact@commeundessein.co'
 				send_mail(title, message, fromMail, [owner.email], fail_silently=True)
+
 				user.emailNotifications = []
 				user.save()
 
@@ -1007,8 +1008,6 @@ def loadDrawingsAndTilesFromBounds(request, bounds, cityName=None, drawingsToIgn
 	box = makeBoxFromBounds(city, bounds)
 	# box = makeBoxCCWFromBounds(city, bounds)
 	# box = makeTLBRFromBounds(city, bounds)
-
-	print(box)
 
 	drawings = None
 
