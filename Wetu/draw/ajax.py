@@ -2630,7 +2630,7 @@ def vote(request, pk, date, positive, itemType='drawing'):
 	if item.owner == request.user.username:
 		return json.dumps({'state': 'error', 'message': 'You cannot vote for your own ' + itemType})
 
-	if itemType == 'drawing' and isDrawingStatusValidated(item):
+	if itemType == 'drawing' and isDrawingStatusValidated(item) and not user.admin:
 		return json.dumps({'state': 'error', 'message': 'The drawing is already validated.'})
 
 	# if drawing.status == 'emailNotConfirmed':
