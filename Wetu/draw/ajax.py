@@ -2499,16 +2499,16 @@ def updateDrawingState(drawingPk=None, drawing=None, unflag=False):
 
 	drawingStateChanged = False
 
-	actionName = ''
+	actionName = u''
 	if isDrawingValidated(city, nPositiveVotes, nNegativeVotes) and drawing.status == 'pending':
 		drawing.status = 'validated'
-		actionName = 'validé'
+		actionName = u'validé'
 		drawing.save()
 		drawingStateChanged = True
 	elif isDrawingRejected(city, nNegativeVotes) and drawing.status == 'pending':
 		# drawingWasActive = drawing.status == 'pending' or drawing.status == 'validated' or drawing.status == 'created' or drawing.status == 'drawing'
 		drawing.status = 'rejected'
-		actionName = 'rejeté'
+		actionName = u'rejeté'
 		drawing.save()
 		# if drawingWasActive:
 		removeDrawingFromRasters(city, drawing, 'active')
@@ -2516,7 +2516,7 @@ def updateDrawingState(drawingPk=None, drawing=None, unflag=False):
 		drawingStateChanged = True
 	elif (drawing.status == 'flagged' or drawing.status == 'flagged_pending') and unflag: 	# not accepted nor rejected: it was pending
 		drawing.status = drawing.previousStatus
-		actionName = 'modéré'
+		actionName = u'modéré'
 		drawing.save()
 		layerName = 'inactive' if drawing.status == 'rejected' else 'active'
 		updateRastersFromDrawing(city, drawing, layerName)

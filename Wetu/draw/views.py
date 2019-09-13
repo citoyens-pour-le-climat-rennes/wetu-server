@@ -32,7 +32,7 @@ def addCityToResult(result, city):
 	result['cityEventDate'] = str(city.eventDate)
 	result['cityEventLocation'] = city.eventLocation
 	result['cityMessage'] = city.message
-	result['cityStrokeWidth'] = city.strokeWidth
+	result['cityStrokeWidth'] = str(city.strokeWidth)
 	result['cityWidth'] = city.width
 	result['cityHeight'] = city.height
 	result['cityUseSVG'] = city.useSVG
