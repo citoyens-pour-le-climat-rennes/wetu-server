@@ -37,6 +37,7 @@ from mongoengine.queryset import Q
 import time
 
 from PIL import Image, ImageChops
+import colorsys
 import cStringIO
 import StringIO
 import traceback
@@ -48,7 +49,7 @@ from allauth.socialaccount.models import SocialToken
 from allauth.account.signals import email_confirmed, email_confirmation_sent
 
 import base64
-
+import subprocess
 
 # from github3 import authorize
 
@@ -299,7 +300,7 @@ def setVoteThresholds(request, cityName, positiveVoteThreshold=10, negativeVoteT
 	
 	city = getCity(cityName)
 	if not city:
-		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
+		return json.dumps( { 'state': 'error', 'message': 'The city does not exist', 'code': 'CITY_DOES_NOT_EXIST' } )
 
 	city.positiveVoteThreshold = positiveVoteThreshold
 	city.negativeVoteThreshold = negativeVoteThreshold
@@ -324,7 +325,7 @@ def setVoteValidationDelay(request, cityName, hours, minutes, seconds):
 	
 	city = getCity(cityName)
 	if not city:
-		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
+		return json.dumps( { 'state': 'error', 'message': 'The city does not exist', 'code': 'CITY_DOES_NOT_EXIST' } )
 
 	city.voteValidationDelay = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds).total_seconds()
 	city.save()
@@ -336,7 +337,7 @@ def setVoteMinDuration(request, cityName, hours, minutes, seconds):
 
 	city = getCity(cityName)
 	if not city:
-		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
+		return json.dumps( { 'state': 'error', 'message': 'The city does not exist', 'code': 'CITY_DOES_NOT_EXIST' } )
 
 	city.voteMinDuration = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds).total_seconds()
 	city.save()
@@ -348,7 +349,7 @@ def setCityNextEventDateAndLocation(request, cityName, date, location):
 
 	city = getCity(cityName)
 	if not city:
-		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
+		return json.dumps( { 'state': 'error', 'message': 'The city does not exist', 'code': 'CITY_DOES_NOT_EXIST' } )
 
 	city.eventDate = datetime.datetime.fromtimestamp(date/1000.0)
 	city.eventLocation = location
@@ -361,7 +362,7 @@ def setCityDimensions(request, cityName, width, height, strokeWidth):
 
 	city = getCity(cityName)
 	if not city:
-		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
+		return json.dumps( { 'state': 'error', 'message': 'The city does not exist', 'code': 'CITY_DOES_NOT_EXIST' } )
 
 	city.width = width
 	city.height = height
@@ -905,7 +906,7 @@ def loadDraft(request, cityName=None):
 	city = getCity(cityName)
 
 	if not city:
-		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
+		return json.dumps( { 'state': 'error', 'message': 'The city does not exist', 'code': 'CITY_DOES_NOT_EXIST' } )
 
 	cityPk = str(city.pk)
 
@@ -950,7 +951,7 @@ def loadDraft(request, cityName=None):
 
 # 	(cityPk, cityFinished) = getCity(request, city)
 # 	if not cityPk:
-# 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
+# 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist', 'code': 'CITY_DOES_NOT_EXIST' } )
 
 # 	statusToLoad = ['pending', 'drawing', 'drawn', 'rejected']
 
@@ -974,7 +975,7 @@ def loadDraft(request, cityName=None):
 
 # 	(cityPk, cityFinished) = getCity(request, city)
 # 	if not cityPk:
-# 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
+# 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist', 'code': 'CITY_DOES_NOT_EXIST' } )
 
 # 	# tiles = Tile.objects(city=cityPk, x__in=range(xMin, xMax), y__in=range(yMin, yMax))
 # 	tiles = Tile.objects(city=cityPk, x__gte=xMin, x__lt=xMax, y__gte=yMin, y__lt=yMax).only('status', 'pk', 'x', 'y')
@@ -983,12 +984,12 @@ def loadDraft(request, cityName=None):
 
 @checkSimulateSlowResponse
 @checkDebug
-def loadDrawingsAndTilesFromBounds(request, bounds, cityName=None, drawingsToIgnore=[], tilesToIgnore=[], rejected=False):
+def loadDrawingsAndTilesFromBounds(request, bounds, cityName=None, drawingsToIgnore=[], tilesToIgnore=[], discussionsToIgnore=[], rejected=False):
 
 	city = getCity(cityName)
 	
 	if not city:
-		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
+		return json.dumps( { 'state': 'error', 'message': 'The city does not exist', 'code': 'CITY_DOES_NOT_EXIST' } )
 
 	cityPk = str(city.pk)
 
@@ -1028,7 +1029,12 @@ def loadDrawingsAndTilesFromBounds(request, bounds, cityName=None, drawingsToIgn
 	# tiles = Tile.objects(city=cityPk, box__geo_within_polygon=box["coordinates"][0], pk__nin=tilesToIgnore).only(*fields)
 	# tiles = Tile.objects(city=cityPk, box__geo_within_box=box, pk__nin=tilesToIgnore).only(*fields)
 
-	return json.dumps( { 'tiles': tiles.to_json(), 'items': items, 'user': request.user.username } )
+	discussions = None
+
+	# fields = ['title', 'pk', 'box', 'clientId']
+	discussions = Discussion.objects(city=cityPk, box__geo_intersects=box, pk__nin=discussionsToIgnore)
+
+	return json.dumps( { 'tiles': tiles.to_json(), 'items': items, 'discussions': discussions.to_json(), 'user': request.user.username } )
 
 
 # @checkDebug
@@ -1038,7 +1044,7 @@ def loadDrawingsAndTilesFromBounds(request, bounds, cityName=None, drawingsToIgn
 
 # 	(cityPk, cityFinished) = getCity(request, city)
 # 	if not cityPk:
-# 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
+# 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist', 'code': 'CITY_DOES_NOT_EXIST' } )
 
 # 	try:
 # 		userProfile = UserProfile.objects.get(username=request.user.username)
@@ -1103,7 +1109,7 @@ def emailIsConfirmed(request, userProfile=None):
 
 # 	(cityPk, cityFinished) = getCity(request, city)
 # 	if not cityPk:
-# 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
+# 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist', 'code': 'CITY_DOES_NOT_EXIST' } )
 
 # 	try:
 # 		userProfile = UserProfile.objects.get(username=request.user.username)
@@ -1180,7 +1186,7 @@ def loadVotes(request, cityName=None):
 
 # 	(city, cityFinished) = getCity(request, city)
 # 	if not city:
-# 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.' } )
+# 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist' } )
 
 # 	models = ['Path', 'Box']
 # 	items = getItems(models, areasToLoad, 1, city, checkAddItemRasterizer, itemsDates)
@@ -1231,7 +1237,7 @@ def saveDrawing(request, clientId, cityName, date, title, description=None, poin
 	city = getCity(cityName)
 	
 	if not city:
-		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
+		return json.dumps( { 'state': 'error', 'message': 'The city does not exist', 'code': 'CITY_DOES_NOT_EXIST' } )
 
 	cityPk = str(city.pk)
 
@@ -1411,6 +1417,100 @@ def submitDrawing(request, pk, clientId, svg, date, bounds, title=None, descript
 
 	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(drawing.pk), 'status': drawing.status, 'negativeVoteThreshold': city.negativeVoteThreshold, 'positiveVoteThreshold': city.positiveVoteThreshold, 'voteMinDuration': city.voteMinDuration, 'draft': draft.to_json() } )
 
+
+@checkSimulateSlowResponse
+@checkDebug
+def submitDiscussion(request, clientId, title, cityName, bounds):
+
+	if not request.user.is_authenticated():
+		return json.dumps({'state': 'not_logged_in'})
+	
+	try:
+		userProfile = UserProfile.objects.get(username=request.user.username)
+	except UserProfile.DoesNotExist:
+		return json.dumps( { 'status': 'error', 'message': 'The user profile does not exist.' } )
+	
+	if userProfile.banned:
+		return json.dumps({'state': 'error', 'message': 'Your account has been suspended'})
+
+	if not emailIsConfirmed(request, userProfile):
+		return json.dumps({'state': 'error', 'message': 'Please confirm your email'})
+
+	city = getCity(cityName)
+	
+	if not city:
+		return json.dumps( { 'state': 'error', 'message': 'The city does not exist', 'code': 'CITY_DOES_NOT_EXIST' } )
+
+	cityPk = str(city.pk)
+
+	discussion = Discussion(clientId=clientId, city=str(city.pk), title=title, owner=request.user.username, author=userProfile)
+	discussion.box = makeBoxFromBounds(city, bounds)
+
+	try:
+		discussion.save()
+	except NotUniqueError:
+		return json.dumps({'state': 'error', 'message': 'A discussion with this clientId already exists.'})
+	
+	drawingChanged.send(sender=None, type='new', clientId=discussion.clientId, pk=str(discussion.pk), city=city.name, itemType='discussion', bounds=bounds)
+
+	# Create new draft and return it
+
+	clientId = '' + str(datetime.datetime.now()) + str(random.random())
+
+	return json.dumps( {'state': 'success', 'owner': request.user.username, 'pk':str(discussion.pk) } )
+
+@checkSimulateSlowResponse
+@checkDebug
+def loadDiscussion(request, pk):
+	try:
+		discussion = Discussion.objects.get(pk=pk)
+	except Discussion.DoesNotExist:
+		return json.dumps({'state': 'error', 'message': 'Element does not exist'})
+	
+	return json.dumps( {'state': 'success', 'discussion': discussion.to_json() } )
+
+
+@checkSimulateSlowResponse
+@checkDebug
+def updateDiscussion(request, pk, title, bounds):
+
+	if not request.user.is_authenticated():
+		return json.dumps({'state': 'not_logged_in'})
+	
+	try:
+		userProfile = UserProfile.objects.get(username=request.user.username)
+	except UserProfile.DoesNotExist:
+		return json.dumps( { 'status': 'error', 'message': 'The user profile does not exist.' } )
+	
+	if userProfile.banned:
+		return json.dumps({'state': 'error', 'message': 'Your account has been suspended'})
+
+	if not emailIsConfirmed(request, userProfile):
+		return json.dumps({'state': 'error', 'message': 'Please confirm your email'})
+
+	try:
+		discussion = Discussion.objects.get(pk=pk)
+	except Discussion.DoesNotExist:
+		return json.dumps( { 'state': 'error', 'message': 'The discussion does not exist' } )
+
+
+	try:
+		city = City.objects.get(pk=discussion.city)
+	except City.DoesNotExist:
+		return json.dumps({'state': 'info', 'message': "The city is does not exist"})
+
+	cityPk = str(city.pk)
+
+	discussion.box = makeBoxFromBounds(city, bounds)
+	discussion.title = title
+
+	discussion.save()
+
+	# drawingChanged.send(sender=None, type='new', clientId=discussion.clientId, pk=str(discussion.pk), city=city.name, itemType='discussion', bounds=bounds)
+
+	return json.dumps( {'state': 'success' } )
+
+
 @checkSimulateSlowResponse
 @checkDebug
 def updateDrawingBox(request, pk, clientId, bounds):
@@ -1464,7 +1564,7 @@ def submitTile(request, number, x, y, bounds, clientId, cityName):
 	city = getCity(cityName)
 	
 	if not city:
-		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
+		return json.dumps( { 'state': 'error', 'message': 'The city does not exist', 'code': 'CITY_DOES_NOT_EXIST' } )
 
 	cityPk = str(city.pk)
 
@@ -2262,6 +2362,34 @@ def deleteDrawing(request, pk):
 
 @checkSimulateSlowResponse
 @checkDebug
+def deleteDiscussion(request, pk):
+
+	if not request.user.is_authenticated():
+		return json.dumps({'state': 'not_logged_in'})
+
+	try:
+		discussion = Discussion.objects.get(pk=pk)
+	except Discussion.DoesNotExist:
+		return json.dumps({'state': 'error', 'message': 'Element does not exist for this user.'})
+
+	try:
+		city = City.objects.get(pk=discussion.city)
+		if city.finished:
+			return json.dumps({'state': 'info', 'message': "The installation is over"})
+	except City.DoesNotExist:
+		return json.dumps({'state': 'error', 'message': "The city does not exist"})
+
+	if not userAllowed(request, discussion.owner):
+		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
+
+	discussion.delete()
+
+	drawingChanged.send(sender=None, type='delete', clientId=discussion.clientId, pk=str(discussion.pk), itemType='discussion')
+
+	return json.dumps( { 'state': 'success', 'pk': pk } )
+
+@checkSimulateSlowResponse
+@checkDebug
 def cancelDrawing(request, pk):
 
 	if not request.user.is_authenticated():
@@ -2438,7 +2566,7 @@ def removeDeadReferences(request):
 
 # 	city = getCity(cityName)
 # 	if not city:
-# 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
+# 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist', 'code': 'CITY_DOES_NOT_EXIST' } )
 
 # 	paths = Path.objects(owner=request.user.username, isDraft=True, city=str(city.pk))
 # 	items = []
@@ -2953,7 +3081,7 @@ def getNextValidatedDrawing(request, cityName, secret):
 
 	city = getCity(cityName)
 	if not city:
-		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
+		return json.dumps( { 'state': 'error', 'message': 'The city does not exist', 'code': 'CITY_DOES_NOT_EXIST' } )
 	
 	drawings = Drawing.objects(status='validated', city=str(city.pk))
 
@@ -3045,7 +3173,7 @@ def setDrawingStatusDrawn(request, pk, secret):
 	
 # 	city = getCity(cityName)
 # 	if not city:
-# 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist.', 'code': 'CITY_DOES_NOT_EXIST' } )
+# 		return json.dumps( { 'state': 'error', 'message': 'The city does not exist', 'code': 'CITY_DOES_NOT_EXIST' } )
 
 # 	try:
 # 		drawing = Drawing.objects.get(pk=pk)
@@ -3554,3 +3682,50 @@ def importDB(path):
 			continue
 
 	return
+
+
+
+
+def autoTrace(request, png):
+
+	if not request.user.is_authenticated():
+		return json.dumps({'state': 'not_logged_in'})
+	
+	try:
+		userProfile = UserProfile.objects.get(username=request.user.username)
+	except UserProfile.DoesNotExist:
+		return json.dumps( { 'status': 'error', 'message': 'The user profile does not exist.' } )
+	
+	if userProfile.banned:
+		return json.dumps({'state': 'error', 'message': 'Your account has been suspended'})
+
+	if not emailIsConfirmed(request, userProfile):
+		return json.dumps({'state': 'error', 'message': 'Please confirm your email'})
+
+	imgstr = re.search(r'base64,(.*)', png).group(1)
+	imageData = imgstr.decode('base64')
+	
+	try:
+		image = Image.open(StringIO.StringIO(imageData))
+		# image = image.convert('L', None, Image.FLOYDSTEINBERG) # Binarize image: not necessary if options --color-count 1 is specified to autotrace
+		# hsv = image.convert('HSV') # WARNING: NOT WORKING, NOT SUPPORTED!!
+		# h, s, v = hsv.split()
+		# imageGrayscale = ImageChops.darker(ImageChops.invert(s), v)
+		# blurredImage = imageGrayscale.filter(ImageFilter.GaussianBlur(15))
+		# subtraction = ImageChops.subtract(imageGrayscale, blurredImage)
+		# finalImage = subtraction.point(lambda i: 255 if i < 12 else 0)
+		finalImage = image.point(lambda i: 255 if i > 128 else 0)
+		finalImage.save('Wetu/media/imageToSVG.bmp', 'BMP')
+		# command = 'autotrace -centerline -color-count 2 -output-format svg Wetu/media/imageToSVG.bmp'.split()
+		command = 'autotrace -centerline -output-format svg Wetu/media/imageToSVG.bmp'.split()
+
+		process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+		stdout, stderr = process.communicate()
+
+		return json.dumps( {'state': 'success' if not stderr else 'error', 'svg': stdout, 'error': stderr } )
+
+	except IOError:
+		pass
+
+	return json.dumps( { 'state': 'error', 'message': 'impossible to read image.'} )
+

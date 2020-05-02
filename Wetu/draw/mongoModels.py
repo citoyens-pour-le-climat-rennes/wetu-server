@@ -79,6 +79,22 @@ class Tile(Document):
 Tile.register_delete_rule(Vote, 'tile', CASCADE)
 Tile.register_delete_rule(Comment, 'tile', CASCADE)
 
+class Discussion(Document):
+    clientId = StringField(required=True, unique=True)
+    author = ReferenceField('UserProfile', required=True)
+    title = StringField()
+    owner = StringField(required=True)
+    city = StringField(required=True)
+    box = PolygonField()
+    date = DateTimeField(default=datetime.datetime.now, required=True)
+    # votes = ListField(ReferenceField('Vote', reverse_delete_rule=PULL))
+
+    meta = {
+        'indexes': [ "city", [ ("box", "2dsphere") ], "#author" ]
+    }
+
+# Discussion.register_delete_rule(Vote, 'discussion', CASCADE)
+
 @receiver(user_signed_up, dispatch_uid="_allauth.user_signed_up")
 def createUserProfile(sender, user, **kwargs):
     profile = UserProfile(username=user.username)

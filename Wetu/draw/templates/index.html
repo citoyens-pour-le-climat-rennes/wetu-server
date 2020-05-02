@@ -37,6 +37,7 @@
 
     <!-- Bootstrap core CSS -->
     <link href="{% static 'libs/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
     <!-- <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet"> -->
     <!-- <link href="{% static 'libs/bootstrap.min.css' %}" rel="stylesheet"> -->
     <!-- <link href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-modal/2.2.5/css/bootstrap-modal.css" rel="stylesheet"> -->
@@ -46,13 +47,17 @@
     <!-- <link href="{% static 'libs/bootstrap-colorpickersliders/bootstrap.colorpickersliders.css' %}" rel="stylesheet"> -->
     <!-- <link href="{% static 'libs/jqtree/jqtree.css' %}" rel="stylesheet"> -->
     <!-- <link href="{% static 'libs/slider.css' %}" rel="stylesheet"> -->
+
+    <link href="{% static 'libs/cropper/cropper.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/biostar.css' %}" rel="stylesheet">
     <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+
     <!-- Latest compiled and minified CSS -->
 
     {% if isCommeUnDessein %}
       <link href="https://fonts.googleapis.com/css?family=Amatic+SC|Open+Sans:400,700" rel="stylesheet">
     {% else %}
-      <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css?family=Patrick+Hand|Open+Sans:300,400,700" rel="stylesheet">
     {% endif %}
 
     <!-- <link href="https://fonts.googleapis.com/css?family=Coming+Soon|Open+Sans:400,700&display=swap" rel="stylesheet"> -->
@@ -75,7 +80,9 @@
     
   </head>
 
-  <body>
+  <body draggable="true">
+    
+
     <div id="FavoriteTools" class="cd-row">
       <h3 class="title"> 
         <!-- <img class="title-img" src="{% static 'images/icons/logo48.png' %}" alt="commeUnDessein_logo"/> -->
@@ -616,7 +623,7 @@
                     </div>  <!-- no selection  -->
 
 
-                    <div class="cd-column">
+                    <div id="drawing-thumbnail" class="cd-column">
 
                       <div class="thumbnail drawing-thumbnail">
                       </div>
@@ -810,6 +817,17 @@
                         <button class="cd-grow btn btn-success original-color start-discussion" type="button"><span class="glyphicon glyphicon-comment"></span><span data-i18n="Participate in discussion" class='text'>Participate in discussion</span></button>
 
                       </div>
+                      
+                      <div class="cd-column cd-end discussion-container">
+                        <div class="cd-row comment-header">
+                          <h4>Discussion</h4>
+                        </div>
+
+                        <div id="discussion-content" class="cd-column discussion">
+                          
+                        </div>
+
+                      </div>
 
                     </form>
 
@@ -924,11 +942,17 @@
         <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> <span class="text" data-i18n='Loading'>Loading</span>...
       </div>
     </div>
-    <!-- <div id="dropMessage" class="">
+    <div id="camera">
+      <button id="cancel-photo" class="btn"><span class="glyphicon glyphicon-remove" aria-hidden="true"> </button>
+      <button id="take-photo" class="btn-lg"><span class="glyphicon glyphicon-facetime-video" aria-hidden="true"></span> <span data-i18n='Take photo'>Take photo</span></button>
+    </div>
+    
+    <div id="dropMessage" class="">
       <div class="background">
         <span class="text" data-i18n='Drop your image here to trace it'>Drop your image here to trace it</span>
       </div>
-    </div> -->
+    </div>
+
     <!-- <canvas id="loadingBar"></canvas> -->
     
     <div id="popovers"></div>
@@ -1293,7 +1317,6 @@
 
     <script src="{% static 'libs/break-on-access.js' %}"></script>
     <script>WEB_SOCKET_SWF_LOCATION="{% static 'flashsocket/WebSocketMain.swf' %}";</script>
-
 
     {% if useDebugFiles %}
       <script data-main="{% static 'wetu-client/js/App' %}" src="{% static 'libs/require.js' %}" async></script>

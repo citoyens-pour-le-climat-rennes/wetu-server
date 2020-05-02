@@ -5,7 +5,6 @@ import socketio.sdjango
 socketio.sdjango.autodiscover()
 
 urlpatterns = [
-    # hack for Brackets Theseus...
 
     url(r'^$', views.welcome, name='welcome'),
     url(r'^ajaxCall/$', views.ajaxCall),

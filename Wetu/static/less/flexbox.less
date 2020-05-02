@@ -1,135 +1,118 @@
-// --------------------------------------------------
-// Flexbox LESS mixins
-// The spec: http://www.w3.org/TR/css3-flexbox
-// --------------------------------------------------
-
-// Flexbox display
-// flex or inline-flex
-.flex-display(@display: flex) {
-	display: ~"-webkit-@{display}";
-	display: ~"-moz-@{display}";
-	display: ~"-ms-@{display}box"; // IE10 uses -ms-flexbox
-	display: ~"-ms-@{display}"; // IE11
-	display: @display;
+.post .title {
+  /* text-shadow: 1px 2px 2px rgba(0, 0, 0, 0.1); */
+  font-size: 140%;
+  font-weight: normal;
+  padding-bottom: 2px;
+  margin-bottom: 10px;
+  padding-top: 1em;
+  color: #333;
 }
-
-// The 'flex' shorthand
-// - applies to: flex items
-// <positive-number>, initial, auto, or none
-.flex(@columns: initial) {
-  -webkit-flex: @columns;
-     -moz-flex: @columns;
-      -ms-flex: @columns;
-          flex: @columns;
+.post .action {
+  float: left;
+  width: 50%;
+  padding-top: 10px;
+  vertical-align: middle;
 }
-
-// Flex Flow Direction
-// - applies to: flex containers
-// row | row-reverse | column | column-reverse
-.flex-direction(@direction: row) {
-  -webkit-flex-direction: @direction;
-     -moz-flex-direction: @direction;
-      -ms-flex-direction: @direction;
-          flex-direction: @direction;
+/* // Voting box for posts. */
+.post.vote-box {
+  text-align: center;
+  min-width: 60px;
+  float: left;
+  margin-left: -10px;
+  display: block;
 }
-
-// Flex Line Wrapping
-// - applies to: flex containers
-// nowrap | wrap | wrap-reverse
-.flex-wrap(@wrap: nowrap) {
-  -webkit-flex-wrap: @wrap;
-     -moz-flex-wrap: @wrap;
-      -ms-flex-wrap: @wrap;
-          flex-wrap: @wrap;
+.post.vote-box.ratings-enabled {
+  min-width: 150px;
 }
-
-// Flex Direction and Wrap
-// - applies to: flex containers
-// <flex-direction> || <flex-wrap>
-.flex-flow(@flow) {
-  -webkit-flex-flow: @flow;
-     -moz-flex-flow: @flow;
-      -ms-flex-flow: @flow;
-          flex-flow: @flow;
+.post.vote-box .count {
+  font-size: 180%;
+  font-weight: bold;
+  text-align: center;
+  margin: 5px 0px 5px 0px;
+  color: #505050;
 }
-
-// Display Order
-// - applies to: flex items
-// <integer>
-.flex-order(@order: 0) {
-  -webkit-order: @order;
-     -moz-order: @order;
-      -ms-order: @order;
-          order: @order;
+.post.vote-box .mark {
+  height: 30px;
+  background-position: center;
+  /* margin-top: 10px; */
+  background-repeat: no-repeat;
+  cursor: pointer;
+  color: #e97200;
+  opacity: 0.9;
 }
-
-// Flex grow factor
-// - applies to: flex items
-// <number>
-.flex-grow(@grow: 0) {
-  -webkit-flex-grow: @grow;
-     -moz-flex-grow: @grow;
-      -ms-flex-grow: @grow;
-          flex-grow: @grow;
+.post.vote-box .tip {
+  font-size: 13px;
 }
-
-// Flex shr
-// - applies to: flex itemsink factor
-// <number> 
-.flex-shrink(@shrink: 1) {
-  -webkit-flex-shrink: @shrink;
-     -moz-flex-shrink: @shrink;
-      -ms-flex-shrink: @shrink;
-          flex-shrink: @shrink;
+.post.vote-box .off {
+  color: #5f5f5f;
+  opacity: 0.3;
 }
-
-// Flex basis
-// - the initial main size of the flex item
-// - applies to: flex itemsnitial main size of the flex item
-// <width> 
-.flex-basis(@width: auto) {
-  -webkit-flex-basis: @width;
-     -moz-flex-basis: @width;
-      -ms-flex-basis: @width;
-          flex-basis: @width;
+.post.vote-box .ratings .vote.mark[data-type="bookmark"] {
+  margin-right: 20px;
+  margin-top: 0px;
+  opacity: 0.9;
 }
-
-// Axis Alignment
-// - applies to: flex containers
-// flex-start | flex-end | center | space-between | space-around 
-.justify-content(@justify: flex-start) {
-  -webkit-justify-content: @justify;
-     -moz-justify-content: @justify;
-      -ms-justify-content: @justify;
-          justify-content: @justify;
+.post.vote-box .ratings .vote.mark[data-type="bookmark"] .btn.btn-default {
+  color: #808080;
+  border-color: #eee;
+  justify-content: center;
 }
-
-// Packing Flex Lines
-// - applies to: multi-line flex containers
-// flex-start | flex-end | center | space-between | space-around | stretch 
-.align-content(@align: stretch) {
-  -webkit-align-content: @align;
-     -moz-align-content: @align;
-      -ms-align-content: @align;
-          align-content: @align;
+/* // Voting box for comments. */
+.comment.vote-box {
+  text-align: center;
+  padding: 10px;
+  padding-right: 15px;
+  width: 35px;
+  float: left;
+  margin-left: -10px;
+  display: block;
 }
-
-// Cross-axis Alignment
-// - applies to: flex containers
-// flex-start | flex-end | center | baseline | stretch 
-.align-items(@align: stretch) {
-  -webkit-align-items: @align;
-     -moz-align-items: @align;
-      -ms-align-items: @align;
-          align-items: @align;
+.comment.vote-box .mark {
+  cursor: pointer;
+  color: #2F5B14;
+  opacity: 0.9;
+  width: 20px;
+  float: left;
+  vertical-align: middle;
 }
-
-// Cross-axis Alignment
-// - applies to: flex items
-// auto | flex-start | flex-end | center | baseline | stretch 
-.align-self(@align: auto) {
-  -webkit-align-self: @align;
-     -moz-align-self: @align;
-      -ms-align-self: @align;
-          align-self: @align;
+.comment.vote-box .count {
+  width: 20px;
+  float: left;
+  font-size: small;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  margin: 1px 0px 5px 0px;
+}
+.comment.vote-box .off {
+  opacity: 0.3;
+}
+.action-line {
+  width: 50%;
+  float: left;
+}
+.author-line {
+  width: 30%;
+  float: right;
+}
+.comment {
+  clear: left;
+}
+.comment .entry {
+  overflow-x: auto;
+  padding: 0px 10px 0px 10px;
+  margin-top: 0;
+  border-bottom: 1px solid #eeeeee;
+  margin-bottom: 20px;
+}
+.comment .entry hr {
+  border-top: 1px solid #e3e3e3;
+}
+.comment .post-info-line {
+  float: left;
+  margin-right: 10px;
+  color: #666666;
+}
+.comment .indent {
+  margin-left: 1.5em;
 }
