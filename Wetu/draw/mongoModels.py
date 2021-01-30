@@ -355,10 +355,12 @@ class City(Document):
     message = StringField(required=False)
     public = BooleanField(default=False)
     strokeWidth = DecimalField(default=7)
+    pixelPerMm = DecimalField(default=1)
     width = DecimalField(default=4000)
     height = DecimalField(default=3000)
     finished = BooleanField(default=False)
     useSVG = BooleanField(default=False)
+    mode = StringField(default='CommeUnDessein')
     eventLocation = StringField()
     eventDate = DateTimeField(default=datetime.datetime.now)
     

@@ -3468,17 +3468,17 @@ form.login ul.errorlist {
   right: 0;
   width: 100%;
   height: 100%;
+  background-color: black;
+  z-index: 100001;
   display: none;
 }
 #camera.active {
   display: block;
 }
 #camera canvas {
-  z-index: 100001;
   position: absolute;
 }
 #camera button {
-  z-index: 100002;
   position: absolute;
 }
 #camera #take-photo {
@@ -3491,4 +3491,61 @@ form.login ul.errorlist {
   right: 20px;
   width: 40px;
   height: 40px;
+}
+#camera .cd-sliders {
+  position: absolute;
+  bottom: 140px;
+  left: 0;
+  padding: 0 50px;
+  width: 100%;
+  margin: auto;
+}
+#camera .cd-slider {
+  width: 100%;
+  margin-bottom: 40px;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 10px;
+  background-color: #00000033;
+}
+#camera .cd-slider button.btn {
+  position: relative;
+  border-radius: 40px;
+  font-size: 12px;
+  height: 40px;
+  width: 40px;
+  padding: 6px 12px;
+  margin: 0;
+  border-color: #ffffff29;
+  color: #ffffffb0;
+  background-color: transparent;
+}
+#camera .cd-slider .cd-inline {
+  color: white;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  cursor: pointer;
+}
+#camera .cd-slider .cd-inline .cd-line {
+  position: absolute;
+  width: calc(50% - 20px);
+  border-style: solid;
+  border-color: transparent;
+  border-bottom-color: #ffffff8a;
+  border-width: 1px;
+  height: 21px;
+  margin: 0 10px;
+  flex-grow: 1;
+}
+#camera .cd-slider .cd-inline .cd-line:last-child {
+  left: 50%;
+}
+#camera .cd-slider .cd-inline .glyphicon {
+  margin-top: 12px;
+  color: #ffffffab;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%);
 }

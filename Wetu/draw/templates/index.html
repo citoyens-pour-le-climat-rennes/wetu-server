@@ -524,7 +524,7 @@
           <div class="hidden text-separator"></div>
 
           <!-- <canvas id="background-canvas" resize hidpi="off"></canvas> -->
-          <canvas id="canvas" resize hidpi="off" data-pos-x="{{ x }}" data-pos-y="{{ y }}" data-points="{{ points }}" data-box="{{ box }}" data-site="{{ site }}" data-message="{{ message }}" data-load-entire-area="{{ loadEntireArea }}" data-city="{{ city }}" data-city-event-date="{{ cityEventDate }}" data-city-event-date="{{ cityEventLocation }}" data-city-finished="{{ cityFinished }}" data-city-message="{{ cityMessage }}" data-city-stroke-width="{{ cityStrokeWidth }}" data-city-width="{{ cityWidth }}" data-city-height="{{ cityHeight }}" data-city-use-svg="{{ cityUseSVG }}" data-city-use-vote-colors="{{ cityUseVoteColors }}" data-owner="{{ owner }}" data-is-admin="{{ userIsAdmin }}" data-drawing-pk="{{ drawingPk }}" data-tile-pk="{{ tilePk }}" data-bounds="{{ bounds }}" data-github-login="{{ githubLogin }}" data-username="{{ request.user.username }}" data-user-email="{{ request.user.email }}" data-email-confirmed="{{ emailConfirmed }}" data-is-authenticated="{{ request.user.is_authenticated }}" data-drawing-mode="{{ drawingMode }}" data-positiveVoteThreshold="{{ positiveVoteThreshold }}" data-negativeVoteThreshold="{{ negativeVoteThreshold }}" data-voteMinDuration="{{ voteMinDuration }}" data-application="{{ application }}"></canvas>
+          <canvas id="canvas" resize hidpi="off" data-pos-x="{{ x }}" data-pos-y="{{ y }}" data-points="{{ points }}" data-box="{{ box }}" data-site="{{ site }}" data-message="{{ message }}" data-load-entire-area="{{ loadEntireArea }}" data-city="{{ city }}" data-city-event-date="{{ cityEventDate }}" data-city-event-date="{{ cityEventLocation }}" data-city-finished="{{ cityFinished }}" data-city-message="{{ cityMessage }}" data-city-stroke-width="{{ cityStrokeWidth }}" data-city-width="{{ cityWidth }}" data-city-height="{{ cityHeight }}" data-city-pixel-per-mm="{{ cityPixelPerMm }}" data-city-use-svg="{{ cityUseSVG }}" data-city-mode="{{ cityMode }}" data-city-use-vote-colors="{{ cityUseVoteColors }}" data-owner="{{ owner }}" data-is-admin="{{ userIsAdmin }}" data-drawing-pk="{{ drawingPk }}" data-tile-pk="{{ tilePk }}" data-bounds="{{ bounds }}" data-github-login="{{ githubLogin }}" data-username="{{ request.user.username }}" data-user-email="{{ request.user.email }}" data-email-confirmed="{{ emailConfirmed }}" data-is-authenticated="{{ request.user.is_authenticated }}" data-drawing-mode="{{ drawingMode }}" data-positiveVoteThreshold="{{ positiveVoteThreshold }}" data-negativeVoteThreshold="{{ negativeVoteThreshold }}" data-voteMinDuration="{{ voteMinDuration }}" data-application="{{ application }}"></canvas>
           <div id="rasters"></div>
 
           <div id="html-view">
@@ -944,6 +944,32 @@
     </div>
     <div id="camera">
       <button id="cancel-photo" class="btn"><span class="glyphicon glyphicon-remove" aria-hidden="true"> </button>
+      
+      <div class="cd-sliders cd-column">
+        
+        <div class="cd-slider cd-row saturation">
+          <button class="btn minus"><span class="glyphicon glyphicon-minus" aria-hidden="true"> </button>
+          <div class="cd-inline">
+            <span class="cd-line"></span>
+            <span class="glyphicon glyphicon-tint" aria-hidden="true"></span>
+            <span class="cd-line"></span>
+          </div>
+          <button class="btn plus"><span class="glyphicon glyphicon-plus" aria-hidden="true"> </button>
+        </div>
+
+        <div class="cd-slider cd-row lightness">
+          <button class="btn minus"><span class="glyphicon glyphicon-minus" aria-hidden="true"> </button>
+            <div class="cd-inline">
+              <span class="cd-line"></span>
+              <!-- <span class="glyphicon glyphicon-lamp" aria-hidden="true"></span> -->
+              <span class="glyphicon glyphicon-adjust" aria-hidden="true"></span>
+              <span class="cd-line"></span>
+            </div>
+            <button class="btn plus"><span class="glyphicon glyphicon-plus" aria-hidden="true"> </button>
+        </div>
+
+      </div>
+
       <button id="take-photo" class="btn-lg"><span class="glyphicon glyphicon-facetime-video" aria-hidden="true"></span> <span data-i18n='Take photo'>Take photo</span></button>
     </div>
     

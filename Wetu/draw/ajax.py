@@ -36,7 +36,7 @@ from mongoengine import ValidationError
 from mongoengine.queryset import Q
 import time
 
-from PIL import Image, ImageChops
+from PIL import Image, ImageFilter
 import colorsys
 import cStringIO
 import StringIO
@@ -50,6 +50,7 @@ from allauth.account.signals import email_confirmed, email_confirmation_sent
 
 import base64
 import subprocess
+import numpy as np
 
 # from github3 import authorize
 
@@ -166,22 +167,22 @@ except City.DoesNotExist:
 
 logger = logging.getLogger(__name__)
 
-with open('/data/wetu/secret_github.txt') as f:
+with open(settings.DATA_DIR + '/wetu/secret_github.txt') as f:
 	PASSWORD = base64.b64decode(f.read().strip())
 
-with open('/data/wetu/secret_tipibot.txt') as f:
+with open(settings.DATA_DIR + '/wetu/secret_tipibot.txt') as f:
 	TIPIBOT_PASSWORD = f.read().strip()
 
-with open('/data/wetu/client_secret_github.txt') as f:
+with open(settings.DATA_DIR + '/wetu/client_secret_github.txt') as f:
 	CLIENT_SECRET = f.read().strip()
 
-with open('/data/wetu/accesstoken_github.txt') as f:
+with open(settings.DATA_DIR + '/wetu/accesstoken_github.txt') as f:
 	ACCESS_TOKEN = f.read().strip()
 
-with open('/data/wetu/openaccesstoken_github.txt') as f:
+with open(settings.DATA_DIR + '/wetu/openaccesstoken_github.txt') as f:
 	OPEN_ACCESS_TOKEN = f.read().strip()
 
-with open('/data/wetu/settings.json') as f:
+with open(settings.DATA_DIR + '/wetu/settings.json') as f:
     localSettings = json.loads(f.read().strip())
 
 # pprint(vars(object))
@@ -238,6 +239,10 @@ def makeBoxCCWFromBounds(city, bounds):
 def makeTLBRFromBounds(city, bounds):
 	bounds = projectToGeoJSON(city, bounds)
 	return [(bounds['x'], bounds['y']), (bounds['x'] + bounds['width'], bounds['y'] + bounds['height'])]
+
+# def makeBLTRFromBounds(city, bounds):
+# 	bounds = projectToGeoJSON(city, bounds)
+# 	return [(bounds['x'], bounds['y'] + bounds['height']), (bounds['x'] + bounds['width'], bounds['y'])]
 
 def makeBoundsFromBox(city, box):
 	left = box['coordinates'][0][0][0]
@@ -744,7 +749,7 @@ def deleteCity(request, name):
 		globals()[model].objects(city=city.pk).delete()
 
 	try:
-		shutil.rmtree('media/rasters/' + str(city.pk))
+		shutil.rmtree('media/rasters/' + str(city.name))
 	except Exception:
 		pass
 
@@ -1375,6 +1380,9 @@ def submitDrawing(request, pk, clientId, svg, date, bounds, title=None, descript
 	drawing.description = description
 
 	drawing.box = makeBoxFromBounds(city, bounds)
+	# if bounds is too large:
+	# 	return json.dumps({'state': 'error', 'message': "The drawing is too large"})
+
 	# drawing.bounds = json.dumps(bounds)
 	# drawing.left = int(floor(bounds['x'] / 1000))
 	# drawing.top = int(floor(bounds['y'] / 1000))
@@ -1394,7 +1402,7 @@ def submitDrawing(request, pk, clientId, svg, date, bounds, title=None, descript
 		output.write(imageData)
 		output.close()
 
-		updateRasters(imageData, bounds)
+		updateRasters(imageData, bounds, city)
 
 	svgFile = open('Wetu/static/drawings/'+pk+'.svg', 'wb')
 	svgFile.write(svg)
@@ -2094,10 +2102,10 @@ def updateDrawing(request, pk, title, description=None):
 
 	return json.dumps( {'state': 'success' } )
 
-def updateDrawingRaster(bounds, png):
+def updateDrawingRaster(bounds, png, city):
 	imgstr = re.search(r'base64,(.*)', png).group(1)
 	imageData = imgstr.decode('base64')
-	updateRasters(imageData, bounds)
+	updateRasters(imageData, bounds, city)
 	return
 
 @checkSimulateSlowResponse
@@ -2130,7 +2138,7 @@ def updateDrawingImage(request, pk, bounds, png):
 	if not userAllowed(request, drawing.owner):
 		return json.dumps({'state': 'error', 'message': 'Not owner of drawing'})
 	
-	updateDrawingRaster(bounds, png)
+	updateDrawingRaster(bounds, png, city)
 
 	return json.dumps( {'state': 'success' } )
 
@@ -3269,11 +3277,12 @@ def removeDrawingFromRasters(city, drawing, rasterType = 'active'):
 	imageX = l
 	imageY = t
 
-	geometry = makeTLBRFromBounds(city, {'x': imageX, 'y': imageY, 'width': imageWidth, 'height': imageHeight})
+	box = makeBoxFromBounds(city, {'x': imageX, 'y': imageY, 'width': imageWidth, 'height': imageHeight})
 
 	statuses = ['pending', 'drawing', 'drawn', 'validated'] if rasterType == 'active' else ['rejected']
-	overlappingDrawings = Drawing.objects(pk__ne=drawing.pk, city=drawing.city, planetX=drawing.planetX, planetY=drawing.planetY, status__in=statuses, box__geo_within_box=geometry).order_by('+date')
-		
+	# overlappingDrawings = Drawing.objects(pk__ne=drawing.pk, city=drawing.city, planetX=drawing.planetX, planetY=drawing.planetY, status__in=statuses, box__geo_within_box=geometry).order_by('+date')
+	overlappingDrawings = Drawing.objects(pk__ne=drawing.pk, city=drawing.city, planetX=drawing.planetX, planetY=drawing.planetY, status__in=statuses, box__geo_intersects=box).order_by('+date')
+
 	drawingBounds['x'] = l
 	drawingBounds['y'] = t
 	drawingBounds['width'] = r - l
@@ -3296,18 +3305,18 @@ def removeDrawingFromRasters(city, drawing, rasterType = 'active'):
 			except IOError:
 				pass
 
-	updateRastersFromImage(newImage, { 'x': imageX, 'y': imageY, 'width': imageWidth, 'height': imageHeight }, True, rasterType)
+	updateRastersFromImage(newImage, { 'x': imageX, 'y': imageY, 'width': imageWidth, 'height': imageHeight }, city, True, rasterType)
 
 	return
 
-def updateRasters(imageData, bounds):
+def updateRasters(imageData, bounds, city):
 
 	try:
 		image = Image.open(StringIO.StringIO(imageData))				# Pillow version
 	except IOError:
 		return { 'state': 'error', 'message': 'impossible to read image.'}
 
-	return updateRastersFromImage(image, bounds)
+	return updateRastersFromImage(image, bounds, city)
 
 def updateRastersFromDrawing(city, drawing, rasterType = 'active'):
 
@@ -3316,7 +3325,7 @@ def updateRastersFromDrawing(city, drawing, rasterType = 'active'):
 	except IOError:
 		return { 'state': 'error', 'message': 'impossible to read the drawing image.'}
 
-	return updateRastersFromImage(image, makeBoundsFromBox(city, drawing.box), False, rasterType)
+	return updateRastersFromImage(image, makeBoundsFromBox(city, drawing.box), city, False, rasterType)
 
 def createClampedImage(image, bounds, scaleFactor=4):
 
@@ -3343,7 +3352,7 @@ def createClampedImage(image, bounds, scaleFactor=4):
 
 	return (clampedImage, imageX, imageY, imageWidth, imageHeight)
 
-def updateRastersFromImage(image, bounds, overwrite = False, rasterType = 'active'):
+def updateRastersFromImage(image, bounds, city, overwrite = False, rasterType = 'active'):
 
 	# find top, left, bottom and right positions of the area in the quantized space
 	
@@ -3363,8 +3372,12 @@ def updateRastersFromImage(image, bounds, overwrite = False, rasterType = 'activ
 
 		for xi in range(l, r):
 			for yi in range(t, b):
+				
+				rasterName = 'Wetu/static/rasters/' + city.name + '/' + rasterType + '/zoom' + str(n) + '/' + str(xi) + ',' + str(yi) + '.png'
+				rasterDir = os.path.abspath(os.path.join(rasterName, os.pardir))
+				if not os.path.exists(rasterDir):
+					os.makedirs(rasterDir)
 
-				rasterName = 'Wetu/static/rasters/' + rasterType + '/zoom' + str(n) + '/' + str(xi) + ',' + str(yi) + '.png'
 				try:
 					# raster = Image(filename=rasterName)  		# Wand version
 					raster = Image.open(rasterName)				# Pillow version
@@ -3683,10 +3696,82 @@ def importDB(path):
 
 	return
 
+# def autoTraceMultiChannels(request, png, colors):
 
+# 	if not request.user.is_authenticated():
+# 		return json.dumps({'state': 'not_logged_in'})
+	
+# 	try:
+# 		userProfile = UserProfile.objects.get(username=request.user.username)
+# 	except UserProfile.DoesNotExist:
+# 		return json.dumps( { 'status': 'error', 'message': 'The user profile does not exist.' } )
+	
+# 	if userProfile.banned:
+# 		return json.dumps({'state': 'error', 'message': 'Your account has been suspended'})
 
+# 	if not emailIsConfirmed(request, userProfile):
+# 		return json.dumps({'state': 'error', 'message': 'Please confirm your email'})
 
-def autoTrace(request, png):
+# 	imgstr = re.search(r'base64,(.*)', png).group(1)
+# 	imageData = imgstr.decode('base64')
+	
+# 	try:
+# 		image = Image.open(StringIO.StringIO(imageData))
+# 		# image = image.convert('L', None, Image.FLOYDSTEINBERG) # Binarize image: not necessary if options --color-count 1 is specified to autotrace
+# 		# hsv = image.convert('HSV') # WARNING: NOT WORKING, NOT SUPPORTED!!
+# 		# h, s, v = hsv.split()
+# 		# imageGrayscale = ImageChops.darker(ImageChops.invert(s), v)
+# 		# blurredImage = imageGrayscale.filter(ImageFilter.GaussianBlur(15))
+# 		# subtraction = ImageChops.subtract(imageGrayscale, blurredImage)
+# 		# finalImage = subtraction.point(lambda i: 255 if i < 12 else 0)
+		
+# 		# In the future: Convert to closest colors
+
+# 		r = np.arange(image.size[1])
+# 		r2 = np.repeat(r[:, np.newaxis], image.size[0], axis=1)
+# 		mask = np.where(r2 % 6 == 0, 255, 0)
+
+# 		# mask = Image.fromarray(r3.astype(np.uint8))
+
+# 		# "Stripe" the image
+# 		# Convert each color in SVG
+# 		data = np.asarray(image)
+# 		svgs = []
+# 		# import pdb; pdb.set_trace()
+# 		for color in colors:
+# 			# colorData = np.all(data != color, axis=-1).astype(np.uint8)
+# 			distMax = 5
+# 			colorData = (np.sum(abs(data-color), -1) < distMax).astype(np.uint8) * 255
+# 			colorImage = Image.fromarray(colorData)
+
+# 			eroded = colorImage.filter(ImageFilter.MaxFilter(5))
+# 			erodedData = np.asarray(eroded)
+# 			finalColorData = np.where(erodedData == 0, mask, colorData)
+# 			finalColorImage = Image.fromarray(finalColorData.astype(np.uint8))
+# 			finalColorImage.save('Wetu/media/imageToSVG.bmp', 'BMP')
+# 			command = 'autotrace -centerline -output-format svg Wetu/media/imageToSVG.bmp'.split()
+# 			process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+# 			stdout, stderr = process.communicate()
+# 			svgs.append(stdout)
+# 			if stderr:
+# 				return json.dumps( {'state': 'error', 'svg': stdout, 'error': stderr } )
+
+# 		# finalImage = image.point(lambda i: 255 if i > 128 else 0)
+# 		# finalImage.save('Wetu/media/imageToSVG.bmp', 'BMP')
+# 		# # command = 'autotrace -centerline -color-count 2 -output-format svg Wetu/media/imageToSVG.bmp'.split()
+# 		# command = 'autotrace -centerline -output-format svg Wetu/media/imageToSVG.bmp'.split()
+
+# 		# process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+# 		# stdout, stderr = process.communicate()
+
+# 		return json.dumps( {'state': 'success', 'svgs': svgs, 'colors': colors} )
+
+# 	except IOError:
+# 		pass
+
+# 	return json.dumps( { 'state': 'error', 'message': 'impossible to read image.'} )
+
+def autoTrace(request, png, colors):
 
 	if not request.user.is_authenticated():
 		return json.dumps({'state': 'not_logged_in'})
@@ -3707,22 +3792,49 @@ def autoTrace(request, png):
 	
 	try:
 		image = Image.open(StringIO.StringIO(imageData))
-		# image = image.convert('L', None, Image.FLOYDSTEINBERG) # Binarize image: not necessary if options --color-count 1 is specified to autotrace
-		# hsv = image.convert('HSV') # WARNING: NOT WORKING, NOT SUPPORTED!!
-		# h, s, v = hsv.split()
-		# imageGrayscale = ImageChops.darker(ImageChops.invert(s), v)
-		# blurredImage = imageGrayscale.filter(ImageFilter.GaussianBlur(15))
-		# subtraction = ImageChops.subtract(imageGrayscale, blurredImage)
-		# finalImage = subtraction.point(lambda i: 255 if i < 12 else 0)
-		finalImage = image.point(lambda i: 255 if i > 128 else 0)
-		finalImage.save('Wetu/media/imageToSVG.bmp', 'BMP')
-		# command = 'autotrace -centerline -color-count 2 -output-format svg Wetu/media/imageToSVG.bmp'.split()
-		command = 'autotrace -centerline -output-format svg Wetu/media/imageToSVG.bmp'.split()
-
+		image.save('Wetu/media/imageToSVG.bmp', 'BMP')
+		# image.save('Wetu/media/imageToSVG.png', 'png')
+		command = 'autotrace -centerline -background-color FFFFFF -color-count 0 -output-format svg Wetu/media/imageToSVG.bmp'.split()
 		process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		stdout, stderr = process.communicate()
 
-		return json.dumps( {'state': 'success' if not stderr else 'error', 'svg': stdout, 'error': stderr } )
+		output = 'Wetu/media/output.html'
+
+		with open(output, 'w') as out:
+			
+			out.write("""
+			<html>
+				<style>
+					svg {
+						stroke-width: 7px;
+						stroke-linecap: round;
+						stroke-linejoin: round;
+					}
+				</style>
+				<body>
+			""")
+
+			out.write('<h4> image: </h4>')
+			
+			out.write(str(stdout) + '\n')
+
+			out.write("""
+				</body>
+			</html>
+			""")
+			
+		if stderr:
+			return json.dumps( {'state': 'error', 'svg': stdout, 'error': stderr } )
+
+		# finalImage = image.point(lambda i: 255 if i > 128 else 0)
+		# finalImage.save('Wetu/media/imageToSVG.bmp', 'BMP')
+		# # command = 'autotrace -centerline -color-count 2 -output-format svg Wetu/media/imageToSVG.bmp'.split()
+		# command = 'autotrace -centerline -output-format svg Wetu/media/imageToSVG.bmp'.split()
+
+		# process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+		# stdout, stderr = process.communicate()
+
+		return json.dumps( {'state': 'success', 'svg': stdout, 'colors': colors} )
 
 	except IOError:
 		pass

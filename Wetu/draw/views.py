@@ -35,7 +35,9 @@ def addCityToResult(result, city):
 	result['cityStrokeWidth'] = str(city.strokeWidth)
 	result['cityWidth'] = city.width
 	result['cityHeight'] = city.height
+	result['cityPixelPerMm'] = city.pixelPerMm
 	result['cityUseSVG'] = city.useSVG
+	result['cityMode'] = city.mode or 'CommeUnDessein'
 	return
 
 def index(request, site=None, owner=None, cityName=None, x=0, y=0, useDebugFiles=False, drawingMode=None, visit=False, pk=None, tilePk=None):

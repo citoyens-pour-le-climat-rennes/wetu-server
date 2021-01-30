@@ -19,7 +19,12 @@ import datetime
 from mongoengine import *
 connect('Wetu')
 
-with open('/data/wetu/settings.json') as f:
+DATA_DIR = '/data'
+
+if not os.path.isdir(DATA_DIR):
+    DATA_DIR = os.path.expanduser('~/.root/data')
+    
+with open(DATA_DIR + '/wetu/settings.json') as f:
     localSettings = json.loads(f.read().strip())
 
 SITE_ID = localSettings['SITE_ID']
@@ -54,7 +59,7 @@ if DEBUG:
     STATICFILES_FINDERS = STATICFILES_FINDERS + ('draw.fileFinder.StaticRootFinder',)
 
 # Make this unique, and don't share it with anybody.
-with open('/data/wetu/secret_key.txt') as f:
+with open(DATA_DIR + '/wetu/secret_key.txt') as f:
     SECRET_KEY = f.read().strip()
 # SECRET_KEY = 'A unique secret key'
 # SECURITY WARNING: keep the secret key used in production secret!
