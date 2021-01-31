@@ -202,11 +202,17 @@ def unix_time_millis(dt):
 planetWidth = 180
 planetHeight = 90
 
+def getCitySizePixel(city):
+	width = city.width * city.pixelPerMm if hasattr(city, 'pixelPerMm') else city.width
+	height = city.height * city.pixelPerMm if hasattr(city, 'pixelPerMm') else city.height
+	return { 'width': width, 'height': height }
+
 def projectToGeoJSON(city, bounds):
-	x = planetWidth * bounds['x'] / float(city.width)
-	y = planetHeight * bounds['y'] / float(city.height)
-	width = planetWidth * bounds['width'] / float(city.width)
-	height = planetHeight * bounds['height'] / float(city.height)
+	citySize = getCitySizePixel(city)
+	x = planetWidth * bounds['x'] / float(citySize['width'])
+	y = planetHeight * bounds['y'] / float(citySize['height'])
+	width = planetWidth * bounds['width'] / float(citySize['width'])
+	height = planetHeight * bounds['height'] / float(citySize['height'])
 	x = min(max(x, -planetWidth/2), planetWidth/2)
 	y = min(max(y, -planetHeight/2), planetHeight/2)
 	if x + width > planetWidth/2:
@@ -216,10 +222,11 @@ def projectToGeoJSON(city, bounds):
 	return { 'x': x, 'y': y, 'width': width, 'height': height }
 
 def geoJSONToProject(city, bounds):
-	x = float(city.width) * bounds['x'] / planetWidth
-	y = float(city.height) * bounds['y'] / planetHeight
-	width = float(city.width) * bounds['width'] / planetWidth
-	height = float(city.height) * bounds['height'] / planetHeight
+	citySize = getCitySizePixel(city)
+	x = float(citySize['width']) * bounds['x'] / planetWidth
+	y = float(citySize['height']) * bounds['y'] / planetHeight
+	width = float(citySize['width']) * bounds['width'] / planetWidth
+	height = float(citySize['height']) * bounds['height'] / planetHeight
 	return { 'x': x, 'y': y, 'width': width, 'height': height }
 
 def makeBox(left, top, right, bottom):
@@ -361,7 +368,7 @@ def setCityNextEventDateAndLocation(request, cityName, date, location):
 	city.save()
 	return json.dumps({"message": "success"})
 
-def setCityDimensions(request, cityName, width, height, strokeWidth):
+def setCityDimensions(request, cityName, width, height, strokeWidth, pixelPerMm=None):
 	if not isAdmin(request.user):
 		return json.dumps({"status": "error", "message": "not_admin"})
 
@@ -372,6 +379,8 @@ def setCityDimensions(request, cityName, width, height, strokeWidth):
 	city.width = width
 	city.height = height
 	city.strokeWidth = strokeWidth
+	if pixelPerMm is not None:
+		city.strokeWidth = pixelPerMm
 	city.save()
 	return json.dumps({"message": "success"})
 
@@ -1008,7 +1017,8 @@ def loadDrawingsAndTilesFromBounds(request, bounds, cityName=None, drawingsToIgn
 	if rejected:
 		statusToLoad.append('rejected')
 
-	if bounds['x'] >= city.width / 2 or bounds['y'] >= city.height / 2 or city.width <= 0 or city.height <= 0:
+	citySize = getCitySizePixel(city)
+	if bounds['x'] >= citySize['width'] / 2 or bounds['y'] >= citySize['height'] / 2 or citySize['width'] <= 0 or citySize['height'] <= 0:
 	 	return json.dumps( { 'tiles': [], 'items': [], 'user': request.user.username } )
 
 	box = makeBoxFromBounds(city, bounds)
@@ -3583,27 +3593,6 @@ def getSurveyResults(request):
 
 	return json.dumps( results )
 
-def projectToGeoJSON2(city, bounds):
-	x = planetWidth * bounds['x'] / float(city.width)
-	y = planetHeight * bounds['y'] / float(city.height)
-	width = planetWidth * bounds['width'] / float(city.width)
-	height = planetHeight * bounds['height'] / float(city.height)
-	x = min(max(x, -planetWidth/2), planetWidth/2)
-	y = min(max(y, -planetHeight/2), planetHeight/2)
-	if x + width > planetWidth/2:
-		width = planetWidth/2 - x
-	if y + height > planetHeight/2:
-		height = planetHeight/2 - y
-	return { 'x': x, 'y': y, 'width': width, 'height': height }
-
-def makeBox2(left, top, right, bottom):
-	return { "type": "Polygon", "coordinates": [ [ [left, top], [right, top], [right, bottom], [left, bottom], [left, top] ] ] }
-
-def makeBoxFromBounds2(city, bounds):
-	bounds = projectToGeoJSON2(city, bounds)
-	return makeBox2(bounds['x'], bounds['y'], bounds['x'] + bounds['width'], bounds['y'] + bounds['height'])
-
-
 def importObject(path, name, Object):
 
 	file = open(path + name + '.json', 'r')
@@ -3633,7 +3622,7 @@ def importDB(path):
 
 		try:
 			drawing = Drawing.objects.get(pk=drawing['_id']['$oid'])
-			drawing['box'] = makeBoxFromBounds2(city, {'x': 0, 'y': 0, 'width': 10, 'height': 10})
+			drawing['box'] = makeBoxFromBounds(city, {'x': 0, 'y': 0, 'width': 10, 'height': 10})
 			drawing.save()
 			continue
 		except Drawing.DoesNotExist:
@@ -3685,8 +3674,8 @@ def importDB(path):
 		# xMax *= 1000
 		# yMax *= 1000
 
-		# drawing['box'] = makeBoxFromBounds2(city, {'x': xMin, 'y': yMin, 'width': xMax-xMin, 'height': yMax-yMin})
-		drawing['box'] = makeBoxFromBounds2(city, {'x': 0, 'y': 0, 'width': 10, 'height': 10})
+		# drawing['box'] = makeBoxFromBounds(city, {'x': xMin, 'y': yMin, 'width': xMax-xMin, 'height': yMax-yMin})
+		drawing['box'] = makeBoxFromBounds(city, {'x': 0, 'y': 0, 'width': 10, 'height': 10})
 
 		try:
 			do = Drawing.from_json(json.dumps(drawing))
